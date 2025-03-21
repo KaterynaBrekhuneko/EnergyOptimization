@@ -9,33 +9,64 @@ typedef CGAL::Triangulation_data_structure_2<Vb, Fb> Tds;
 typedef CGAL::Constrained_Delaunay_triangulation_2<K, Tds> CDT;
 typedef CDT::Edge_iterator Edge_iterator;
 
-// TODO: rewrite step size using Armijo
-double compute_step_size(Problem* problem){
-    CDT cdt = problem->generate_CDT<CDT>();
+bool armijo_condition(const std::vector<Point>& gradient, double f, double f_new, double step_size, double armijo_const){
+    double dot_product = 0.0;
+    for(int i = 0; i < gradient.size(); i++){
+        dot_product = dot_product - gradient[i].x()*gradient[i].x() - gradient[i].y()*gradient[i].y();
+    }
+    return f_new <= f + armijo_const*step_size*dot_product;
+}
 
-    std::vector<double> edge_lengths;
+std::vector<Point> line_search(std::vector<Polygon>& triangles, const std::vector<Point>& steiner, const std::vector<Point>& gradient, double s_max = 1.0, double shrink = 0.8, double max_iters = 64, double armijo_const = 1e-4){
+    // Check input
+   assert(steiner.size() == gradient.size());
 
-    // Extract edge lengths
-    for (Edge_iterator eit = cdt.edges_begin(); eit != cdt.edges_end(); ++eit) {
-        auto segment = cdt.segment(*eit);
-        double length = std::sqrt(CGAL::to_double((CGAL::squared_distance(segment.source(), segment.target()))));
-        edge_lengths.push_back(length);
+    if (s_max <= 0.0)
+        std::runtime_error("Max step size not positive.");
+
+    // Also try a step size of 1.0 (if valid)
+    const bool try_one = s_max > 1.0;
+
+    // Calculate initial function value
+    std::vector<std::vector<Polygon>> neighborhoods;
+    double f = 0.0;
+    for(const Point& s : steiner){
+        std::vector<Polygon> neighborhood = find_neighborhood(s, triangles);
+        neighborhoods.push_back(neighborhood);
+        f += value_refined_sigmoid(s, s, neighborhood);
     }
 
-    if (edge_lengths.empty()) return 1e-2; // Default small step size if no edges exist
+    std::vector<Point> new_steiner = steiner;
+    double step_size = s_max;
+    for (int i = 0; i < max_iters; i++){
+        for(int j = 0; j<steiner.size(); j++){
+            Point current = new_steiner[j];
+            Point current_grad = gradient[j];
+            new_steiner[j] = Point(current.x() - step_size*current_grad.x(), current.y() - step_size*current_grad.y());
+        }
 
-    // Compute basic statistics
-    std::sort(edge_lengths.begin(), edge_lengths.end());
-    double min_length = edge_lengths.front();
-    double max_length = edge_lengths.back();
-    double median_length = edge_lengths[edge_lengths.size() / 2];
+        // Calculate new function value
+        double f_new = 0.0;
+        for(int k = 0; k < steiner.size(); k++){
+            Point old_s = steiner[k];
+            Point new_s = new_steiner[k];
+            f_new += value_refined_sigmoid(old_s, new_s, neighborhoods[k]);
+        }
 
-    // Heuristic: scale step size based on edge length distribution
-    double step_size = std::pow(10, std::round(std::log10(median_length)));
+        if (armijo_condition(gradient, f, f_new, step_size, armijo_const)){
+            //std::cout << "Armijo did find improvement!" << std::endl;
+            return new_steiner;
+        }
 
-    // Ensure the step size remains within reasonable bounds
-    //return std::clamp(step_size, 1e-3, 1e7);
-    return step_size;
+        if (try_one && step_size > 1.0 && step_size * shrink < 1.0)
+            step_size = 1.0;
+        else
+            step_size *= shrink;
+    }
+
+    std::cout << "Armijo did not find improvement!" << std::endl;
+
+    return steiner;
 }
 
 Point project_onto_segment(const Point p, const Segment& s) {
@@ -124,7 +155,7 @@ Point locally_optimize_position_constraint(Point steiner, std::vector<Polygon>& 
     Point s = steiner;
     Segment constraint;
 
-    double stepSize = 100;
+    double step_size = 100;
     double TOL = 1e-7;
     const int MAX_ITER = 100;
 
@@ -144,7 +175,7 @@ Point locally_optimize_position_constraint(Point steiner, std::vector<Polygon>& 
         Point gradient = calculate_gradient_refined_sigmoid(s, neighborhood);
         
         while(norm(gradient) > TOL && iteration < MAX_ITER){
-            Point tmp = move_point_on_segment(s, constraint, stepSize, neighborhood);
+            Point tmp = move_point_on_segment(s, constraint, step_size, neighborhood);
             update_neighborhood(neighborhood, s, tmp);
             s = tmp;
 
@@ -215,7 +246,7 @@ bool is_on_constraint(const Point& steiner, Problem* problem, Segment* constrain
     return false;
 }
 
-bool is_in_the_neighborhood(const Point& p, std::vector<Polygon>& neighborhood){
+bool is_in_the_neighborhood(const Point& p, const std::vector<Polygon>& neighborhood){
     CGAL::Bounded_side side;
     for(Polygon neighbor : neighborhood){
         side = CGAL::bounded_side_2(neighbor.vertices_begin(), neighbor.vertices_end(), p, K());
@@ -251,6 +282,106 @@ void update_neighborhood(std::vector<Polygon>& neighborhood, const Point& s, con
 
 double norm(const Point& gradient) {
     return std::sqrt(CGAL::to_double(gradient.x()*gradient.x() + gradient.y()*gradient.y()));
+}
+
+double value_ln(const Point& old_s, const Point& new_s, const std::vector<Polygon> neighborhood){
+    double value = 0;
+
+    if(!is_in_the_neighborhood(new_s, neighborhood)){
+        return INFINITY;
+    }
+
+    for(Polygon triangle : neighborhood){
+        int index = find_point_index(old_s, triangle);
+
+        Point a = triangle.vertex((index + 1) % 3);
+        Point b = triangle.vertex((index + 2) % 3);
+
+        double ab2 = CGAL::to_double(CGAL::squared_distance(a, b));
+        double sa2 = CGAL::to_double(CGAL::squared_distance(new_s, a));
+        double sb2 = CGAL::to_double(CGAL::squared_distance(new_s, b));
+
+        double w1 = std::acos((ab2 + sa2 - sb2)/(2*std::sqrt(ab2)*std::sqrt(sa2))); // cos alpha
+        double w2 = std::acos((ab2 + sb2 - sa2)/(2*std::sqrt(ab2)*std::sqrt(sb2))); // cos beta
+        double w3 = std::acos((sa2 + sb2 - ab2)/(2*std::sqrt(sa2)*std::sqrt(sb2))); // cos gamma
+
+        double ln1 = std::log(1 + std::exp(w1 - M_PI/2));
+        double ln2 = std::log(1 + std::exp(w2 - M_PI/2));
+        double ln3 = std::log(1 + std::exp(w3 - M_PI/2));
+
+        value = value + ln1 + ln2 + ln3;
+    }
+
+    return value;
+}
+
+double value_sigmoid(const Point& old_s, const Point& new_s, const std::vector<Polygon> neighborhood){
+    double value = 0;
+
+    double k = 15;
+
+    if(!is_in_the_neighborhood(new_s, neighborhood)){
+        return INFINITY;
+    }
+
+    for(Polygon triangle : neighborhood){
+        int index = find_point_index(old_s, triangle);
+
+        Point a = triangle.vertex((index + 1) % 3);
+        Point b = triangle.vertex((index + 2) % 3);
+
+        double ab2 = CGAL::to_double(CGAL::squared_distance(a, b));
+        double sa2 = CGAL::to_double(CGAL::squared_distance(new_s, a));
+        double sb2 = CGAL::to_double(CGAL::squared_distance(new_s, b));
+
+        double w1 = std::acos((ab2 + sa2 - sb2)/(2*std::sqrt(ab2)*std::sqrt(sa2))); // cos alpha
+        double w2 = std::acos((ab2 + sb2 - sa2)/(2*std::sqrt(ab2)*std::sqrt(sb2))); // cos beta
+        double w3 = std::acos((sa2 + sb2 - ab2)/(2*std::sqrt(sa2)*std::sqrt(sb2))); // cos gamma
+
+        double sigm1 =  1 / (1 + std::exp(-k * (w1-M_PI/2)));
+        double sigm2 =  1 / (1 + std::exp(-k * (w2-M_PI/2)));
+        double sigm3 =  1 / (1 + std::exp(-k * (w3-M_PI/2)));
+
+        value = value + sigm1 + sigm2 + sigm3;
+    }
+
+    return value;
+}
+
+double value_refined_sigmoid(const Point& old_s, const Point& new_s, const std::vector<Polygon> neighborhood){
+    double value = 0;
+
+    double k = 15;
+    double scale = 1.2;
+    double m = 0.1;
+    double k_s = 10;
+
+    if(!is_in_the_neighborhood(new_s, neighborhood)){
+        return INFINITY;
+    }
+
+    for(Polygon triangle : neighborhood){
+        int index = find_point_index(old_s, triangle);
+
+        Point a = triangle.vertex((index + 1) % 3);
+        Point b = triangle.vertex((index + 2) % 3);
+
+        double ab2 = CGAL::to_double(CGAL::squared_distance(a, b));
+        double sa2 = CGAL::to_double(CGAL::squared_distance(new_s, a));
+        double sb2 = CGAL::to_double(CGAL::squared_distance(new_s, b));
+
+        double w1 = std::acos((ab2 + sa2 - sb2)/(2*std::sqrt(ab2)*std::sqrt(sa2))); // cos alpha
+        double w2 = std::acos((ab2 + sb2 - sa2)/(2*std::sqrt(ab2)*std::sqrt(sb2))); // cos beta
+        double w3 = std::acos((sa2 + sb2 - ab2)/(2*std::sqrt(sa2)*std::sqrt(sb2))); // cos gamma
+
+        double sigm1 =  scale / (1 + std::exp(-k * (w1-M_PI/2))) + (m * (w1 - M_PI/2))/(1 + std::exp(-k_s * (w1-M_PI/2)));
+        double sigm2 =  scale / (1 + std::exp(-k * (w2-M_PI/2))) + (m * (w2 - M_PI/2))/(1 + std::exp(-k_s * (w2-M_PI/2)));
+        double sigm3 =  scale / (1 + std::exp(-k * (w3-M_PI/2))) + (m * (w3 - M_PI/2))/(1 + std::exp(-k_s * (w3-M_PI/2)));
+
+        value = value + sigm1 + sigm2 + sigm3;
+    }
+
+    return value;
 }
 
 // f(x) = (x-60)^2
@@ -453,9 +584,9 @@ Point calculate_gradient_refined_sigmoid(Point& s, std::vector<Polygon>& triangl
 
 Point locally_optimize_position(Point steiner, std::vector<Polygon>& triangles, Problem *problem){
 
-    double stepSize = 1e2;
-    //double stepSize = compute_step_size(problem);
-    //std::cout << "Computed step size: " << stepSize << std::endl;
+    double step_size = 1e6;
+    //double step_size = compute_step_size(problem);
+    //std::cout << "Computed step size: " << step_size << std::endl;
 
     double TOL = 1e-7;
     const int MAX_ITER = 1000;
@@ -487,8 +618,14 @@ Point locally_optimize_position(Point steiner, std::vector<Polygon>& triangles, 
 
             //std::cout << "gradient norm: " << norm(gradient) << std::endl;
             while(norm(gradient) > TOL && iteration < MAX_ITER){
-                Point tmp(s.x() - stepSize*gradient.x(), s.y() - stepSize*gradient.y());
 
+                // * Armijo version
+                Point tmp = line_search(triangles, {s}, {gradient}, step_size)[0];
+                update_neighborhood(neighborhood, s, tmp);
+                s = tmp;
+
+                // * Use this code if not using Armijo
+                /*Point tmp(s.x() - step_size*gradient.x(), s.y() - step_size*gradient.y());
                 // Only proceed if the new point position is not outside the initial neighborhood
                 if(is_in_the_neighborhood(tmp, neighborhood)){              
                     update_neighborhood(neighborhood, s, tmp);
@@ -496,14 +633,16 @@ Point locally_optimize_position(Point steiner, std::vector<Polygon>& triangles, 
                 }
                 else{
                     std::cout << "I'm outside!!!\n";
-                    stepSize /= 10;
+                    step_size /= 10;
                     //break;
-                }
+                }*/
 
                 gradient = calculate_gradient_refined_sigmoid(s, neighborhood);
 
                 iteration++;
             }
+
+            //std::cout << "start point: " << steiner << " end point: " << s << std::endl;
 
             // update triangles with a new steiner point position
             update_neighborhood(triangles, steiner, s);

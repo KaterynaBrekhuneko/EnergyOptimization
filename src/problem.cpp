@@ -144,6 +144,22 @@ double distance(Point& a, Point& b){
     return std::sqrt(CGAL::to_double(CGAL::squared_distance(a, b)));
 }
 
+int find_point_index(Point& p, const std::vector<Point>& points, const std::vector<Point>& steiner){
+    for(int i = 0; i<points.size(); i++){
+        if(p == points[i]){
+            return i;
+        }
+    }
+
+    for(int j = 0; j<steiner.size(); j++){
+        if(p == steiner[j]){
+            return j + points.size();
+        }
+    }
+
+    throw std::runtime_error("Point not found in points or steiner!");
+}
+
 void Problem::visualize_solution(){
     // assuming run from build folder
     std::string path = "../solutions/ipe/MESH2-" + name + ".ipe";

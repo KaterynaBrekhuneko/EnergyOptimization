@@ -3,23 +3,76 @@
 #include <CGAL/Constrained_Delaunay_triangulation_2.h>
 #include <CGAL/Delaunay_mesh_face_base_2.h>
 
+#include <Eigen/Dense>
+
 typedef CGAL::Triangulation_vertex_base_2<K> Vb;
 typedef CGAL::Delaunay_mesh_face_base_2<K> Fb;
 typedef CGAL::Triangulation_data_structure_2<Vb, Fb> Tds;
 typedef CGAL::Constrained_Delaunay_triangulation_2<K, Tds> CDT;
 typedef CDT::Edge_iterator Edge_iterator;
 
-bool armijo_condition(const std::vector<Point>& gradient, double f, double f_new, double step_size, double armijo_const){
-    double dot_product = 0.0;
-    for(int i = 0; i < gradient.size(); i++){
-        dot_product = dot_product - gradient[i].x()*gradient[i].x() - gradient[i].y()*gradient[i].y();
+std::tuple<Eigen::MatrixXd, Eigen::MatrixXi> convert_triangulation_to_matrix(Problem* problem){
+    std::vector<Point> points = problem->get_points();
+    std::vector<Point> steiner = problem->get_steiner();
+    std::vector<Polygon> triangles = problem->get_triangulation();
+
+    // Convert all points to a vector
+    Eigen::MatrixXd V(points.size() + steiner.size(), 2);
+    for (size_t i = 0; i < points.size(); ++i) {
+        V(i, 0) = CGAL::to_double(points[i].x()); 
+        V(i, 1) = CGAL::to_double(points[i].y()); 
     }
-    return f_new <= f + armijo_const*step_size*dot_product;
+    for (size_t i = points.size(); i < points.size() + steiner.size(); ++i) {
+        V(i, 0) = CGAL::to_double(steiner[i - points.size()].x()); 
+        V(i, 1) = CGAL::to_double(steiner[i - points.size()].y()); 
+    }
+
+    // Convert triangles to a matrix
+    Eigen::MatrixXi F(triangles.size(), 3);
+    for (size_t i = 0; i < triangles.size(); ++i) {
+        const Polygon& polygon = triangles[i];
+
+        Point a = polygon.vertex(0);
+        Point b = polygon.vertex(1);
+        Point c = polygon.vertex(2);
+
+        F(i, 0) = find_point_index(a, points, steiner);
+        F(i, 1) = find_point_index(b, points, steiner);
+        F(i, 2) = find_point_index(c, points, steiner);
+    }
+    return {V, F};
 }
 
-std::vector<Point> line_search(std::vector<Polygon>& triangles, const std::vector<Point>& steiner, const std::vector<Point>& gradient, double s_max = 1.0, double shrink = 0.8, double max_iters = 64, double armijo_const = 1e-4){
-    // Check input
-   assert(steiner.size() == gradient.size());
+std::vector<Point> convert_matrix_to_triangulation(Eigen::VectorXd V_new, int points_size, int steiner_size){
+    std::vector<Point> new_steiner;
+    for(int i = 0; i < steiner_size; i++){
+        Point s(V_new[2*points_size + 2*i], V_new[2*points_size + 2*i + 1]);
+        new_steiner.push_back(s);
+        //std::cout << "point: " << s << std::endl;
+    }
+
+    return new_steiner;
+}
+
+Eigen::VectorXd convert_gradient(const std::vector<Point>& gradient, int size_points){
+    Eigen::VectorXd new_grad(size_points*2 + gradient.size()*2);
+    for(int i = 0; i < 2*size_points; i++){
+        new_grad[i] = 0.0;
+    }
+    for(int i = 0; i < gradient.size(); i++){
+        new_grad[size_points*2 + 2*i] = gradient[i].x();
+        new_grad[size_points*2 + 2*i + 1] = gradient[i].y();
+    }
+    return new_grad;
+}
+
+bool armijo_condition(const Eigen::MatrixXd& gradient, double f, double f_new, double step_size, double armijo_const){
+    return f_new <= f + armijo_const*step_size*(-gradient.squaredNorm());
+}
+
+std::vector<Point> line_search(Problem* problem, Eigen::MatrixXd& V, Eigen::MatrixXi& F, const std::vector<Point>& gradient, double s_max = 1.0, double shrink = 0.8, double max_iters = 64, double armijo_const = 1e-4){
+    int n = problem->get_points().size();
+    int k = problem->get_steiner().size();
 
     if (s_max <= 0.0)
         std::runtime_error("Max step size not positive.");
@@ -28,34 +81,36 @@ std::vector<Point> line_search(std::vector<Polygon>& triangles, const std::vecto
     const bool try_one = s_max > 1.0;
 
     // Calculate initial function value
-    std::vector<std::vector<Polygon>> neighborhoods;
-    double f = 0.0;
-    for(const Point& s : steiner){
-        std::vector<Polygon> neighborhood = find_neighborhood(s, triangles);
-        neighborhoods.push_back(neighborhood);
-        f += value_refined_sigmoid(s, s, neighborhood);
-    }
+    double f = value_refined_sigmoid(V, F);
+    Eigen::VectorXd G = convert_gradient(gradient, n);
 
-    std::vector<Point> new_steiner = steiner;
+    Eigen::VectorXd V_new = V.reshaped<Eigen::RowMajor>();
+
     double step_size = s_max;
     for (int i = 0; i < max_iters; i++){
-        for(int j = 0; j<steiner.size(); j++){
-            Point current = new_steiner[j];
-            Point current_grad = gradient[j];
-            new_steiner[j] = Point(current.x() - step_size*current_grad.x(), current.y() - step_size*current_grad.y());
-        }
+        V_new = V_new - step_size*G;
+
+        /*std::cout << "original point: " << V(14, 0) << " " << V(14, 1) << std::endl;
+        std::cout << "optimized point: " << V_new[28] << " " << V_new[29] << std::endl;
+        std::cout << "gradient " << G[28] << " " << G[29] << std::endl;
+
+        /*std::cout << V << std::endl;
+        std::cout << "\n\n" << std::endl;
+        std::cout << V_new << std::endl;
+        std::cout << "\n\n" << std::endl;
+        std::cout << G << std::endl;*/
 
         // Calculate new function value
-        double f_new = 0.0;
-        for(int k = 0; k < steiner.size(); k++){
-            Point old_s = steiner[k];
-            Point new_s = new_steiner[k];
-            f_new += value_refined_sigmoid(old_s, new_s, neighborhoods[k]);
-        }
-
-        if (armijo_condition(gradient, f, f_new, step_size, armijo_const)){
-            //std::cout << "Armijo did find improvement!" << std::endl;
-            return new_steiner;
+        Eigen::Map<const Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor>> V_new_not_flat(V_new.data(), n+k, 2);
+        double f_new = value_refined_sigmoid(V_new_not_flat, F);
+        //std::cout << "\n\n" << std::endl;
+        if (armijo_condition(G, f, f_new, step_size, armijo_const)){
+            V = V_new_not_flat;
+            auto result = convert_matrix_to_triangulation(V_new, n, k);
+            /*for(int i = 0; i < result.size(); i++){
+                std::cout << result[i] << std::endl;
+            }*/
+            return result;
         }
 
         if (try_one && step_size > 1.0 && step_size * shrink < 1.0)
@@ -66,9 +121,11 @@ std::vector<Point> line_search(std::vector<Polygon>& triangles, const std::vecto
 
     std::cout << "Armijo did not find improvement!" << std::endl;
 
-    return steiner;
+    return problem->get_steiner();
+    //throw std::runtime_error("fdfewf.");
 }
 
+//TODO--------------------------start------------------------------
 Point project_onto_segment(const Point p, const Segment& s) {
     K::Line_2 line(s.source(), s.target()); 
     Point proj = line.projection(p); 
@@ -191,8 +248,8 @@ Point locally_optimize_position_constraint(Point steiner, std::vector<Polygon>& 
 
     return s;
 }
+//TODO--------------------------end------------------------------
 
-//--------------------------------From this point code looks good------------------------------
 
 Segment find_boundary_segment(const Point& p, const Polygon& polygon) {
     size_t n = polygon.size();
@@ -211,7 +268,7 @@ Segment find_boundary_segment(const Point& p, const Polygon& polygon) {
 std::vector<Polygon> find_neighborhood(const Point& steiner, std::vector<Polygon>& triangles){    
     std::vector<Polygon> neighborhood;
     for (Polygon triangle : triangles){
-        if(find_point_index(steiner, triangle) != -1){
+        if(find_point_index_in_polygon(steiner, triangle) != -1){
             neighborhood.push_back(triangle);
         }
     }
@@ -258,7 +315,7 @@ bool is_in_the_neighborhood(const Point& p, const std::vector<Polygon>& neighbor
     return false;
 }
 
-int find_point_index(const Point& s, const Polygon& polygon) {
+int find_point_index_in_polygon(const Point& s, const Polygon& polygon) {
     int index = 0;
 
     for (auto it = polygon.vertices_begin(); it != polygon.vertices_end(); ++it) {
@@ -284,30 +341,32 @@ double norm(const Point& gradient) {
     return std::sqrt(CGAL::to_double(gradient.x()*gradient.x() + gradient.y()*gradient.y()));
 }
 
-double value_ln(const Point& old_s, const Point& new_s, const std::vector<Polygon> neighborhood){
+double value_ln(Eigen::MatrixXd V, Eigen::MatrixXi F){
     double value = 0;
 
-    if(!is_in_the_neighborhood(new_s, neighborhood)){
-        return INFINITY;
-    }
+    for(int i = 0; i < F.rows(); i++){
+        Eigen::Vector2d a = V.row(F(i, 0));
+        Eigen::Vector2d b = V.row(F(i, 1));
+        Eigen::Vector2d c = V.row(F(i, 2));
 
-    for(Polygon triangle : neighborhood){
-        int index = find_point_index(old_s, triangle);
+        Eigen::Matrix2d M;
+        M.col(0) = b - a;
+        M.col(1) = c - a;
+        if (M.determinant() <= 0.0){ 
+            return INFINITY;
+        }
 
-        Point a = triangle.vertex((index + 1) % 3);
-        Point b = triangle.vertex((index + 2) % 3);
+        Eigen::Vector2d ab = (b - a).normalized();
+        Eigen::Vector2d bc = (c - b).normalized();
+        Eigen::Vector2d ca = (a - c).normalized();
 
-        double ab2 = CGAL::to_double(CGAL::squared_distance(a, b));
-        double sa2 = CGAL::to_double(CGAL::squared_distance(new_s, a));
-        double sb2 = CGAL::to_double(CGAL::squared_distance(new_s, b));
+        double angle_a = std::acos((-ca).dot(ab));
+        double angle_b = std::acos((-ab).dot(bc));
+        double angle_c = std::acos((-bc).dot(ca));
 
-        double w1 = std::acos((ab2 + sa2 - sb2)/(2*std::sqrt(ab2)*std::sqrt(sa2))); // cos alpha
-        double w2 = std::acos((ab2 + sb2 - sa2)/(2*std::sqrt(ab2)*std::sqrt(sb2))); // cos beta
-        double w3 = std::acos((sa2 + sb2 - ab2)/(2*std::sqrt(sa2)*std::sqrt(sb2))); // cos gamma
-
-        double ln1 = std::log(1 + std::exp(w1 - M_PI/2));
-        double ln2 = std::log(1 + std::exp(w2 - M_PI/2));
-        double ln3 = std::log(1 + std::exp(w3 - M_PI/2));
+        double ln1 = std::log(1 + std::exp(angle_a - M_PI/2));
+        double ln2 = std::log(1 + std::exp(angle_b - M_PI/2));
+        double ln3 = std::log(1 + std::exp(angle_c - M_PI/2));
 
         value = value + ln1 + ln2 + ln3;
     }
@@ -315,32 +374,34 @@ double value_ln(const Point& old_s, const Point& new_s, const std::vector<Polygo
     return value;
 }
 
-double value_sigmoid(const Point& old_s, const Point& new_s, const std::vector<Polygon> neighborhood){
+double value_sigmoid(Eigen::MatrixXd V, Eigen::MatrixXi F){
     double value = 0;
 
     double k = 15;
 
-    if(!is_in_the_neighborhood(new_s, neighborhood)){
-        return INFINITY;
-    }
+    for(int i = 0; i < F.rows(); i++){
+        Eigen::Vector2d a = V.row(F(i, 0));
+        Eigen::Vector2d b = V.row(F(i, 1));
+        Eigen::Vector2d c = V.row(F(i, 2));
 
-    for(Polygon triangle : neighborhood){
-        int index = find_point_index(old_s, triangle);
+        Eigen::Matrix2d M;
+        M.col(0) = b - a;
+        M.col(1) = c - a;
+        if (M.determinant() <= 0.0){ 
+            return INFINITY;
+        }
 
-        Point a = triangle.vertex((index + 1) % 3);
-        Point b = triangle.vertex((index + 2) % 3);
+        Eigen::Vector2d ab = (b - a).normalized();
+        Eigen::Vector2d bc = (c - b).normalized();
+        Eigen::Vector2d ca = (a - c).normalized();
 
-        double ab2 = CGAL::to_double(CGAL::squared_distance(a, b));
-        double sa2 = CGAL::to_double(CGAL::squared_distance(new_s, a));
-        double sb2 = CGAL::to_double(CGAL::squared_distance(new_s, b));
+        double angle_a = std::acos((-ca).dot(ab));
+        double angle_b = std::acos((-ab).dot(bc));
+        double angle_c = std::acos((-bc).dot(ca));
 
-        double w1 = std::acos((ab2 + sa2 - sb2)/(2*std::sqrt(ab2)*std::sqrt(sa2))); // cos alpha
-        double w2 = std::acos((ab2 + sb2 - sa2)/(2*std::sqrt(ab2)*std::sqrt(sb2))); // cos beta
-        double w3 = std::acos((sa2 + sb2 - ab2)/(2*std::sqrt(sa2)*std::sqrt(sb2))); // cos gamma
-
-        double sigm1 =  1 / (1 + std::exp(-k * (w1-M_PI/2)));
-        double sigm2 =  1 / (1 + std::exp(-k * (w2-M_PI/2)));
-        double sigm3 =  1 / (1 + std::exp(-k * (w3-M_PI/2)));
+        double sigm1 =  1 / (1 + std::exp(-k * (angle_a-M_PI/2)));
+        double sigm2 =  1 / (1 + std::exp(-k * (angle_b-M_PI/2)));
+        double sigm3 =  1 / (1 + std::exp(-k * (angle_c-M_PI/2)));
 
         value = value + sigm1 + sigm2 + sigm3;
     }
@@ -348,7 +409,7 @@ double value_sigmoid(const Point& old_s, const Point& new_s, const std::vector<P
     return value;
 }
 
-double value_refined_sigmoid(const Point& old_s, const Point& new_s, const std::vector<Polygon> neighborhood){
+double value_refined_sigmoid(Eigen::MatrixXd V, Eigen::MatrixXi F){
     double value = 0;
 
     double k = 15;
@@ -356,27 +417,29 @@ double value_refined_sigmoid(const Point& old_s, const Point& new_s, const std::
     double m = 0.1;
     double k_s = 10;
 
-    if(!is_in_the_neighborhood(new_s, neighborhood)){
-        return INFINITY;
-    }
+    for(int i = 0; i < F.rows(); i++){
+        Eigen::Vector2d a = V.row(F(i, 0));
+        Eigen::Vector2d b = V.row(F(i, 1));
+        Eigen::Vector2d c = V.row(F(i, 2));
 
-    for(Polygon triangle : neighborhood){
-        int index = find_point_index(old_s, triangle);
+        Eigen::Matrix2d M;
+        M.col(0) = b - a;
+        M.col(1) = c - a;
+        if (M.determinant() <= 0.0){ 
+            return INFINITY;
+        }
 
-        Point a = triangle.vertex((index + 1) % 3);
-        Point b = triangle.vertex((index + 2) % 3);
+        Eigen::Vector2d ab = (b - a).normalized();
+        Eigen::Vector2d bc = (c - b).normalized();
+        Eigen::Vector2d ca = (a - c).normalized();
 
-        double ab2 = CGAL::to_double(CGAL::squared_distance(a, b));
-        double sa2 = CGAL::to_double(CGAL::squared_distance(new_s, a));
-        double sb2 = CGAL::to_double(CGAL::squared_distance(new_s, b));
+        double angle_a = std::acos((-ca).dot(ab));
+        double angle_b = std::acos((-ab).dot(bc));
+        double angle_c = std::acos((-bc).dot(ca));
 
-        double w1 = std::acos((ab2 + sa2 - sb2)/(2*std::sqrt(ab2)*std::sqrt(sa2))); // cos alpha
-        double w2 = std::acos((ab2 + sb2 - sa2)/(2*std::sqrt(ab2)*std::sqrt(sb2))); // cos beta
-        double w3 = std::acos((sa2 + sb2 - ab2)/(2*std::sqrt(sa2)*std::sqrt(sb2))); // cos gamma
-
-        double sigm1 =  scale / (1 + std::exp(-k * (w1-M_PI/2))) + (m * (w1 - M_PI/2))/(1 + std::exp(-k_s * (w1-M_PI/2)));
-        double sigm2 =  scale / (1 + std::exp(-k * (w2-M_PI/2))) + (m * (w2 - M_PI/2))/(1 + std::exp(-k_s * (w2-M_PI/2)));
-        double sigm3 =  scale / (1 + std::exp(-k * (w3-M_PI/2))) + (m * (w3 - M_PI/2))/(1 + std::exp(-k_s * (w3-M_PI/2)));
+        double sigm1 =  scale / (1 + std::exp(-k * (angle_a-M_PI/2))) + (m * (angle_a - M_PI/2))/(1 + std::exp(-k_s * (angle_a-M_PI/2)));
+        double sigm2 =  scale / (1 + std::exp(-k * (angle_b-M_PI/2))) + (m * (angle_b - M_PI/2))/(1 + std::exp(-k_s * (angle_b-M_PI/2)));
+        double sigm3 =  scale / (1 + std::exp(-k * (angle_c-M_PI/2))) + (m * (angle_c - M_PI/2))/(1 + std::exp(-k_s * (angle_c-M_PI/2)));
 
         value = value + sigm1 + sigm2 + sigm3;
     }
@@ -390,7 +453,7 @@ Point calculate_gradient_equilateral(Point& s, std::vector<Polygon>& triangles){
     double dy = 0.0;
 
     for(Polygon triangle : triangles){
-        int index = find_point_index(s, triangle);
+        int index = find_point_index_in_polygon(s, triangle);
 
         //std::cout << "index: " << index << std::endl;
 
@@ -439,7 +502,7 @@ Point calculate_gradient_ln(Point& s, std::vector<Polygon>& triangles){
     double dy = 0.0;
 
     for(Polygon triangle : triangles){
-        int index = find_point_index(s, triangle);
+        int index = find_point_index_in_polygon(s, triangle);
 
         Point a = triangle.vertex((index + 1) % 3);
         Point b = triangle.vertex((index + 2) % 3);
@@ -486,7 +549,7 @@ Point calculate_gradient_sigmoid(Point& s, std::vector<Polygon>& triangles){
 
     for(Polygon triangle : triangles){
 
-        int index = find_point_index(s, triangle);
+        int index = find_point_index_in_polygon(s, triangle);
 
         Point a = triangle.vertex((index + 1) % 3);
         Point b = triangle.vertex((index + 2) % 3);
@@ -535,7 +598,7 @@ Point calculate_gradient_refined_sigmoid(Point& s, std::vector<Polygon>& triangl
     double dy = scale*CGAL::to_double(gradSigmoid.y());
 
     for(Polygon triangle : triangles){
-        int index = find_point_index(s, triangle);
+        int index = find_point_index_in_polygon(s, triangle);
 
         Point a = triangle.vertex((index + 1) % 3);
         Point b = triangle.vertex((index + 2) % 3);
@@ -616,18 +679,38 @@ Point locally_optimize_position(Point steiner, std::vector<Polygon>& triangles, 
         if((is_interior_vertex(s, problem->get_boundary())) && !is_on_constraint(s, problem, &constraint)){
             Point gradient = calculate_gradient_refined_sigmoid(s, neighborhood);
 
+            int index = find_point_index(steiner, problem->get_points(), problem->get_steiner());
+            auto [V, F] = convert_triangulation_to_matrix(problem);
             //std::cout << "gradient norm: " << norm(gradient) << std::endl;
             while(norm(gradient) > TOL && iteration < MAX_ITER){
 
                 // * Armijo version
-                Point tmp = line_search(triangles, {s}, {gradient}, step_size)[0];
+                std::vector<Point> gradient_expanded(problem->get_steiner().size());
+                for(int i = 0; i < problem->get_steiner().size(); i++){
+                    if(i == index - problem->get_points().size()){
+                        gradient_expanded[i] = gradient;
+                    } else {
+                        gradient_expanded[i] = Point(0,0);
+                    }
+                }
+
+                auto tmp_points = line_search(problem, V, F, gradient_expanded, step_size);
+                /*std::cout << "\n" << std::endl;
+                for(int i = 0; i < tmp_points.size(); i++){
+                    std::cout << tmp_points[i] << std::endl;
+                }*/
+                Point tmp = tmp_points[index - problem->get_points().size()];
+                //std::cout << s << std::endl;
+                //std::cout << tmp << std::endl;
                 update_neighborhood(neighborhood, s, tmp);
                 s = tmp;
 
                 // * Use this code if not using Armijo
                 /*Point tmp(s.x() - step_size*gradient.x(), s.y() - step_size*gradient.y());
                 // Only proceed if the new point position is not outside the initial neighborhood
-                if(is_in_the_neighborhood(tmp, neighborhood)){              
+                if(is_in_the_neighborhood(tmp, neighborhood)){ 
+                    //std::cout << s << std::endl;
+                    //std::cout << tmp << std::endl;             
                     update_neighborhood(neighborhood, s, tmp);
                     s = tmp;
                 }

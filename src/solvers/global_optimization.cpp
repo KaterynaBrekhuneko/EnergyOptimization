@@ -29,7 +29,7 @@ Point calculate_gradient_point_laplace(const Point& s, std::vector<Polygon>& nei
     double dy = 0.0;
 
     for(Polygon triangle : neighborhood){
-        int index1 = find_point_index(s, triangle);
+        int index1 = find_point_index_in_polygon(s, triangle);
 
         Point a = triangle.vertex((index1 + 1) % 3);
         Point b = triangle.vertex((index1 + 2) % 3);

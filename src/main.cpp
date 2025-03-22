@@ -120,8 +120,13 @@ void locally_optimize_solution(Problem *problem){
 
     //std::cout << "boundary size: " << (problem->get_boundary()).size() << std::endl;
 
-    for(Point s : problem->get_steiner()){
+    for(int i = 0; i < problem->get_steiner().size(); i++){
+        Point s = problem->get_steiner()[i];
         Point new_s = locally_optimize_position(s, triangulation, problem);
+
+        //std::cout << s << std::endl;
+        //std::cout << new_s << std::endl;
+
         steiner.push_back(new_s);
     }
     problem->clear_solution();

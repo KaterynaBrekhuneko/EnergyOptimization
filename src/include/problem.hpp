@@ -83,6 +83,8 @@ int find_obtuse_angle(Polygon& triangle);
 bool is_obtuse_triangle(Polygon& triangle);
 int count_obtuse_triangles(Problem* problem);
 
+int find_point_index(Point& p, const std::vector<Point>& points, const std::vector<Point>& steiner);
+
 double squared_distance(Point& a, Point& b);
 double distance(Point& a, Point& b);
 

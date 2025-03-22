@@ -213,22 +213,6 @@ bool is_on_boundary(Point& steiner, Polygon& boundary, Segment* constraint){
     return false;
 }
 
-int find_point_idx(Point& p, std::vector<Point>& points, std::vector<Point>& steiner){
-    for(int i = 0; i<points.size(); i++){
-        if(p == points[i]){
-            return i;
-        }
-    }
-
-    for(int j = 0; j<steiner.size(); j++){
-        if(p == steiner[j]){
-            return j + points.size();
-        }
-    }
-
-    throw std::runtime_error("Point not found in points or steiner!");
-}
-
 const bool is_constrained_point(Point& p, Polygon& boundary, std::vector<Segment>& constraints, Segment* constraint) {
     return is_on_constraint(p, constraints, constraint) || is_on_boundary(p, boundary, constraint);
 }
@@ -363,9 +347,9 @@ void optimizeTinyAD(Problem* problem){
         Point b = polygon.vertex(1);
         Point c = polygon.vertex(2);
 
-        F(i, 0) = find_point_idx(a, points, steiner);
-        F(i, 1) = find_point_idx(b, points, steiner);
-        F(i, 2) = find_point_idx(c, points, steiner);
+        F(i, 0) = find_point_index(a, points, steiner);
+        F(i, 1) = find_point_index(b, points, steiner);
+        F(i, 2) = find_point_index(c, points, steiner);
     }
 
     // Define barrier terms for the constraints

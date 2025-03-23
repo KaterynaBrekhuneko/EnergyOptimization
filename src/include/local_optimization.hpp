@@ -10,7 +10,10 @@ double norm(const Point& gradient);
 Segment find_boundary_segment(const Point& p, const Polygon& polygon);
 Point project_onto_segment(const Point p, const Segment& s);
 bool is_on_constraint(const Point& steiner, Problem* problem, Segment* constraint);
-bool is_boundary_vertex_with_tolerance(const Point& p, const Polygon& polygon);
+bool is_interior_vertex_with_tolerance(const Point& p, const Polygon& polygon);
+bool is_on_constraint_with_tolerance(const Point& steiner, Problem* problem, Segment* constraint);
+
+std::vector<Point> line_search(std::vector<Polygon>& triangles, const std::vector<Point>& steiner, const std::vector<Point>& gradient, double s_max = 1.0, double shrink = 0.8, double max_iters = 64, double armijo_const = 1e-4);
 
 double value_ln(const Point& old_s, const Point& new_s, const std::vector<Polygon> neighborhood);
 double value_sigmoid(const Point& old_s, const Point& new_s, const std::vector<Polygon> neighborhood);

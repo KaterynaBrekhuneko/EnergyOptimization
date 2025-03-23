@@ -73,14 +73,14 @@ std::vector<Point> calculate_gradient(std::vector<Point>& steiner_points, std::v
     std::vector<Point> gradients;
     Segment constraint;
     for(Point steiner : steiner_points){
-        if(is_interior_vertex(steiner, problem->get_boundary()) && !is_on_constraint(steiner, problem, &constraint)){
+        if(is_interior_vertex_with_tolerance(steiner, problem->get_boundary()) && !is_on_constraint_with_tolerance(steiner, problem, &constraint)){
             Point gradient(0,0);
             try{
                 std::vector<Polygon> neighborhood = find_neighborhood(steiner, triangles);
                 //gradient = calculate_gradient_point_laplace(steiner, neighborhood, problem);
-                gradient = calculate_gradient_sigmoid(steiner, neighborhood);
+                gradient = calculate_gradient_refined_sigmoid(steiner, neighborhood);
             }catch(const CGAL::Assertion_exception& e){
-                //std::cout << "CGAL Exception for point " << steiner << std::endl;
+                std::cout << "CGAL Exception for point " << steiner << std::endl;
             }
             gradients.push_back(gradient);
         } else{
@@ -93,9 +93,10 @@ std::vector<Point> calculate_gradient(std::vector<Point>& steiner_points, std::v
 std::vector<Point> globally_optimize_position(std::vector<Point>& steiner_points, std::vector<Polygon>& triangles, Problem *problem){
     //double stepSize = 1e6;
     double TOL = 1e-7;
-    const int MAX_ITER = 100;
+    const int MAX_ITER = 1000;
 
-    std::vector<double> step_sizes(steiner_points.size(), 1e6);
+    std::vector<double> step_sizes(steiner_points.size(), 1e-1);
+    double step_size = 1e-1;
 
     int iteration = 0;
 
@@ -111,12 +112,18 @@ std::vector<Point> globally_optimize_position(std::vector<Point>& steiner_points
         std::cout << "\n";*/
 
         while(!norm_is_smaller(gradients, TOL) && iteration < MAX_ITER){
-            // Update point positions
+
+            //* Armijo
+            std::vector<Point> tmp = line_search(triangles, s, gradients, step_size);
             for(int i = 0; i<steiner_points.size(); i++){
-                //std::cout << "gradient of " << i << ": " << gradients[i] << std::endl;
+                update_neighborhood(triangles, s[i], tmp[i]);
+            }
+            s = tmp;
+
+            //* Gradient descent
+            /*for(int i = 0; i<steiner_points.size(); i++){
+                
                 Point tmp(s[i].x() - step_sizes[i]*gradients[i].x(), s[i].y() - step_sizes[i]*gradients[i].y());  
-            
-                //std::cout << "steiner before: " << s[i] << " steiner after: " << tmp << std::endl;
 
                 //check whether the new point position is valid
                 std::vector<Polygon> neighborhood = find_neighborhood(s[i], triangles);
@@ -128,7 +135,7 @@ std::vector<Point> globally_optimize_position(std::vector<Point>& steiner_points
                     step_sizes[i] = step_sizes[i]/10;
                     std::cout << "Outside the neighborhood: index - " << i << std::endl; 
                 }  
-            }        
+            }*/    
 
             gradients = calculate_gradient(s, triangles, problem);
             iteration++;

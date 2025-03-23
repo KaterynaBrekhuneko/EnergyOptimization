@@ -128,7 +128,6 @@ void locally_optimize_solution(Problem *problem){
     for(int i = 0; i < steiner.size(); i++){
         problem->add_steiner(steiner[i]);
     }
-    
     problem->set_triangulation(triangulation);
 }
 
@@ -184,7 +183,12 @@ void globally_optimize_solution(Problem *problem){
     std::vector<Point> steiner = problem->get_steiner();
     std::vector<Polygon> triangulation = problem->get_triangulation();
 
-    globally_optimize_position(steiner, triangulation, problem);
+    std::vector<Point> new_steiner = globally_optimize_position(steiner, triangulation, problem);
+
+    problem->clear_solution();
+    for(int i = 0; i < new_steiner.size(); i++){
+        problem->add_steiner(new_steiner[i]);
+    }
     problem->set_triangulation(triangulation);
 }
 
@@ -350,7 +354,7 @@ double get_function_value(Problem* problem){
 
 int main(int argc, char **argv)
 {
-    Problem *problem = new Problem("../instances_presentation/ortho_10_d2723dcc.instance.json");
+    Problem *problem = new Problem("../instances_presentation/simple-polygon-exterior-20_60_53ad6d23.instance.json");
     //Problem *problem = new Problem(argv[1]);
     
     //* Custom Delaunay refinement
@@ -365,7 +369,7 @@ int main(int argc, char **argv)
     std::cout << "Num obtuse before: " << countObtuse(problem->get_triangulation()) << std::endl;
     problem->visualize_solution();
 
-    locally_optimize_solution(problem);
+    globally_optimize_solution(problem);
     std::cout << "Num obtuse after: " << countObtuse(problem->get_triangulation()) << std::endl;
     problem->visualize_solution();
 

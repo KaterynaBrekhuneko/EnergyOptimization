@@ -116,11 +116,17 @@ void perform_edge_flips(Problem *problem, bool ignore){
 
 void locally_optimize_solution(Problem *problem){
     std::vector<Polygon> triangulation = problem->get_triangulation();
+    std::vector<Point> steiner;
 
     //std::cout << "boundary size: " << (problem->get_boundary()).size() << std::endl;
 
     for(Point s : problem->get_steiner()){
-        Point new_steiner = locally_optimize_position(s, triangulation, problem);
+        Point new_s = locally_optimize_position(s, triangulation, problem);
+        steiner.push_back(new_s);
+    }
+    problem->clear_solution();
+    for(int i = 0; i < steiner.size(); i++){
+        problem->add_steiner(steiner[i]);
     }
     problem->set_triangulation(triangulation);
 }
@@ -177,7 +183,12 @@ void globally_optimize_solution(Problem *problem){
     std::vector<Point> steiner = problem->get_steiner();
     std::vector<Polygon> triangulation = problem->get_triangulation();
 
-    globally_optimize_position(steiner, triangulation, problem);
+    std::vector<Point> new_steiner = globally_optimize_position(steiner, triangulation, problem);
+
+    problem->clear_solution();
+    for(int i = 0; i < new_steiner.size(); i++){
+        problem->add_steiner(new_steiner[i]);
+    }
     problem->set_triangulation(triangulation);
 }
 
@@ -343,17 +354,25 @@ double get_function_value(Problem* problem){
 
 int main(int argc, char **argv)
 {
-    Problem *problem = new Problem("../instances_presentation/ortho_10_d2723dcc.instance.json");
+    Problem *problem = new Problem("../instances_presentation/simple-polygon-exterior-20_60_53ad6d23.instance.json");
     //Problem *problem = new Problem(argv[1]);
     
+    //* Custom Delaunay refinement
     //refine(problem);
-    step_by_step_mesh(problem);
 
-    /*Solver* solver = new Mesh();
+    //* Step by step CGAL refinement
+    //step_by_step_mesh(problem);
+
+    //* Just testing optimization
+    Solver* solver = new Mesh();
     solver->solve(problem);
-    std::cout << "Num obtuse before: " << countObtuse(problem->get_triangulation()) << std::endl;*/
+    std::cout << "Num obtuse before: " << countObtuse(problem->get_triangulation()) << std::endl;
+    problem->visualize_solution();
 
-    //locally_optimize_solution(problem);
+    globally_optimize_solution(problem);
+    std::cout << "Num obtuse after: " << countObtuse(problem->get_triangulation()) << std::endl;
+    problem->visualize_solution();
+
     /*std::cout << "Function value before: " << get_function_value(problem) << std::endl;
     globally_optimize_solution(problem);
     std::cout << "Num obtuse after first optimization: " << countObtuse(problem->get_triangulation()) << std::endl;

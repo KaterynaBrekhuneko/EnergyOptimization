@@ -253,9 +253,9 @@ void refine(Problem* problem){
         problem->visualize_solution();
 
         // LLoyd optimization
-        CGAL::lloyd_optimize_mesh_2(cdt, CGAL::parameters::number_of_iterations(1000));
+        /*CGAL::lloyd_optimize_mesh_2(cdt, CGAL::parameters::number_of_iterations(1000));
         update_problem(problem, cdt, point_set);
-        problem->visualize_solution();
+        problem->visualize_solution();*/
     }
 
     std::cout << "End of meshing" << std::endl;
@@ -336,48 +336,4 @@ void step_by_step_mesh(Problem* problem){
     }
 
     std::cout << "Total num iters: " << iter << std::endl;
-}
-
-//---------------------------------------------------------------------------------------------------------------
-//--------------------------------------Custom point insertion---------------------------------------------------
-//---------------------------------------------------------------------------------------------------------------
-// TODO
-Face_handle find_obtuse_triangle(Problem* problem, CDT& cdt){
-    Face_handle face;
-    double cosine = std::numeric_limits<double>::max();
-    for(const auto& triangle : cdt.finite_face_handles()){
-        if(triangle_is_inside(&cdt, problem->get_boundary(), triangle)){
-
-            Point a = triangle->vertex(0)->point();
-            Point b = triangle->vertex(1)->point();
-            Point c = triangle->vertex(2)->point();
-
-            // TODO: normalize the vector
-            Vector ab = (b-a);
-            Vector bc = (c-b);
-            Vector ca = (a-c);
-
-            auto cos_angle_a = (-ca)*(ab);
-            auto cos_angle_b = (-ab)*(bc);
-            auto cos_angle_c = (-bc)*(ca);
-
-            if(cos_angle_a < cosine){
-                cosine = cos_angle_a;
-                face = triangle;
-            }
-            if(cos_angle_b < cosine){
-                cosine = cos_angle_b;
-                face = triangle;
-            }
-            if(cos_angle_c < cosine){
-                cosine = cos_angle_c;
-                face = triangle;
-            }
-        }
-    }
-
-    if(std::abs(cosine) > 1){
-        std::cout << RED << "[ERROR] Cosine is out of range!" << std::endl;
-    }
-    return face;
 }

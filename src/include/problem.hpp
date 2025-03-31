@@ -10,7 +10,7 @@
 #include <CGAL/convex_hull_2.h>
 
 using json = nlohmann::json;
-typedef CGAL::Exact_predicates_inexact_constructions_kernel K;
+typedef CGAL::Exact_predicates_exact_constructions_kernel K;
 typedef CGAL::Exact_predicates_inexact_constructions_kernel K_i;
 typedef CGAL::Polygon_2<K> Polygon;
 typedef Polygon::Vertex_iterator VertexIterator;

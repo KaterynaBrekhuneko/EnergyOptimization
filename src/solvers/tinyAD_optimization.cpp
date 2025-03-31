@@ -388,10 +388,10 @@ void optimizeTinyAD(Problem* problem){
 
         Segment c = constraints_of_points[i];
         
-        BS_TANGENT(i, 0) = c.target().x();
-        BS_TANGENT(i, 1) = c.target().y();
-        BS_TANGENT(i, 2) = c.source().x();
-        BS_TANGENT(i, 3) = c.source().y();
+        BS_TANGENT(i, 0) = CGAL::to_double(c.target().x());
+        BS_TANGENT(i, 1) = CGAL::to_double(c.target().y());
+        BS_TANGENT(i, 2) = CGAL::to_double(c.source().x());
+        BS_TANGENT(i, 3) = CGAL::to_double(c.source().y());
     }
 
     find_minimum(problem, V, F, B, B_VAR, BS, BS_VAR, BS_TANGENT);

@@ -12,7 +12,7 @@ typedef CDT::Edge_iterator Edge_iterator;
 bool armijo_condition(const std::vector<Point>& gradient, double f, double f_new, double step_size, double armijo_const){
     double dot_product = 0.0;
     for(int i = 0; i < gradient.size(); i++){
-        dot_product = dot_product - gradient[i].x()*gradient[i].x() - gradient[i].y()*gradient[i].y();
+        dot_product = dot_product - CGAL::to_double(gradient[i].x()*gradient[i].x() - gradient[i].y()*gradient[i].y());
     }
     return f_new <= f + armijo_const*step_size*dot_product;
 }

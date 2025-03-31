@@ -361,17 +361,17 @@ int main(int argc, char **argv)
     //refine(problem);
 
     //* Step by step CGAL refinement
-    //step_by_step_mesh(problem);
+    step_by_step_mesh(problem);
 
     //* Just testing optimization
-    Solver* solver = new Mesh();
+    /*Solver* solver = new Mesh();
     solver->solve(problem);
     std::cout << "Num obtuse before: " << countObtuse(problem->get_triangulation()) << std::endl;
     problem->visualize_solution();
 
     globally_optimize_solution(problem);
     std::cout << "Num obtuse after: " << countObtuse(problem->get_triangulation()) << std::endl;
-    problem->visualize_solution();
+    problem->visualize_solution();*/
 
     /*std::cout << "Function value before: " << get_function_value(problem) << std::endl;
     globally_optimize_solution(problem);

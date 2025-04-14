@@ -6,11 +6,12 @@
 #include <vector>
 #include <CGAL/Exact_predicates_exact_constructions_kernel.h>
 #include <CGAL/Exact_predicates_inexact_constructions_kernel.h>
+#include <CGAL/Boolean_set_operations_2/oriented_side.h>
 #include <CGAL/Polygon_2.h>
 #include <CGAL/convex_hull_2.h>
 
 using json = nlohmann::json;
-typedef CGAL::Exact_predicates_inexact_constructions_kernel K;
+typedef CGAL::Exact_predicates_exact_constructions_kernel K;
 typedef CGAL::Exact_predicates_inexact_constructions_kernel K_i;
 typedef CGAL::Polygon_2<K> Polygon;
 typedef Polygon::Vertex_iterator VertexIterator;
@@ -27,18 +28,20 @@ private:
     std::string name;
 
     Polygon boundary;
+    std::vector<int> boundary_indices;
 
     std::vector<Point> points;
     std::vector<Point> steiner;
 
     std::vector<Segment> constraints;
+    std::vector<std::tuple<int, int>> constraints_indices;
+
     std::vector<Polygon> triangulation;
 
 public:
     Problem(std::string file_name);
     //Problem(char *file_name);
 
-    // ! delete this constructor?
     Problem(Problem *problem){
         name = problem->name;
         points = problem->points;
@@ -48,8 +51,10 @@ public:
 
     std::string get_name() { return name; };
     Polygon get_boundary() { return boundary; };
+    std::vector<int> get_boundary_indices() { return boundary_indices; };
     std::vector<Point> get_points() { return points; };
     std::vector<Segment> get_constraints() { return constraints; };
+    std::vector<std::tuple<int, int>> get_constraints_indices() { return constraints_indices; };
 
     std::vector<Point> get_steiner() { return steiner; };
     void add_steiner(Point s) { steiner.push_back(s); };
@@ -76,6 +81,47 @@ public:
         cdt.insert(steiner.begin(), steiner.end());
         cdt.insert_constraints(all_constraints.begin(), all_constraints.end());
         return cdt;
+    }
+
+    template <typename CDT, typename Face_handle>
+    bool triangle_is_inside(CDT& cdt, const Face_handle& triangle){
+        Vector a = Vector(0, 0);
+        for (int i = 0; i < 3; i++) {
+            Point p = cdt.point(triangle->vertex(i));
+            a += Vector(p.x(), p.y());
+        }
+        Point c = Point(a.x() / 3, a.y() / 3);
+        return CGAL::oriented_side(c, boundary) == CGAL::POSITIVE;
+    }
+
+    template <typename CDT, typename Face_handle>
+    std::vector<std::vector<Point>> grab_triangulation(CDT& cdt) {
+        std::vector<std::vector<Point>> triangulation;
+        for (const auto& face : cdt.finite_face_handles()) {
+            if(triangle_is_inside<CDT, Face_handle>(cdt, face)){
+                std::vector<Point> triangle;
+                for (int i = 0; i < 3; i++) {
+                    Point p = face->vertex(i)->point();
+                    triangle.push_back(p);
+                }
+                triangulation.push_back(triangle);
+            }
+        }
+        return triangulation;
+    }
+
+    template <typename CDT, typename Face_handle>
+    void update_problem(CDT& cdt, std::set<Point>& point_set){
+        clear_solution();
+    
+        for (const auto& p : cdt.finite_vertex_handles()) {
+            if (point_set.find(p->point()) == point_set.end()) {
+                add_steiner(p->point());
+            }
+        }
+        for (auto triangle : grab_triangulation<CDT, Face_handle>(cdt)) {
+            add_triangle(Polygon(triangle.begin(), triangle.end()));
+        }
     }
 };
 

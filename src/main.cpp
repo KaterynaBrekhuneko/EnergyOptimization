@@ -3,6 +3,9 @@
 #include "global_optimization.hpp"
 #include "tinyAD_optimization.hpp"
 #include "delaunay_refinement.hpp"
+#include "quad_mesher.hpp"
+
+#include <gmsh.h>
 
 namespace fs = std::filesystem;
 
@@ -183,7 +186,7 @@ void globally_optimize_solution(Problem *problem){
     std::vector<Point> steiner = problem->get_steiner();
     std::vector<Polygon> triangulation = problem->get_triangulation();
 
-    std::vector<Point> new_steiner = globally_optimize_position(steiner, triangulation, problem);
+    std::vector<Point> new_steiner = globally_optimize_position(steiner, triangulation, problem, false);
 
     problem->clear_solution();
     for(int i = 0; i < new_steiner.size(); i++){
@@ -220,7 +223,12 @@ void globally_optimize_obtuse(Problem *problem){
 
     //std::cout << "Num obtuse steiner: " << obtuse_steiner_points.size() << std::endl;
 
-    globally_optimize_position(obtuse_steiner_points, triangulation, problem);
+    std::vector<Point> new_steiner = globally_optimize_position(obtuse_steiner_points, triangulation, problem, false);
+    
+    problem->clear_solution();
+    for(int i = 0; i < new_steiner.size(); i++){
+        problem->add_steiner(new_steiner[i]);
+    }
     problem->set_triangulation(triangulation);
 }
 
@@ -354,8 +362,11 @@ double get_function_value(Problem* problem){
 
 int main(int argc, char **argv)
 {
-    Problem *problem = new Problem("../instances_presentation/simple-polygon-exterior-20_60_53ad6d23.instance.json");
+    Problem *problem = new Problem("../instances_presentation/ortho_10_d2723dcc.instance.json");
     //Problem *problem = new Problem(argv[1]);
+
+    //* Quad Mesh
+    build_quad_mesh_medians(problem);
     
     //* Custom Delaunay refinement
     //refine(problem);
@@ -364,14 +375,14 @@ int main(int argc, char **argv)
     //step_by_step_mesh(problem);
 
     //* Just testing optimization
-    Solver* solver = new Mesh();
+    /*Solver* solver = new Mesh();
     solver->solve(problem);
     std::cout << "Num obtuse before: " << countObtuse(problem->get_triangulation()) << std::endl;
     problem->visualize_solution();
 
     globally_optimize_solution(problem);
     std::cout << "Num obtuse after: " << countObtuse(problem->get_triangulation()) << std::endl;
-    problem->visualize_solution();
+    problem->visualize_solution();*/
 
     /*std::cout << "Function value before: " << get_function_value(problem) << std::endl;
     globally_optimize_solution(problem);

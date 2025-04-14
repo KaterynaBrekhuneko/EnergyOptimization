@@ -11,6 +11,8 @@
 #include <unordered_map>
 #include <limits>
 
+#include "global_optimization.hpp"
+
 #define BLUE    "\033[34m"
 #define GREEN   "\033[32m"
 #define RED     "\033[31m" 
@@ -27,45 +29,12 @@ typedef CGAL::Delaunay_mesher_2<CDT, Criteria>              Mesher;
 typedef CDT::Face_handle Face_handle;
 typedef CDT::Edge Edge;
 
-CDT generate_triangulation(std::set<Point>& points, std::set<Point>& steiner_points, std::vector<Segment>& constraints) {
-    CDT cdt;
-    cdt.insert(points.begin(), points.end());
-    cdt.insert(steiner_points.begin(), steiner_points.end());
-    cdt.insert_constraints(constraints.begin(), constraints.end());
-    return cdt;
-}
-
-bool triangle_is_inside(CDT* cdt, const Polygon& boundary, const Face_handle& triangle){
-    Vector a = Vector(0, 0);
-    for (int i = 0; i < 3; i++) {
-        CDT::Point p = cdt->point(triangle->vertex(i));
-        a += Vector(p.x(), p.y());
-    }
-    Point c = Point(a.x() / 3, a.y() / 3);
-    return CGAL::oriented_side(c, boundary) == CGAL::POSITIVE;
-}
-
-std::vector<std::vector<Point>> grab_triangulation(CDT* cdt, const Polygon& boundary) {
-    std::vector<std::vector<Point>> triangulation;
-    for (const auto& face : cdt->finite_face_handles()) {
-        if(triangle_is_inside(cdt, boundary, face)){
-            std::vector<Point> triangle;
-            for (int i = 0; i < 3; i++) {
-                Point p = face->vertex(i)->point();
-                triangle.push_back(p);
-            }
-            triangulation.push_back(triangle);
-        }
-    }
-    return triangulation;
-}
-
 double get_sizing(Problem* problem) {
     Polygon boundary = problem->get_boundary();
     auto bbox = boundary.bbox();
     double max_size = std::sqrt(std::pow(bbox.x_span(), 2) + std::pow(bbox.y_span(), 2)) * 0.1;
 
-    std::cout << RED << "xmin: " << bbox.xmin() << " scale: " << std::max(bbox.xmax() - bbox.xmin(), bbox.ymax() - bbox.ymin()) << RESET << std::endl;
+    std::cout << RED << "sizing: " << max_size/2 << " xmin: " << bbox.xmin() << " scale: " << std::max(bbox.xmax() - bbox.xmin(), bbox.ymax() - bbox.ymin()) << RESET << std::endl;
     
     return max_size / 2;
 }
@@ -94,7 +63,7 @@ double compute_max_sizing_ratio(Problem* problem, CDT& cdt, double sizing){
         max_sizing_ratio = std::max(max_sizing_ratio, sizing_ratio_constraint);
     }   
     for(const auto& t : cdt.finite_face_handles()){
-        if(triangle_is_inside(&cdt, problem->get_boundary(), t)){
+        if(problem->triangle_is_inside<CDT, Face_handle>(cdt, t)){
             double sizing_ratio_triangle = get_sizing_ratio_triangle(t, sizing);
             max_sizing_ratio = std::max(max_sizing_ratio, get_sizing_ratio_triangle(t, sizing));
         }
@@ -109,7 +78,7 @@ void get_constraints_and_faces(Problem* problem, CDT& cdt, std::vector<Edge>& co
     }
     faces.clear();
     for (const auto& face : cdt.finite_face_handles()) {
-        if(triangle_is_inside(&cdt, problem->get_boundary(), face)){
+        if(problem->triangle_is_inside<CDT, Face_handle>(cdt, face)){
             faces.push_back(face);
         }
     }
@@ -143,26 +112,12 @@ std::unordered_map<Edge, double, EdgeHash, EdgeEqual> create_edge_map(CDT& cdt, 
 std::unordered_map<Face_handle, double> create_face_map(Problem* problem, CDT& cdt, double sizing){
     std::unordered_map<Face_handle, double> face_to_ratio_map;
     for(const auto& face : cdt.finite_face_handles()){
-        if(triangle_is_inside(&cdt, problem->get_boundary(), face)){
+        if(problem->triangle_is_inside<CDT, Face_handle>(cdt, face)){
             face_to_ratio_map[face] = get_sizing_ratio_triangle(face, sizing);
         }
     }
 
     return face_to_ratio_map;
-}
-
-void update_problem(Problem* problem, CDT& cdt, std::set<Point>& point_set){
-    auto boundary = problem->get_boundary();
-    problem->clear_solution();
-
-    for (const auto& p : cdt.finite_vertex_handles()) {
-        if (point_set.find(p->point()) == point_set.end()) {
-            problem->add_steiner(p->point());
-        }
-    }
-    for (auto triangle : grab_triangulation(&cdt, boundary)) {
-        problem->add_triangle(Polygon(triangle.begin(), triangle.end()));
-    }
 }
 
 void mesh(Problem* problem, CDT& cdt, double sizing, double target_sizing){
@@ -189,7 +144,7 @@ void mesh(Problem* problem, CDT& cdt, double sizing, double target_sizing){
         }
     }   
     for(Face_handle t : cdt.finite_face_handles()){
-        if(!triangle_is_inside(&cdt, problem->get_boundary(), t)){
+        if(!problem->triangle_is_inside<CDT, Face_handle>(cdt, t)){
             continue;
         }
 
@@ -232,7 +187,7 @@ void refine(Problem* problem){
 
     std::cout << "scale: " << scale << " min: " << box.xmin() << "\n" << std::endl;
 
-    CDT cdt = generate_triangulation(point_set, steiner_point_set, constraints);
+    CDT cdt = problem->generate_CDT<CDT>();
     std::cout  << "Num of points in cdt before: " << cdt.number_of_vertices() << std::endl;
 
     double sizing, max_sizing, target_sizing;
@@ -249,13 +204,14 @@ void refine(Problem* problem){
         mesh(problem, cdt, sizing, target_sizing);
         std::cout << BLUE  << "Num of points in cdt after " << i << ": " << cdt.number_of_vertices()  << RESET << std::endl;
 
-        update_problem(problem, cdt, point_set);
+        problem->update_problem<CDT, Face_handle>(cdt, point_set);
         problem->visualize_solution();
 
         // LLoyd optimization
-        CGAL::lloyd_optimize_mesh_2(cdt, CGAL::parameters::number_of_iterations(1000));
+        //!For this first need to convert to an inexact kernel
+        /*CGAL::lloyd_optimize_mesh_2(cdt, CGAL::parameters::number_of_iterations(1000));
         update_problem(problem, cdt, point_set);
-        problem->visualize_solution();
+        problem->visualize_solution();*/
     }
 
     std::cout << "End of meshing" << std::endl;
@@ -273,6 +229,19 @@ void refine(Problem* problem){
     cdt = generate_triangulation(point_set, steiner_point_set, constraints);*/
 }
 
+void globally_optimize_triangles(Problem *problem, bool debug){
+    std::vector<Point> steiner = problem->get_steiner();
+    std::vector<Polygon> triangulation = problem->get_triangulation();
+
+    std::vector<Point> new_steiner = globally_optimize_position(steiner, triangulation, problem, debug);
+
+    problem->clear_solution();
+    for(int i = 0; i < new_steiner.size(); i++){
+        problem->add_steiner(new_steiner[i]);
+    }
+    problem->set_triangulation(triangulation);
+}
+
 void step_by_step_mesh(Problem* problem){
     // Preprocess the input instance, compute and compute cdt
     std::vector<Point> points = problem->get_points();
@@ -285,13 +254,13 @@ void step_by_step_mesh(Problem* problem){
         constraints.push_back(Segment(boundary_points[i], boundary_points[(i + 1) % boundary_points.size()]));
     }
 
-    CDT cdt = generate_triangulation(point_set, steiner_point_set, constraints);
-    update_problem(problem, cdt, point_set);
+    CDT cdt = problem->generate_CDT<CDT>();
+    problem->update_problem<CDT, Face_handle>(cdt, point_set);
     std::cout  << "Num of points in cdt before: " << cdt.number_of_vertices() << std::endl;
 
     // Set up meshing
     double size = get_sizing(problem);
-    Criteria criteria(0.125, size);
+    Criteria criteria(0, size);
     //Criteria criteria(0.125, std::numeric_limits<double>::max());
     std::optional<Mesher> mesher;
     mesher.emplace(cdt, criteria);
@@ -302,82 +271,64 @@ void step_by_step_mesh(Problem* problem){
     int iter = 1;
     int opt_count = 1;
 
-    while (iter != 100 && !mesher->is_refinement_done()) {
+    while (iter != 101 && !mesher->is_refinement_done()) {
         mesher->step_by_step_refine_mesh();
 
-        //update_problem(problem, cdt, point_set);
-        //problem->visualize_solution();
+        /*if(iter == 10){
+            update_problem(problem, cdt, point_set);
+            problem->visualize_solution();
+            
+            steiner_point_set.clear();
+            for(const auto& steiner : problem->get_steiner()){
+                steiner_point_set.insert(steiner);
+            }
+            cdt = generate_triangulation(point_set, steiner_point_set, constraints);
+            mesher.emplace(cdt, criteria);
+            mesher->init();
+
+            Edge e =  mesher->next_encroached_edge();
+            Face_handle f = e.first;
+            int i = e.second;
+            std::cout << GREEN << f->vertex((i + 1) % 3)->point() << " | " << f->vertex((i + 2) % 3)->point() << RESET << std::endl;
+
+            problem->visualize_solution();
+            mesher->step_by_step_refine_mesh();
+            update_problem(problem, cdt, point_set);
+            problem->visualize_solution();
+        }*/
 
         if(iter%10 == 0){
             // Optimize
-            update_problem(problem, cdt, point_set);
+            problem->update_problem<CDT, Face_handle>(cdt, point_set);
             std::cout << "Num obtuse before optimization " << opt_count << ": " << count_obtuse_triangles(problem) << std::endl;
-            problem->visualize_solution();
-            optimizeTinyAD(problem);
+            //problem->visualize_solution();
+            bool debug = (opt_count == 9);
+            globally_optimize_triangles(problem, debug);
+            //optimizeTinyAD(problem);
+
             std::cout << "Num obtuse after optimization " << opt_count << ": " << count_obtuse_triangles(problem) << std::endl;
-            problem->visualize_solution();
+            //problem->visualize_solution();
 
             // Update CDT
             steiner_point_set.clear();
             for(const auto& steiner : problem->get_steiner()){
                 steiner_point_set.insert(steiner);
             }
-            cdt = generate_triangulation(point_set, steiner_point_set, constraints);
+            cdt = problem->generate_CDT<CDT>();
             std::cout << "Num obtuse after regenerating CDT after optimization " << opt_count << ": " << count_obtuse_triangles(problem) << "\n" << std::endl;
             problem->visualize_solution();
             opt_count++;
 
             // Reinit the mesher
+            /*Mesher new_mesher(cdt, criteria);
+            new_mesher.init();
+            new_mesher.step_by_step_refine_mesh();*/
             mesher.emplace(cdt, criteria);
-            mesher->init();     
+            mesher->init();    
         }
 
         iter++;
     }
 
     std::cout << "Total num iters: " << iter << std::endl;
-}
-
-//---------------------------------------------------------------------------------------------------------------
-//--------------------------------------Custom point insertion---------------------------------------------------
-//---------------------------------------------------------------------------------------------------------------
-// TODO
-Face_handle find_obtuse_triangle(Problem* problem, CDT& cdt){
-    Face_handle face;
-    double cosine = std::numeric_limits<double>::max();
-    for(const auto& triangle : cdt.finite_face_handles()){
-        if(triangle_is_inside(&cdt, problem->get_boundary(), triangle)){
-
-            Point a = triangle->vertex(0)->point();
-            Point b = triangle->vertex(1)->point();
-            Point c = triangle->vertex(2)->point();
-
-            // TODO: normalize the vector
-            Vector ab = (b-a);
-            Vector bc = (c-b);
-            Vector ca = (a-c);
-
-            auto cos_angle_a = (-ca)*(ab);
-            auto cos_angle_b = (-ab)*(bc);
-            auto cos_angle_c = (-bc)*(ca);
-
-            if(cos_angle_a < cosine){
-                cosine = cos_angle_a;
-                face = triangle;
-            }
-            if(cos_angle_b < cosine){
-                cosine = cos_angle_b;
-                face = triangle;
-            }
-            if(cos_angle_c < cosine){
-                cosine = cos_angle_c;
-                face = triangle;
-            }
-        }
-    }
-
-    if(std::abs(cosine) > 1){
-        std::cout << RED << "[ERROR] Cosine is out of range!" << std::endl;
-    }
-    return face;
 }

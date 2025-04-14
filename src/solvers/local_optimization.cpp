@@ -12,7 +12,7 @@ typedef CDT::Edge_iterator Edge_iterator;
 bool armijo_condition(const std::vector<Point>& gradient, double f, double f_new, double step_size, double armijo_const){
     double dot_product = 0.0;
     for(int i = 0; i < gradient.size(); i++){
-        dot_product = dot_product - gradient[i].x()*gradient[i].x() - gradient[i].y()*gradient[i].y();
+        dot_product = dot_product - CGAL::to_double(gradient[i].x()*gradient[i].x() - gradient[i].y()*gradient[i].y());
     }
     return f_new <= f + armijo_const*step_size*dot_product;
 }
@@ -32,7 +32,7 @@ std::vector<Point> line_search(std::vector<Polygon>& triangles, const std::vecto
     double f = 0.0;
     int i = 0;
     for(const Point& s : steiner){
-        std::vector<Polygon> neighborhood = find_neighborhood(s, triangles);
+        std::vector<Polygon> neighborhood = find_neighborhood(s, triangles, false);
         neighborhoods.push_back(neighborhood);
         f += value_refined_sigmoid(s, s, neighborhood);
         i++;
@@ -93,7 +93,7 @@ Point move_point_on_segment(Point& p, const Segment& s, double step_size, std::v
 
     // find boundary points on the segment
     std::vector<Point> ab;
-    for(Polygon triangle : neighborhood){
+    for(const Polygon& triangle : neighborhood){
         for(Point point : triangle.vertices()){
             if(s.has_on(point) && point!=p){
                 ab.push_back(point);
@@ -174,7 +174,7 @@ Point locally_optimize_position_constraint(Point steiner, std::vector<Polygon>& 
     }
 
     try{
-        std::vector<Polygon> neighborhood = find_neighborhood(s, triangles);
+        std::vector<Polygon> neighborhood = find_neighborhood(s, triangles, false);
         Point gradient = calculate_gradient_refined_sigmoid(s, neighborhood);
         
         while(norm(gradient) > TOL && iteration < MAX_ITER){
@@ -211,12 +211,14 @@ Segment find_boundary_segment(const Point& p, const Polygon& polygon) {
     throw std::runtime_error("Point is not on any segment of the polygon (should not happen).");
 }
 
-std::vector<Polygon> find_neighborhood(const Point& steiner, std::vector<Polygon>& triangles){    
+std::vector<Polygon> find_neighborhood(const Point& steiner, std::vector<Polygon>& triangles, bool debug){    
     std::vector<Polygon> neighborhood;
-    for (Polygon triangle : triangles){
-        if(find_point_index(steiner, triangle) != -1){
+    int count = 0;
+    for (const Polygon& triangle : triangles){
+        if(find_point_index(steiner, triangle, (debug && count == 9)) != -1){
             neighborhood.push_back(triangle);
         }
+        count++;
     }
     return neighborhood;
 }
@@ -226,7 +228,7 @@ bool is_interior_vertex(const Point& steiner, const Polygon& boundary){
 }
 
 bool is_interior_vertex_with_tolerance(const Point& p, const Polygon& polygon) {
-    double tolerance = 1e-6;
+    double tolerance = 1e-12;
     for (auto edge_it = polygon.edges_begin(); edge_it != polygon.edges_end(); ++edge_it) {
         double distance = std::sqrt(CGAL::to_double(CGAL::squared_distance(*edge_it, p)));
         //std::cout << "distance: " << distance << std::endl;
@@ -250,7 +252,7 @@ bool is_on_constraint(const Point& steiner, Problem* problem, Segment* constrain
 }
 
 bool is_on_constraint_with_tolerance(const Point& steiner, Problem* problem, Segment* constraint){
-    double tolerance = 1e-6;
+    double tolerance = 1e-12;
     std::vector<Segment> constraints = problem->get_constraints();
     for(Segment c : constraints){
         double distance = std::sqrt(CGAL::to_double(CGAL::squared_distance(c, steiner)));
@@ -275,22 +277,36 @@ bool is_in_the_neighborhood(const Point& p, const std::vector<Polygon>& neighbor
     return false;
 }
 
-int find_point_index(const Point& s, const Polygon& polygon) {
+int find_point_index(const Point& s, const Polygon& triangle, bool debug) {
+    double tolerance = 1e-12;
     int index = 0;
 
-    for (auto it = polygon.vertices_begin(); it != polygon.vertices_end(); ++it) {
-        if (*it == s) { 
-            return index;  
-        }
-        index++;
+    Point a = triangle[0];
+    Point b = triangle[1];
+    Point c = triangle[2];
+
+    if(debug){
+        std::cout << "a: " << a << " b: " << b << " c: " << c << " s: " << s <<std::endl;
     }
+
+    if(std::abs(CGAL::to_double(a.x()) - CGAL::to_double(s.x())) < tolerance && std::abs(CGAL::to_double(a.y()) - CGAL::to_double(s.y())) < tolerance){
+        return 0;
+    }
+    if(std::abs(CGAL::to_double(b.x()) - CGAL::to_double(s.x())) < tolerance && std::abs(CGAL::to_double(b.y()) - CGAL::to_double(s.y())) < tolerance){
+        return 1;
+    }
+    if(std::abs(CGAL::to_double(c.x()) - CGAL::to_double(s.x())) < tolerance && std::abs(CGAL::to_double(c.y()) - CGAL::to_double(s.y())) < tolerance){
+        return 2;
+    }
+
     return -1; 
 }
 
 void update_neighborhood(std::vector<Polygon>& neighborhood, const Point& s, const Point& new_s) {
+    double tolerance = 1e-12;
     for (auto& triangle : neighborhood) {
         for (size_t i = 0; i < triangle.size(); ++i) {
-            if (triangle.vertex(i) == s) {  
+            if (std::abs(CGAL::to_double(triangle.vertex(i).x()) - CGAL::to_double(s.x())) < tolerance && std::abs(CGAL::to_double(triangle.vertex(i).y()) - CGAL::to_double(s.y())) < tolerance) {  
                 triangle[i] = new_s;  
             }
         }
@@ -308,8 +324,8 @@ double value_ln(const Point& old_s, const Point& new_s, const std::vector<Polygo
         return INFINITY;
     }
 
-    for(Polygon triangle : neighborhood){
-        int index = find_point_index(old_s, triangle);
+    for(const Polygon& triangle : neighborhood){
+        int index = find_point_index(old_s, triangle, false);
 
         Point a = triangle.vertex((index + 1) % 3);
         Point b = triangle.vertex((index + 2) % 3);
@@ -345,8 +361,8 @@ double value_sigmoid(const Point& old_s, const Point& new_s, const std::vector<P
         return INFINITY;
     }
 
-    for(Polygon triangle : neighborhood){
-        int index = find_point_index(old_s, triangle);
+    for(const Polygon& triangle : neighborhood){
+        int index = find_point_index(old_s, triangle, false);
 
         Point a = triangle.vertex((index + 1) % 3);
         Point b = triangle.vertex((index + 2) % 3);
@@ -385,8 +401,8 @@ double value_refined_sigmoid(const Point& old_s, const Point& new_s, const std::
         return INFINITY;
     }
 
-    for(Polygon triangle : neighborhood){
-        int index = find_point_index(old_s, triangle);
+    for(const Polygon& triangle : neighborhood){
+        int index = find_point_index(old_s, triangle, false);
 
         Point a = triangle.vertex((index + 1) % 3);
         Point b = triangle.vertex((index + 2) % 3);
@@ -422,8 +438,8 @@ Point calculate_gradient_equilateral(Point& s, std::vector<Polygon>& triangles){
     double dx = 0.0;
     double dy = 0.0;
 
-    for(Polygon triangle : triangles){
-        int index = find_point_index(s, triangle);
+    for(const Polygon& triangle : triangles){
+        int index = find_point_index(s, triangle, false);
 
         //std::cout << "index: " << index << std::endl;
 
@@ -471,8 +487,8 @@ Point calculate_gradient_ln(Point& s, std::vector<Polygon>& triangles){
     double dx = 0.0;
     double dy = 0.0;
 
-    for(Polygon triangle : triangles){
-        int index = find_point_index(s, triangle);
+    for(const Polygon& triangle : triangles){
+        int index = find_point_index(s, triangle, false);
 
         Point a = triangle.vertex((index + 1) % 3);
         Point b = triangle.vertex((index + 2) % 3);
@@ -517,9 +533,9 @@ Point calculate_gradient_sigmoid(Point& s, std::vector<Polygon>& triangles){
 
     double k = 15;
 
-    for(Polygon triangle : triangles){
+    for(const Polygon& triangle : triangles){
 
-        int index = find_point_index(s, triangle);
+        int index = find_point_index(s, triangle, false);
 
         Point a = triangle.vertex((index + 1) % 3);
         Point b = triangle.vertex((index + 2) % 3);
@@ -567,8 +583,8 @@ Point calculate_gradient_refined_sigmoid(Point& s, std::vector<Polygon>& triangl
     double dx = scale*CGAL::to_double(gradSigmoid.x());
     double dy = scale*CGAL::to_double(gradSigmoid.y());
 
-    for(Polygon triangle : triangles){
-        int index = find_point_index(s, triangle);
+    for(const Polygon& triangle : triangles){
+        int index = find_point_index(s, triangle, false);
 
         Point a = triangle.vertex((index + 1) % 3);
         Point b = triangle.vertex((index + 2) % 3);
@@ -630,7 +646,7 @@ Point locally_optimize_position(Point steiner, std::vector<Polygon>& triangles, 
 
     int iteration = 0;
 
-    std::vector<Polygon> neighborhood = find_neighborhood(s, triangles);
+    std::vector<Polygon> neighborhood = find_neighborhood(s, triangles, false);
 
     try{
         // for now only optimize positions of interior points

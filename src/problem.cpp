@@ -25,6 +25,7 @@ Problem::Problem(std::string file_name)
     }
 
     for (int index : data["region_boundary"]){
+        boundary_indices.push_back(index);
         boundary.push_back(points[index]);
     }
 
@@ -33,6 +34,7 @@ Problem::Problem(std::string file_name)
 
     for (int i = 0; i < num_constraints; i++){
         auto constraint = data["additional_constraints"][i];
+        constraints_indices.push_back(constraint);
         constraints.push_back(Segment(points[constraint[0]], points[constraint[1]]));
     }
 }

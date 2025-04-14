@@ -192,7 +192,7 @@ int find_obtuse_angle(Eigen::Vector2d& a, Eigen::Vector2d& b, Eigen::Vector2d& c
 bool is_on_constraint(Point& steiner, std::vector<Segment>& constraints, Segment* constraint){
     for(Segment c : constraints){
         double distance = std::sqrt(CGAL::to_double(CGAL::squared_distance(c, steiner)));
-        if(c.has_on(steiner) /*|| distance < 1e-6*/){
+        if(c.has_on(steiner) || distance < 1e-6){
             *constraint = c;
             return true;
         }
@@ -205,7 +205,7 @@ bool is_on_boundary(Point& steiner, Polygon& boundary, Segment* constraint){
     for (int i = 0; i < n; ++i) {
         Segment edge(boundary.vertex(i), boundary.vertex((i + 1) % n)); 
         double distance = std::sqrt(CGAL::to_double(CGAL::squared_distance(edge, steiner)));
-        if (edge.has_on(steiner) /*|| distance < 1e-6*/) {
+        if (edge.has_on(steiner) || distance < 1e-6) {
             *constraint = edge;
             return true; 
         }
@@ -388,10 +388,10 @@ void optimizeTinyAD(Problem* problem){
 
         Segment c = constraints_of_points[i];
         
-        BS_TANGENT(i, 0) = c.target().x();
-        BS_TANGENT(i, 1) = c.target().y();
-        BS_TANGENT(i, 2) = c.source().x();
-        BS_TANGENT(i, 3) = c.source().y();
+        BS_TANGENT(i, 0) = CGAL::to_double(c.target().x());
+        BS_TANGENT(i, 1) = CGAL::to_double(c.target().y());
+        BS_TANGENT(i, 2) = CGAL::to_double(c.source().x());
+        BS_TANGENT(i, 3) = CGAL::to_double(c.source().y());
     }
 
     find_minimum(problem, V, F, B, B_VAR, BS, BS_VAR, BS_TANGENT);
@@ -473,7 +473,6 @@ void find_minimum(Problem* problem, Eigen::MatrixXd& V, Eigen::MatrixXi& F, Eige
         return 0;*/
         
         return w_penalty * (p_target - p).squaredNorm();
-        //return 0;
     });
 
     // Initialize x with the 2D vertex positions

@@ -1,10 +1,10 @@
 #include "problem.hpp"
 #include "solver.hpp"
 
-std::vector<Polygon> find_neighborhood(const Point& steiner, std::vector<Polygon>& triangles);
+std::vector<Polygon> find_neighborhood(const Point& steiner, std::vector<Polygon>& triangles, bool debug);
 bool is_interior_vertex(const Point& steiner, const Polygon& boundary);
 bool is_in_the_neighborhood(const Point& p, const std::vector<Polygon>& neighborhood);
-int find_point_index(const Point& s, const Polygon& polygon);
+int find_point_index(const Point& s, const Polygon& polygon, bool debug);
 void update_neighborhood(std::vector<Polygon>& neighborhood, const Point& s, const Point& new_s);
 double norm(const Point& gradient);
 Segment find_boundary_segment(const Point& p, const Polygon& polygon);

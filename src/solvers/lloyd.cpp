@@ -11,29 +11,9 @@ typedef CGAL::Delaunay_mesh_face_base_2<K> Fb;
 typedef CGAL::Triangulation_data_structure_2<Vb, Fb> Tds;
 typedef CGAL::Constrained_Delaunay_triangulation_2<K, Tds> CDT;
 typedef CDT::Vertex_handle Vertex_handle;
+typedef CDT::Face_handle Face_handle;
 typedef CGAL::Delaunay_mesh_size_criteria_2<CDT> Criteria;
 typedef CGAL::Delaunay_mesher_2<CDT, Criteria> Mesher;
-
-std::vector<std::vector<Point>> grab_triangulation(CDT *cdt, const Polygon& hull) {
-    std::vector<std::vector<Point>> triangulation;
-
-    for (auto fit : cdt->finite_face_handles()) {
-        std::vector<Point> triangle;
-        Vector a = Vector(0, 0);
-        for (int i = 0; i < 3; i++) {
-            Point p = fit->vertex(i)->point();
-            a += Vector(p.x(), p.y());
-            triangle.push_back(Point(p.x(), p.y()));
-        }
-
-        Point c = Point(a.x() / 3, a.y() / 3);
-        if (CGAL::oriented_side(c, hull) == CGAL::POSITIVE) {
-            triangulation.push_back(triangle);
-        }
-    }
-
-    return triangulation;
-}
 
 bool is_on_constraint(const Point steiner, Problem* problem){
     std::vector<Segment> constraints = problem->get_constraints();
@@ -119,7 +99,7 @@ SolveStatus Lloyd::solve(Problem *problem) {
         //if (!point_set.contains(p->point())) problem->add_steiner(p->point());
     }
 
-    for (auto triangle : grab_triangulation(&cdt, polygon)) {
+    for (auto triangle : problem->grab_triangulation<CDT, Face_handle>(cdt)) {
         problem->add_triangle(Polygon(triangle.begin(), triangle.end()));
     }
 
@@ -133,7 +113,7 @@ SolveStatus Lloyd::solve(Problem *problem) {
         //if (!point_set.contains(p->point())) problem->add_steiner(p->point());
     }
 
-    for (auto triangle : grab_triangulation(&cdt, polygon)) {
+    for (auto triangle : problem->grab_triangulation<CDT, Face_handle>(cdt)) {
         problem->add_triangle(Polygon(triangle.begin(), triangle.end()));
     }
 

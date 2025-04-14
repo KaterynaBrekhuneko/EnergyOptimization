@@ -104,31 +104,125 @@ void build_quad_mesh_medians(Problem* problem){
     to_IPE_quad("../solutions/ipe/QUAD-" + problem->get_name() + ".ipe", problem->get_points(), problem->get_constraints(), problem->get_boundary(), {}, quads);
 }
 
+std::vector<Polygon> convert_quad_mesh(){
+    std::vector<Polygon> quads;
+    try {
+        std::vector<std::size_t> nodeTags;
+        std::vector<double> coords;
+        std::vector<double> paramCoords;
+        gmsh::model::mesh::getNodes(nodeTags, coords, paramCoords);
+
+        std::unordered_map<std::size_t, std::array<double, 3>> nodeIdToCoord;
+        for (std::size_t i = 0; i < nodeTags.size(); ++i) {
+            nodeIdToCoord[nodeTags[i]] = {
+                coords[3 * i + 0],
+                coords[3 * i + 1],
+                coords[3 * i + 2]
+            };
+        }
+
+        // STEP 2: Loop over all 2D entities
+        std::vector<std::pair<int, int>> entities;
+        gmsh::model::getEntities(entities, 2); // dimension 2 = surface elements
+
+        for (const auto &[dim, tag] : entities) {
+            std::vector<int> elementTypes;
+            std::vector<std::vector<std::size_t>> elementTags;
+            std::vector<std::vector<std::size_t>> nodeTagsPerElement;
+
+            gmsh::model::mesh::getElements(elementTypes, elementTags, nodeTagsPerElement, dim, tag);
+
+            for (std::size_t i = 0; i < elementTypes.size(); ++i) {
+                int elementType = elementTypes[i];
+
+                std::string name;
+                int dimDummy;
+                int order;
+                int numNodesPerElem;
+                std::vector<double> dummyCoords;
+                int numPrimaryNodes;
+
+                gmsh::model::mesh::getElementProperties(
+                    elementType, name, dimDummy, order, numNodesPerElem, dummyCoords, numPrimaryNodes
+                );
+
+                std::cout << "Element type: " << name << " (nodes per face: " << numNodesPerElem << ")\n";
+
+                const auto &nodeListFlat = nodeTagsPerElement[i];
+                for (std::size_t j = 0; j < nodeListFlat.size(); j += numNodesPerElem) {
+                    std::cout << "Face:\n";
+
+                    Polygon q;
+                    for (int k = 0; k < numNodesPerElem; ++k) {
+                        std::size_t nodeId = nodeListFlat[j + k];
+                        const auto &xyz = nodeIdToCoord[nodeId];
+                        std::cout << "  Vertex " << nodeId << ": ("<< xyz[0] << ", " << xyz[1] << ", " << xyz[2] << ")\n";
+
+                        Point p(xyz[0], xyz[1]);
+                        q.push_back(p);
+                    }
+                    quads.push_back(q);
+                }
+            }
+        }
+
+    } catch (const std::exception &e) {
+        std::cerr << "Gmsh error: " << e.what() << "\n";
+    }
+    gmsh::finalize();
+
+    return quads;
+}
+
 void build_quad_mesh_gmsh(Problem* problem){
     gmsh::initialize();
-    gmsh::model::add("aaa");
+    gmsh::model::add(problem->get_name());
 
-    double lc = 0.2;  // uniform mesh size
+    double lc = get_sizing_quad(problem)*2;  // uniform mesh size
 
     auto points = problem->get_points();
+    auto boundary_indices = problem->get_boundary_indices();
 
-   /*Eigen::MatrixXd V(points.size(), 2);
+    Eigen::MatrixXd V(points.size(), 2);
     for (int i = 0; i < points.size(); ++i) {
         V(i, 0) = CGAL::to_double(points[i].x()); 
         V(i, 1) = CGAL::to_double(points[i].y()); 
     }
 
     for(int i = 0; i < points.size(); ++i){
-        gmsh::model::geo::addPoint(V[i, 0], V[i, 1], 0, lc);
+        int p = gmsh::model::geo::addPoint(V(i, 0), V(i, 1), 0, lc);
     }
 
-    /*int l1 = gmsh::model::geo::addLine(p1, p2);
-    int l2 = gmsh::model::geo::addLine(p2, p3);
-    int l3 = gmsh::model::geo::addLine(p3, p4);
-    int l4 = gmsh::model::geo::addLine(p4, p1);
+    // Add additional point to make the num of triangles in the triangle mesch even
+    double additional_x = 0;
+    double additional_y = 982072;
+    int p = gmsh::model::geo::addPoint(additional_x, additional_y, 0, lc);
+    boundary_indices.push_back(p-1);
 
-    int cl = gmsh::model::geo::addCurveLoop({l1, l2, l3, l4});
-    int pl = gmsh::model::geo::addPlaneSurface({cl});*/
+    std::vector<int> boundary;
+    for(int i = 0; i < boundary_indices.size(); ++i){
+        int p1 = boundary_indices[i] + 1;
+        int p2 = boundary_indices[(i+1)%boundary_indices.size()] + 1;
+        int l = gmsh::model::geo::addLine(p1, p2);
+        boundary.push_back(l);
+    }
+    int cl = gmsh::model::geo::addCurveLoop(boundary);
+    int pl = gmsh::model::geo::addPlaneSurface({cl});
+
+    gmsh::model::geo::synchronize();
+
+    gmsh::option::setNumber("Mesh.Optimize", 0);
+    gmsh::option::setNumber("Mesh.OptimizeNetgen", 0);
+    gmsh::option::setNumber("Mesh.Smoothing", 0);
+
+    gmsh::option::setNumber("Mesh.RecombinationAlgorithm", 1);
+    gmsh::model::mesh::setRecombine(2, pl);
+
+    gmsh::model::mesh::generate(2);
+    gmsh::write("aaa.msh");
+    
+    std::vector<Polygon> quads = convert_quad_mesh();
+    to_IPE_quad("../solutions/ipe/QUAD-" + problem->get_name() + ".ipe", problem->get_points(), problem->get_constraints(), problem->get_boundary(), {}, quads);
 
 }
 

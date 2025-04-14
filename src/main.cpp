@@ -366,7 +366,7 @@ int main(int argc, char **argv)
     //Problem *problem = new Problem(argv[1]);
 
     //* Quad Mesh
-    build_quad_mesh_medians(problem);
+    build_quad_mesh_gmsh(problem);
     
     //* Custom Delaunay refinement
     //refine(problem);

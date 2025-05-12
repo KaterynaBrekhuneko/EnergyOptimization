@@ -37,6 +37,8 @@ Problem::Problem(std::string file_name)
         constraints_indices.push_back(constraint);
         constraints.push_back(Segment(points[constraint[0]], points[constraint[1]]));
     }
+
+    num_obtuse = -1;
 }
 
 void Problem::remove_triangle(Polygon t){
@@ -56,6 +58,15 @@ void Problem::update_triangulation(Point s, Point new_s){
         }
     }
 
+    for(int i = 0; i< steiner.size(); i++){
+        Point steiner_point = steiner[i];
+        if(steiner_point == s){
+            steiner[i] = new_s;
+        }
+    }
+}
+
+void Problem::update_steiner(Point s, Point new_s){
     for(int i = 0; i< steiner.size(); i++){
         Point steiner_point = steiner[i];
         if(steiner_point == s){
@@ -163,6 +174,16 @@ void Problem::visualize_solution(){
     }
 
     to_IPE(path, points, constraints, {}, boundary.vertices(), steiner, triangle_segments, obtuse_triangles);
+}
+
+void Problem::save_intermidiate_result(){
+    Problem* new_result = new Problem(this);
+    new_result->set_triangulation(triangulation);
+    for(int i = 0; i<steiner.size(); i++){
+        new_result->add_steiner(steiner[i]);
+    }
+
+    new_result->set_num_obtuse(count_obtuse_triangles(this));
 }
 
 void to_IPE(std::string path, std::vector<Point> points, std::vector<Segment> constraints, std::vector<Segment> newConstraints, std::vector<Point> boundary, std::vector<Point> steiner, std::vector<Segment> triangulation, std::vector<Polygon> obtuseTriangles){
@@ -315,4 +336,82 @@ void to_IPE(std::string path, std::vector<Point> points, std::vector<Segment> co
     if (systemRet == -1){
         printf("Could not open IPE");
     }
+}
+
+void to_SVG(std::string path, std::vector<Point> points, std::vector<Segment> constraints, Polygon boundary, std::vector<Point> steiner, std::vector<Polygon> triangles) {
+    std::ofstream o(path);
+    
+    // Compute bounding box
+    auto xmin = boundary[0].x();
+    auto xmax = boundary[0].x();
+    auto ymin = boundary[0].y();
+    auto ymax = boundary[0].y();
+
+    for (Point p : boundary) {
+        xmin = std::min(xmin, p.x());
+        xmax = std::max(xmax, p.x());
+        ymin = std::min(ymin, p.y());
+        ymax = std::max(ymax, p.y());
+    }
+    auto scale = std::max(xmax - xmin, ymax - ymin);
+
+    double width = 600;
+    double height = 600;
+
+    o << "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>\n";
+    o << "<svg xmlns=\"http://www.w3.org/2000/svg\" version=\"1.1\" width=\"" << width << "\" height=\"" << height << "\">\n";
+
+    // Add a white background rectangle
+    o << "<rect width=\"100%\" height=\"100%\" fill=\"white\" />\n";
+
+    // Helper lambda to scale and shift points
+    auto transform_x = [&](double x) { return ((x - xmin) * 560.0 / scale) + 16.0; };
+    auto transform_y = [&](double y) { return height - (((y - ymin) * 560.0 / scale) + 16.0); }; // invert Y axis
+
+    // Draw quads (black edges)
+    for (auto poly : triangles) {
+        for (std::size_t i = 0; i < poly.size(); ++i) {
+            const Point& a = poly[i];
+            const Point& b = poly[(i + 1) % poly.size()];
+
+            o << "<line x1=\"" << transform_x(CGAL::to_double(a.x())) << "\" y1=\"" << transform_y(CGAL::to_double(a.y())) 
+              << "\" x2=\"" << transform_x(CGAL::to_double(b.x())) << "\" y2=\"" << transform_y(CGAL::to_double(b.y())) 
+              << "\" stroke=\"black\" stroke-width=\"1\" />\n";
+        }
+    }
+
+    // Draw boundary (blue, thicker)
+    for (std::size_t i = 0; i < boundary.size(); ++i) {
+        Point a = boundary[i];
+        Point b = boundary[(i + 1) % boundary.size()];
+
+        o << "<line x1=\"" << transform_x(CGAL::to_double(a.x())) << "\" y1=\"" << transform_y(CGAL::to_double(a.y())) 
+          << "\" x2=\"" << transform_x(CGAL::to_double(b.x())) << "\" y2=\"" << transform_y(CGAL::to_double(b.y())) 
+          << "\" stroke=\"blue\" stroke-width=\"3\" />\n";
+    }
+
+    // Draw constraint edges (red, thicker)
+    for (Segment v : constraints) {
+        Point a = v.start();
+        Point b = v.end();
+
+        o << "<line x1=\"" << transform_x(CGAL::to_double(a.x())) << "\" y1=\"" << transform_y(CGAL::to_double(a.y())) 
+          << "\" x2=\"" << transform_x(CGAL::to_double(b.x())) << "\" y2=\"" << transform_y(CGAL::to_double(b.y())) 
+          << "\" stroke=\"red\" stroke-width=\"2\" />\n";
+    }
+
+    // Draw points (black disks)
+    for (Point a : points) {
+        o << "<circle cx=\"" << transform_x(CGAL::to_double(a.x())) << "\" cy=\"" << transform_y(CGAL::to_double(a.y())) 
+          << "\" r=\"2\" fill=\"black\" />\n";
+    }
+
+    // Draw Steiner points (red disks)
+    for (Point a : steiner) {
+        o << "<circle cx=\"" << transform_x(CGAL::to_double(a.x())) << "\" cy=\"" << transform_y(CGAL::to_double(a.y())) 
+          << "\" r=\"2\" fill=\"red\" />\n";
+    }
+
+    o << "</svg>\n";
+    o.close();
 }

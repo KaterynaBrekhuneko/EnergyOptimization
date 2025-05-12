@@ -8,5 +8,5 @@ class Solver {
 public:
     virtual ~Solver() {};
 
-    virtual SolveStatus solve(Problem* prob) = 0;
+    virtual void solve(Problem* prob) = 0;
 };

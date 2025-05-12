@@ -1,15 +1,8 @@
 #pragma once
 
-#include "cxxopts.hpp"
+//enum SolveStatus { Optimal, Feasible, Unsolved };
 
-extern bool visualize;
-extern std::string solution;
-extern std::string comment;
-extern int algorithm;
-
-enum class SolveStatus { Optimal, Feasible, Unsolved };
-
-static void parseOptions(int argc, char* argv[])
+/*static void parseOptions(int argc, char* argv[])
 {
      cxxopts::Options options("mnot <file_name>", "Attempts to solve the MNOT");
 
@@ -32,4 +25,4 @@ static void parseOptions(int argc, char* argv[])
     if (result.count("algorithm")) {
         algorithm = result["algorithm"].as<int>();
     }
-};
+};*/

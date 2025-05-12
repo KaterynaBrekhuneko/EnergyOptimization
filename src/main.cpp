@@ -362,17 +362,30 @@ double get_function_value(Problem* problem){
 
 int main(int argc, char **argv)
 {
-    Problem *problem = new Problem("../instances_presentation/ortho_10_d2723dcc.instance.json");
+    Problem *problem = new Problem("../instances_presentation/simple-polygon-exterior-20_60_53ad6d23.instance.json");
+    problem->visualize_solution();
     //Problem *problem = new Problem(argv[1]);
 
+    /*for (const auto& entry : fs::directory_iterator("../instances/challenge_instances_cgshop25")) {
+        if (entry.is_regular_file() && entry.path().extension() == ".json") {
+            Problem *problem = new Problem("../instances/challenge_instances_cgshop25/" + entry.path().filename().string());
+            build_quad_mesh_gmsh(problem);
+            //std::cout << entry.path().filename().string() << std::endl;
+        }
+    }*/
+
     //* Quad Mesh
-    build_quad_mesh_gmsh(problem);
+    //build_quad_mesh_gmsh(problem);
+    //build_quad_mesh_medians(problem);
     
     //* Custom Delaunay refinement
     //refine(problem);
 
     //* Step by step CGAL refinement
     //step_by_step_mesh(problem);
+    //refine(problem);
+    //classic_delaunay_refinement(problem);
+
 
     //* Just testing optimization
     /*Solver* solver = new Mesh();

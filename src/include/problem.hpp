@@ -10,6 +10,11 @@
 #include <CGAL/Polygon_2.h>
 #include <CGAL/convex_hull_2.h>
 
+#define BLUE    "\033[34m"
+#define GREEN   "\033[32m"
+#define RED     "\033[31m" 
+#define RESET   "\033[0m"
+
 using json = nlohmann::json;
 typedef CGAL::Exact_predicates_exact_constructions_kernel K;
 typedef CGAL::Exact_predicates_inexact_constructions_kernel K_i;
@@ -38,6 +43,9 @@ private:
 
     std::vector<Polygon> triangulation;
 
+    Problem* best_mesh;
+    int num_obtuse;
+
 public:
     Problem(std::string file_name);
     //Problem(char *file_name);
@@ -47,6 +55,7 @@ public:
         points = problem->points;
         boundary = problem->boundary;
         constraints = problem->constraints;
+        num_obtuse = -1;
     }
 
     std::string get_name() { return name; };
@@ -58,10 +67,17 @@ public:
 
     std::vector<Point> get_steiner() { return steiner; };
     void add_steiner(Point s) { steiner.push_back(s); };
+    void update_steiner(Point s, Point new_s);
 
     std::vector<Polygon> get_triangulation(){return triangulation; };
     void set_triangulation(std::vector<Polygon> t){triangulation = t; };
     void add_triangle(Polygon triangle) { triangulation.push_back(triangle); };
+
+    void set_num_obtuse(int num) { num_obtuse = num; };
+    int get_num_obtuse() { return num_obtuse; };
+
+    void set_best_mesh(Problem* result) { best_mesh = result; };
+    Problem* set_best_mesh() { return best_mesh; };
 
     void clear_solution() { triangulation.clear(); steiner.clear(); };
 
@@ -70,6 +86,7 @@ public:
 
     void load_solution();
     void visualize_solution();
+    void save_intermidiate_result();
 
     template <typename CDT>
     CDT generate_CDT() {
@@ -133,3 +150,4 @@ double squared_distance(Point& a, Point& b);
 double distance(Point& a, Point& b);
 
 void to_IPE(std::string path, std::vector<Point> points, std::vector<Segment> constraints, std::vector<Segment> newConstraints, std::vector<Point> boundary, std::vector<Point> steiner, std::vector<Segment> triangulation, std::vector<Polygon> obtuseTriangles);
+void to_SVG(std::string path, std::vector<Point> points, std::vector<Segment> constraints, Polygon boundary, std::vector<Point> steiner, std::vector<Polygon> triangles);

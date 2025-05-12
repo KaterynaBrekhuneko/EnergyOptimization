@@ -1,4 +1,5 @@
 #include "quad_mesher.hpp"
+#include "quad_optimization.hpp"
 
 #include <CGAL/Constrained_Delaunay_triangulation_2.h>
 #include <CGAL/Delaunay_mesher_2.h>
@@ -8,6 +9,9 @@
 #include <CGAL/intersections.h>
 #include <vector>
 #include <gmsh.h>
+
+#include <fstream>
+#include <algorithm>
 
 typedef CGAL::Delaunay_mesh_vertex_base_2<K> Vb;
 typedef CGAL::Delaunay_mesh_face_base_2<K> Fb;
@@ -104,13 +108,88 @@ void build_quad_mesh_medians(Problem* problem){
     to_IPE_quad("../solutions/ipe/QUAD-" + problem->get_name() + ".ipe", problem->get_points(), problem->get_constraints(), problem->get_boundary(), {}, quads);
 }
 
-std::vector<Polygon> convert_quad_mesh(){
+// GMSH Quad mesh---------------------------------------------------------------------------------------------
+
+double get_sq_length_of_shortest_edge(Polygon& boundary){
+    double min_length = DBL_MAX;
+    for(int i = 0; i<boundary.size(); i++){
+        Point a = boundary[i];
+        Point b = boundary[(i+1)%boundary.size()];
+
+        double length = CGAL::to_double(CGAL::squared_distance(a, b));
+        if(length < min_length){
+            min_length = length;
+        }
+    }
+    return min_length;
+}
+
+double get_index_of_longest_edge(Polygon& boundary){
+    double max_length = 0;
+    int index;
+    for(int i = 0; i<boundary.size(); i++){
+        Point a = boundary[i];
+        Point b = boundary[(i+1)%boundary.size()];
+
+        double length = CGAL::to_double(CGAL::squared_distance(a, b));
+        if(length > max_length){
+            max_length = length;
+            index = i;
+        }
+    }
+    return index;
+}
+
+std::tuple<Point, int> calculate_additional_point(Problem* problem){
+    Polygon boundary = problem->get_boundary();
+
+    double min_length = get_sq_length_of_shortest_edge(boundary);
+
+    int i = get_index_of_longest_edge(boundary);
+
+    Point a = boundary[i];
+    Point b = boundary[(i+1)%boundary.size()];
+
+    // Check whether the shortest edge is the last boundary edge
+    /*Point a = boundary[boundary.size() - 1];
+    Point b = boundary[0];
+    if((std::abs(CGAL::to_double(CGAL::squared_distance(a, b)) - min_length)) < 1e-10){
+        a = boundary[0];
+        b = boundary[1];
+        std::cout << RED << "Added point is on the first boundary Segment!" << RESET << std::endl;
+    }*/
+
+    min_length = std::sqrt(min_length);
+
+    Vector ab = a - b;
+    double ab_len = std::sqrt(CGAL::to_double(ab.squared_length()));
+    double scale = min_length / ab_len;
+    FT exact_scale(scale);
+    Vector direction = ab * exact_scale;
+    Point c = a - direction;
+
+    Line line(a, b);
+    Point projected_point = line.projection(c);
+    return {projected_point, i};
+}
+
+std::tuple<std::vector<Polygon>, Eigen::MatrixXd, Eigen::MatrixXi, Eigen::VectorXi, Eigen::MatrixXd>
+convert_quad_mesh(Problem* problem){
+
     std::vector<Polygon> quads;
+    // Init structures for optimization
+    Eigen::MatrixXd V;
+    Eigen::MatrixXi F;
+    Eigen::VectorXi B(problem->get_points().size());
+    Eigen::MatrixXd B_VAR(problem->get_points().size(), 2);
+
     try {
         std::vector<std::size_t> nodeTags;
         std::vector<double> coords;
         std::vector<double> paramCoords;
         gmsh::model::mesh::getNodes(nodeTags, coords, paramCoords);
+
+        V.resize(nodeTags.size(), 2);
 
         std::unordered_map<std::size_t, std::array<double, 3>> nodeIdToCoord;
         for (std::size_t i = 0; i < nodeTags.size(); ++i) {
@@ -119,6 +198,13 @@ std::vector<Polygon> convert_quad_mesh(){
                 coords[3 * i + 1],
                 coords[3 * i + 2]
             };
+            V(i, 0) = coords[3 * i + 0];
+            V(i, 1) = coords[3 * i + 1];
+            if(i < problem->get_points().size()){
+                B(i) = i;
+                B_VAR(i, 0) = coords[3 * i + 0];
+                B_VAR(i, 1) = coords[3 * i + 1];
+            }
         }
 
         // STEP 2: Loop over all 2D entities
@@ -134,7 +220,6 @@ std::vector<Polygon> convert_quad_mesh(){
 
             for (std::size_t i = 0; i < elementTypes.size(); ++i) {
                 int elementType = elementTypes[i];
-
                 std::string name;
                 int dimDummy;
                 int order;
@@ -146,20 +231,28 @@ std::vector<Polygon> convert_quad_mesh(){
                     elementType, name, dimDummy, order, numNodesPerElem, dummyCoords, numPrimaryNodes
                 );
 
-                std::cout << "Element type: " << name << " (nodes per face: " << numNodesPerElem << ")\n";
+                //std::cout << "Element type: " << name << " (nodes per face: " << numNodesPerElem << ")\n";
 
                 const auto &nodeListFlat = nodeTagsPerElement[i];
+
+                // Init faces for optimization
+                int totalFaceCount = nodeListFlat.size();
+                F.resize(totalFaceCount/4, 4);
+
                 for (std::size_t j = 0; j < nodeListFlat.size(); j += numNodesPerElem) {
-                    std::cout << "Face:\n";
+                    //std::cout << "Face:\n";
 
                     Polygon q;
                     for (int k = 0; k < numNodesPerElem; ++k) {
                         std::size_t nodeId = nodeListFlat[j + k];
                         const auto &xyz = nodeIdToCoord[nodeId];
-                        std::cout << "  Vertex " << nodeId << ": ("<< xyz[0] << ", " << xyz[1] << ", " << xyz[2] << ")\n";
+                        //std::cout << "  Vertex " << nodeId << ": ("<< xyz[0] << ", " << xyz[1] << ", " << xyz[2] << ")\n";
 
                         Point p(xyz[0], xyz[1]);
                         q.push_back(p);
+
+                        //std::cout << "  j: " << j << " k: " << k << std::endl;
+                        //F(j/4,k) = nodeId - 1;
                     }
                     quads.push_back(q);
                 }
@@ -171,59 +264,98 @@ std::vector<Polygon> convert_quad_mesh(){
     }
     gmsh::finalize();
 
-    return quads;
+    return {quads, V, F, B, B_VAR};
 }
 
 void build_quad_mesh_gmsh(Problem* problem){
-    gmsh::initialize();
-    gmsh::model::add(problem->get_name());
+    try{
+        gmsh::initialize();
+        gmsh::model::add(problem->get_name());
 
-    double lc = get_sizing_quad(problem)*2;  // uniform mesh size
+        double lc = get_sizing_quad(problem);  // uniform mesh size
 
-    auto points = problem->get_points();
-    auto boundary_indices = problem->get_boundary_indices();
+        auto points = problem->get_points();
+        auto boundary = problem->get_boundary();
+        auto constraints = problem->get_constraints();
+        auto boundary_indices = problem->get_boundary_indices();
+        auto constraints_indices = problem->get_constraints_indices();
 
-    Eigen::MatrixXd V(points.size(), 2);
-    for (int i = 0; i < points.size(); ++i) {
-        V(i, 0) = CGAL::to_double(points[i].x()); 
-        V(i, 1) = CGAL::to_double(points[i].y()); 
+        Eigen::MatrixXd VARS(points.size(), 2);
+        for (int i = 0; i < points.size(); ++i) {
+            VARS(i, 0) = CGAL::to_double(points[i].x()); 
+            VARS(i, 1) = CGAL::to_double(points[i].y()); 
+        }
+
+        for(int i = 0; i < points.size(); ++i){
+            int p = gmsh::model::geo::addPoint(VARS(i, 0), VARS(i, 1), 0, lc);
+        }
+
+        // Add additional point to make the num of triangles in the triangle mesh even
+        auto [c, index] = calculate_additional_point(problem);
+        //std::cout << RED << "final point: " << c.x() << " " << c.y() << RESET << std::endl;
+        int p = gmsh::model::geo::addPoint(CGAL::to_double(c.x()), CGAL::to_double(c.y()), 0, lc);
+        //boundary_indices.push_back(p-1);
+        boundary_indices.insert(boundary_indices.begin() + index + 1, p-1);
+        problem->add_steiner(c);
+
+        //to_IPE_quad("../solutions/ipe/OPTIMIZED_QUAD-" + problem->get_name() + ".ipe", problem->get_points(), problem->get_constraints(), problem->get_boundary(), problem->get_steiner(), {});
+
+        std::vector<int> boundary_segments;
+        for(int i = 0; i < boundary_indices.size(); i++){
+            int p1 = boundary_indices[i] + 1;
+            int p2 = boundary_indices[(i+1)%boundary_indices.size()] + 1;
+            int l = gmsh::model::geo::addLine(p1, p2);
+            boundary_segments.push_back(l);
+            //std::cout << GREEN << p1 << " " << p2 << " | " << RESET;
+        }
+        //std::cout << std::endl;
+        int cl = gmsh::model::geo::addCurveLoop(boundary_segments);
+        int pl = gmsh::model::geo::addPlaneSurface({cl});
+
+        gmsh::model::geo::synchronize();
+
+        // Embed input points into the mesh
+        for(int i = 0; i < points.size(); ++i){
+            gmsh::model::mesh::embed(0, {i+1}, 2, pl);
+        }
+
+        // embed constraints into the mesh
+        std::vector<int> constraints_lines;
+        for(int i = 0; i<constraints.size(); i++){
+            auto [i1, i2] = constraints_indices[i];
+            int constraint_line = gmsh::model::geo::addLine(i1+1, i2+1);
+            constraints_lines.push_back(constraint_line);
+        }
+        gmsh::model::geo::synchronize();
+        for(int i = 0; i<constraints.size(); i++){
+            gmsh::model::mesh::embed(1, {constraints_lines[i]}, 2, pl);
+        }
+
+        gmsh::option::setNumber("Mesh.Optimize", 0);
+        gmsh::option::setNumber("Mesh.OptimizeNetgen", 0);
+        gmsh::option::setNumber("Mesh.Smoothing", 0);
+
+        gmsh::option::setNumber("Mesh.RecombinationAlgorithm", 1);
+        gmsh::model::mesh::setRecombine(2, pl);
+
+        gmsh::model::mesh::generate(2);
+
+        // Print result to result.txt
+        add_text_and_overwrite(problem, "../result.txt");
+        
+        auto [quads, V, F, B, B_VAR] = convert_quad_mesh(problem);
+
+        //std::cout << "\nF\n" << F << std::endl;
+        //std::cout << "\nnum quads: " << quads.size() << " num rows in F: " << F.rows() << std::endl;
+
+        //to_IPE_quad("../solutions/ipe/QUAD-" + problem->get_name() + ".ipe", problem->get_points(), problem->get_constraints(), problem->get_boundary(), {}, quads);
+        to_SVG_quad("../quad_meshes/QUAD-" + problem->get_name() + ".svg", problem->get_points(), problem->get_constraints(), problem->get_boundary(), {}, quads);
+
+        //auto optimized_quads = optimize_TinyAD_quad(problem, V, F, B, B_VAR);
+        //to_IPE_quad("../solutions/ipe/OPTIMIZED_QUAD-" + problem->get_name() + ".ipe", problem->get_points(), problem->get_constraints(), problem->get_boundary(), {}, optimized_quads);
+    } catch (const std::exception &e) {
+        std::cerr << GREEN << "Could not mesh instance " << problem->get_name() << RESET << std::endl;
     }
-
-    for(int i = 0; i < points.size(); ++i){
-        int p = gmsh::model::geo::addPoint(V(i, 0), V(i, 1), 0, lc);
-    }
-
-    // Add additional point to make the num of triangles in the triangle mesch even
-    double additional_x = 0;
-    double additional_y = 982072;
-    int p = gmsh::model::geo::addPoint(additional_x, additional_y, 0, lc);
-    boundary_indices.push_back(p-1);
-
-    std::vector<int> boundary;
-    for(int i = 0; i < boundary_indices.size(); ++i){
-        int p1 = boundary_indices[i] + 1;
-        int p2 = boundary_indices[(i+1)%boundary_indices.size()] + 1;
-        int l = gmsh::model::geo::addLine(p1, p2);
-        boundary.push_back(l);
-    }
-    int cl = gmsh::model::geo::addCurveLoop(boundary);
-    int pl = gmsh::model::geo::addPlaneSurface({cl});
-
-    gmsh::model::geo::synchronize();
-
-    gmsh::option::setNumber("Mesh.Optimize", 0);
-    gmsh::option::setNumber("Mesh.OptimizeNetgen", 0);
-    gmsh::option::setNumber("Mesh.Smoothing", 0);
-
-    gmsh::option::setNumber("Mesh.RecombinationAlgorithm", 1);
-    gmsh::model::mesh::setRecombine(2, pl);
-
-    gmsh::model::mesh::generate(2);
-    gmsh::write("aaa.msh");
-    
-    std::vector<Polygon> quads = convert_quad_mesh();
-    to_IPE_quad("../solutions/ipe/QUAD-" + problem->get_name() + ".ipe", problem->get_points(), problem->get_constraints(), problem->get_boundary(), {}, quads);
-
 }
 
 void to_IPE_quad(std::string path, std::vector<Point> points, std::vector<Segment> constraints, Polygon boundary, std::vector<Point> steiner, std::vector<Polygon> quads){
@@ -357,4 +489,139 @@ void to_IPE_quad(std::string path, std::vector<Point> points, std::vector<Segmen
     if (systemRet == -1){
         printf("Could not open IPE");
     }
+}
+
+void to_SVG_quad(std::string path, std::vector<Point> points, std::vector<Segment> constraints, Polygon boundary, std::vector<Point> steiner, std::vector<Polygon> quads) {
+    std::ofstream o(path);
+    
+    // Compute bounding box
+    auto xmin = boundary[0].x();
+    auto xmax = boundary[0].x();
+    auto ymin = boundary[0].y();
+    auto ymax = boundary[0].y();
+
+    for (Point p : boundary) {
+        xmin = std::min(xmin, p.x());
+        xmax = std::max(xmax, p.x());
+        ymin = std::min(ymin, p.y());
+        ymax = std::max(ymax, p.y());
+    }
+    auto scale = std::max(xmax - xmin, ymax - ymin);
+
+    double width = 600;
+    double height = 600;
+
+    o << "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>\n";
+    o << "<svg xmlns=\"http://www.w3.org/2000/svg\" version=\"1.1\" width=\"" << width << "\" height=\"" << height << "\">\n";
+
+    // Add a white background rectangle
+    o << "<rect width=\"100%\" height=\"100%\" fill=\"white\" />\n";
+
+    // Helper lambda to scale and shift points
+    auto transform_x = [&](double x) { return ((x - xmin) * 560.0 / scale) + 16.0; };
+    auto transform_y = [&](double y) { return height - (((y - ymin) * 560.0 / scale) + 16.0); }; // invert Y axis
+
+    // Draw quads (black edges)
+    for (auto poly : quads) {
+        for (std::size_t i = 0; i < poly.size(); ++i) {
+            const Point& a = poly[i];
+            const Point& b = poly[(i + 1) % poly.size()];
+
+            o << "<line x1=\"" << transform_x(CGAL::to_double(a.x())) << "\" y1=\"" << transform_y(CGAL::to_double(a.y())) 
+              << "\" x2=\"" << transform_x(CGAL::to_double(b.x())) << "\" y2=\"" << transform_y(CGAL::to_double(b.y())) 
+              << "\" stroke=\"black\" stroke-width=\"1\" />\n";
+        }
+    }
+
+    // Draw boundary (blue, thicker)
+    for (std::size_t i = 0; i < boundary.size(); ++i) {
+        Point a = boundary[i];
+        Point b = boundary[(i + 1) % boundary.size()];
+
+        o << "<line x1=\"" << transform_x(CGAL::to_double(a.x())) << "\" y1=\"" << transform_y(CGAL::to_double(a.y())) 
+          << "\" x2=\"" << transform_x(CGAL::to_double(b.x())) << "\" y2=\"" << transform_y(CGAL::to_double(b.y())) 
+          << "\" stroke=\"blue\" stroke-width=\"3\" />\n";
+    }
+
+    // Draw constraint edges (red, thicker)
+    for (Segment v : constraints) {
+        Point a = v.start();
+        Point b = v.end();
+
+        o << "<line x1=\"" << transform_x(CGAL::to_double(a.x())) << "\" y1=\"" << transform_y(CGAL::to_double(a.y())) 
+          << "\" x2=\"" << transform_x(CGAL::to_double(b.x())) << "\" y2=\"" << transform_y(CGAL::to_double(b.y())) 
+          << "\" stroke=\"red\" stroke-width=\"2\" />\n";
+    }
+
+    // Draw points (black disks)
+    for (Point a : points) {
+        o << "<circle cx=\"" << transform_x(CGAL::to_double(a.x())) << "\" cy=\"" << transform_y(CGAL::to_double(a.y())) 
+          << "\" r=\"2\" fill=\"black\" />\n";
+    }
+
+    // Draw Steiner points (red disks)
+    for (Point a : steiner) {
+        o << "<circle cx=\"" << transform_x(CGAL::to_double(a.x())) << "\" cy=\"" << transform_y(CGAL::to_double(a.y())) 
+          << "\" r=\"2\" fill=\"red\" />\n";
+    }
+
+    o << "</svg>\n";
+    o.close();
+}
+
+void add_text_and_overwrite(Problem* problem, const std::string& path) {
+    // Step 1: Read the existing content
+    std::ifstream input_file(path);
+    std::stringstream buffer;
+
+    if (input_file.is_open()) {
+        buffer << input_file.rdbuf(); // read entire file into buffer
+        input_file.close();
+    } // if file does not exist, we just continue with empty buffer
+
+    // Step 2: Modify the content
+    buffer << "\n" + problem->get_name() + "\n"; // append new text
+
+    // Step 3: Loop over all 2D entities
+    std::vector<std::pair<int, int>> entities;
+    gmsh::model::getEntities(entities, 2); // dimension 2 = surface elements
+
+    for (const auto &[dim, tag] : entities) {
+        std::vector<int> elementTypes;
+        std::vector<std::vector<std::size_t>> elementTags;
+        std::vector<std::vector<std::size_t>> nodeTagsPerElement;
+
+        gmsh::model::mesh::getElements(elementTypes, elementTags, nodeTagsPerElement, dim, tag);
+
+        for (std::size_t i = 0; i < elementTypes.size(); ++i) {
+            int elementType = elementTypes[i];
+            std::string name;
+            int dimDummy;
+            int order;
+            int numNodesPerElem;
+            std::vector<double> dummyCoords;
+            int numPrimaryNodes;
+
+            gmsh::model::mesh::getElementProperties(
+                elementType, name, dimDummy, order, numNodesPerElem, dummyCoords, numPrimaryNodes
+            );
+
+            //std::cout << "Element type: " << name << " (nodes per face: " << numNodesPerElem << ")\n";
+            const auto &nodeListFlat = nodeTagsPerElement[i];
+
+            // Init faces for optimization
+            int totalFaceCount = nodeListFlat.size()/4;
+
+            buffer << name << ": " << totalFaceCount << "\n"; 
+        }
+    }
+
+    // Step 4: Write back (overwrite)
+    std::ofstream output_file(path, std::ios::out | std::ios::trunc); // trunc = overwrite
+    if (!output_file.is_open()) {
+        throw std::runtime_error("Failed to open file for writing: " + path);
+    }
+
+    output_file << buffer.str(); // write the updated content
+    output_file.close();
 }

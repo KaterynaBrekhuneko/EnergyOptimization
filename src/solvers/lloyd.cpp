@@ -12,10 +12,11 @@ typedef CGAL::Triangulation_data_structure_2<Vb, Fb> Tds;
 typedef CGAL::Constrained_Delaunay_triangulation_2<K, Tds> CDT;
 typedef CDT::Vertex_handle Vertex_handle;
 typedef CDT::Face_handle Face_handle;
+typedef CDT::Vertex_circulator Vertex_circulator;
 typedef CGAL::Delaunay_mesh_size_criteria_2<CDT> Criteria;
 typedef CGAL::Delaunay_mesher_2<CDT, Criteria> Mesher;
 
-bool is_on_constraint(const Point steiner, Problem* problem){
+bool is_on_constraint_lloyd(const Point& steiner, Problem* problem){
     std::vector<Segment> constraints = problem->get_constraints();
     for(Segment c : constraints){
         if(c.has_on(steiner)){
@@ -26,55 +27,18 @@ bool is_on_constraint(const Point steiner, Problem* problem){
     return false;
 }
 
-Point compute_voronoi_centroid(const Vertex_handle& v, CDT& cdt) {
-    std::vector<Point> neighbors;
-    CDT::Vertex_circulator vc = cdt.incident_vertices(v);
-    if (vc != 0) {
-        do {
-            if (!cdt.is_infinite(vc)) {
-                neighbors.push_back(vc->point());
-            }
-        } while (++vc != cdt.incident_vertices(v));
-    }
-
-    if (neighbors.empty()) return v->point();
-
-    double sum_x = 0, sum_y = 0;
-    for (const auto& neighbor : neighbors) {
-        sum_x += CGAL::to_double(neighbor.x());
-        sum_y += CGAL::to_double(neighbor.y());
-    }
-
-    return Point(sum_x / neighbors.size(), sum_y / neighbors.size());
-}
-
-
-void iterate_lloyd(CDT& cdt, Problem *problem, std::vector<Segment>& constraints, int iterations) {
-    std::vector<Point> points = problem->get_points();
-    Polygon boundary = problem->get_boundary();
-
-    for (int iter = 0; iter < iterations; ++iter) {
-        std::vector<Point> new_positions;
-
-        for (auto v = cdt.finite_vertices_begin(); v != cdt.finite_vertices_end(); ++v) {
-            Point current = v->point();
-
-            if(std::find(points.begin(), points.end(), current) == points.end() && !boundary.has_on_boundary(current) && !is_on_constraint(current, problem)){
-                new_positions.push_back(compute_voronoi_centroid(v, cdt));
-            } else {
-                new_positions.push_back(v->point());
-            }
-
+bool is_on_boundary_lloyd(Point& p, Polygon& boundary){
+    double tolerance = 1e-12;
+    for (auto edge = boundary.edges_begin(); edge != boundary.edges_end(); ++edge) {
+        double distance = CGAL::to_double(CGAL::squared_distance(*edge, p));
+        if (distance <= tolerance || edge->source() == p || edge->target() == p) {
+            return true;
         }
-
-        // Clear and reinsert points while preserving constraints
-        cdt.clear();
-        cdt.insert(new_positions.begin(), new_positions.end());
-        cdt.insert_constraints(constraints.begin(), constraints.end());
     }
+    return false;
 }
 
-SolveStatus Lloyd::solve(Problem *problem) {
+void Lloyd::solve(Problem *problem) {
     std::vector<Point> points = problem->get_points();
     std::set<Point> point_set(points.begin(), points.end());
     std::vector<Point> boundary = problem->get_boundary().vertices();
@@ -105,7 +69,7 @@ SolveStatus Lloyd::solve(Problem *problem) {
 
     problem->visualize_solution();
 
-    iterate_lloyd(cdt, problem, constraints, 10);
+    iterate_lloyd<CDT, Vertex_handle, Vertex_circulator>(cdt, problem, constraints, 10);
 
     problem->clear_solution();
 
@@ -119,5 +83,5 @@ SolveStatus Lloyd::solve(Problem *problem) {
 
     problem->visualize_solution();
     
-    return SolveStatus::Feasible;
+    //return SolveStatus::Feasible;
 }

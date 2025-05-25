@@ -4,6 +4,7 @@ debug
 solutions
 .vscode
 libs/TinyAD
+python/env
 
 *.fish
 *.svg

@@ -631,9 +631,136 @@ Point calculate_gradient_refined_sigmoid(Point& s, std::vector<Polygon>& triangl
     return Point(dx,dy);
 }
 
+Point calculate_gradient_sigmoid_equilateral(Point& s, std::vector<Polygon>& triangles){
+    double dx = 0.0;
+    double dy = 0.0;
+
+    double k = 1;
+
+    for(const Polygon& triangle : triangles){
+
+        int index = find_point_index(s, triangle, false);
+
+        Point a = triangle.vertex((index + 1) % 3);
+        Point b = triangle.vertex((index + 2) % 3);
+
+        double ab2 = CGAL::to_double(CGAL::squared_distance(a, b));
+        double sa2 = CGAL::to_double(CGAL::squared_distance(s, a));
+        double sb2 = CGAL::to_double(CGAL::squared_distance(s, b));;
+
+        double w1 = (ab2 + sa2 - sb2)/(2*std::sqrt(ab2)*std::sqrt(sa2)); // cos alpha
+        double w2 = (ab2 + sb2 - sa2)/(2*std::sqrt(ab2)*std::sqrt(sb2)); // cos beta
+        double w3 = (sa2 + sb2 - ab2)/(2*std::sqrt(sa2)*std::sqrt(sb2)); // cos gamma
+
+        double e1 = std::exp(-k*(acos(w1) - M_PI/3));
+        double e2 = std::exp(-k*(acos(w2) - M_PI/3));
+        double e3 = std::exp(-k*(acos(w3) - M_PI/3));
+
+        // Calculate d/dx
+        double nx1 = 4*CGAL::to_double(b.x() - a.x())*std::sqrt(sa2)*std::sqrt(ab2) - (sa2 + ab2 - sb2)*std::sqrt(ab2)*2*CGAL::to_double(s.x() - a.x())/std::sqrt(sa2);
+        double nx2 = 4*CGAL::to_double(a.x() - b.x())*std::sqrt(sb2)*std::sqrt(ab2) - (sb2 + ab2 - sa2)*std::sqrt(ab2)*2*CGAL::to_double(s.x() - b.x())/std::sqrt(sb2);
+        double nx3 = 4*CGAL::to_double(2*s.x() - a.x() - b.x())*std::sqrt(sa2)*std::sqrt(sb2) - (sa2 + sb2 - ab2)*(std::sqrt(sb2)*2*CGAL::to_double(s.x() - a.x())/std::sqrt(sa2) + std::sqrt(sa2)*2*CGAL::to_double(s.x() - b.x())/std::sqrt(sb2));
+
+        dx += ((e1*k)/((1+e1)*(1+e1)))*(-1/(std::sqrt(1-w1*w1)))*(nx1/(4*ab2*sa2));
+        dx += ((e2*k)/((1+e2)*(1+e2)))*(-1/(std::sqrt(1-w2*w2)))*(nx2/(4*ab2*sb2));
+        dx += ((e3*k)/((1+e3)*(1+e3)))*(-1/(std::sqrt(1-w3*w3)))*(nx3/(4*sa2*sb2));
+
+        // Calculate d/dx
+        double ny1 = 4*CGAL::to_double(b.y() - a.y())*std::sqrt(sa2)*std::sqrt(ab2) - (sa2 + ab2 - sb2)*std::sqrt(ab2)*2*CGAL::to_double(s.y() - a.y())/std::sqrt(sa2);
+        double ny2 = 4*CGAL::to_double(a.y() - b.y())*std::sqrt(sb2)*std::sqrt(ab2) - (sb2 + ab2 - sa2)*std::sqrt(ab2)*2*CGAL::to_double(s.y() - b.y())/std::sqrt(sb2);
+        double ny3 = 4*CGAL::to_double(2*s.y() - a.y() - b.y())*std::sqrt(sa2)*std::sqrt(sb2) - (sa2 + sb2 - ab2)*(std::sqrt(sb2)*2*CGAL::to_double(s.y() - a.y())/std::sqrt(sa2) + std::sqrt(sa2)*2*CGAL::to_double(s.y() - b.y())/std::sqrt(sb2));
+
+        dy += ((e1*k)/((1+e1)*(1+e1)))*(-1/(std::sqrt(1-w1*w1)))*(ny1/(4*ab2*sa2));
+        dy += ((e2*k)/((1+e2)*(1+e2)))*(-1/(std::sqrt(1-w2*w2)))*(ny2/(4*ab2*sb2));
+        dy += ((e3*k)/((1+e3)*(1+e3)))*(-1/(std::sqrt(1-w3*w3)))*(ny3/(4*sa2*sb2));
+    }
+
+    return Point(dx,dy);
+}
+
+Point calculate_gradient_refined_sigmoid_equilateral(Point& s, std::vector<Polygon>& triangles){
+    double scale = 1;
+    double m = 0.1;
+    double k_s = 1;
+
+    Point gradSigmoid = calculate_gradient_sigmoid(s, triangles);
+    double dx = scale*CGAL::to_double(gradSigmoid.x());
+    double dy = scale*CGAL::to_double(gradSigmoid.y());
+
+    for(const Polygon& triangle : triangles){
+        int index = find_point_index(s, triangle, false);
+
+        Point a = triangle.vertex((index + 1) % 3);
+        Point b = triangle.vertex((index + 2) % 3);
+
+        double ab2 = CGAL::to_double(CGAL::squared_distance(a, b));
+        double sa2 = CGAL::to_double(CGAL::squared_distance(s, a));
+        double sb2 = CGAL::to_double(CGAL::squared_distance(s, b));
+
+        double w1 = (ab2 + sa2 - sb2)/(2*std::sqrt(ab2)*std::sqrt(sa2)); // cos alpha
+        double w2 = (ab2 + sb2 - sa2)/(2*std::sqrt(ab2)*std::sqrt(sb2)); // cos beta
+        double w3 = (sa2 + sb2 - ab2)/(2*std::sqrt(sa2)*std::sqrt(sb2)); // cos gamma
+
+        double e1 = std::exp(-k_s*(acos(w1) - M_PI/3));
+        double e2 = std::exp(-k_s*(acos(w2) - M_PI/3));
+        double e3 = std::exp(-k_s*(acos(w3) - M_PI/3));
+
+        // Calculate d/dx
+        double nx1 = 4*CGAL::to_double(b.x() - a.x())*std::sqrt(sa2)*std::sqrt(ab2) - (sa2 + ab2 - sb2)*std::sqrt(ab2)*2*CGAL::to_double(s.x() - a.x())/std::sqrt(sa2);
+        double nx2 = 4*CGAL::to_double(a.x() - b.x())*std::sqrt(sb2)*std::sqrt(ab2) - (sb2 + ab2 - sa2)*std::sqrt(ab2)*2*CGAL::to_double(s.x() - b.x())/std::sqrt(sb2);
+        double nx3 = 4*CGAL::to_double(2*s.x() - a.x() - b.x())*std::sqrt(sa2)*std::sqrt(sb2) - (sa2 + sb2 - ab2)*(std::sqrt(sb2)*2*CGAL::to_double(s.x() - a.x())/std::sqrt(sa2) + std::sqrt(sa2)*2*CGAL::to_double(s.x() - b.x())/std::sqrt(sb2));
+
+        double mx1 = (-1/(std::sqrt(1-w1*w1)))*(nx1/(4*ab2*sa2));
+        double mx2 = (-1/(std::sqrt(1-w2*w2)))*(nx2/(4*ab2*sb2));
+        double mx3 = (-1/(std::sqrt(1-w3*w3)))*(nx3/(4*sa2*sb2));
+
+        dx += (m*(1+e1)*mx1 + m*(acos(w1) - M_PI/3)*e1*k_s*mx1)/((1+e1)*(1+e1));
+        dx += (m*(1+e2)*mx2 + m*(acos(w2) - M_PI/3)*e2*k_s*mx2)/((1+e2)*(1+e2));
+        dx += (m*(1+e3)*mx3 + m*(acos(w3) - M_PI/3)*e3*k_s*mx3)/((1+e3)*(1+e3));
+
+        // Calculate d/dx
+        double ny1 = 4*CGAL::to_double(b.y() - a.y())*std::sqrt(sa2)*std::sqrt(ab2) - (sa2 + ab2 - sb2)*std::sqrt(ab2)*2*CGAL::to_double(s.y() - a.y())/std::sqrt(sa2);
+        double ny2 = 4*CGAL::to_double(a.y() - b.y())*std::sqrt(sb2)*std::sqrt(ab2) - (sb2 + ab2 - sa2)*std::sqrt(ab2)*2*CGAL::to_double(s.y() - b.y())/std::sqrt(sb2);
+        double ny3 = 4*CGAL::to_double(2*s.y() - a.y() - b.y())*std::sqrt(sa2)*std::sqrt(sb2) - (sa2 + sb2 - ab2)*(std::sqrt(sb2)*2*CGAL::to_double(s.y() - a.y())/std::sqrt(sa2) + std::sqrt(sa2)*2*CGAL::to_double(s.y() - b.y())/std::sqrt(sb2));
+
+        double my1 = (-1/(std::sqrt(1-w1*w1)))*(ny1/(4*ab2*sa2));
+        double my2 = (-1/(std::sqrt(1-w2*w2)))*(ny2/(4*ab2*sb2));
+        double my3 = (-1/(std::sqrt(1-w3*w3)))*(ny3/(4*sa2*sb2));
+
+        dy += (m*(1+e1)*my1 + m*(acos(w1) - M_PI/3)*e1*k_s*my1)/((1+e1)*(1+e1));
+        dy += (m*(1+e2)*my2 + m*(acos(w2) - M_PI/3)*e2*k_s*my2)/((1+e2)*(1+e2));
+        dy += (m*(1+e3)*my3 + m*(acos(w3) - M_PI/3)*e3*k_s*my3)/((1+e3)*(1+e3));
+    }
+
+    return Point(dx,dy);
+}
+
+double get_step_size(Problem* problem){
+    Polygon polygon = problem->get_boundary();
+    
+    auto bbox = polygon.bbox();
+    double max_size = std::sqrt(pow(bbox.x_span(),2) + pow(bbox.y_span(),2)) * 0.1;
+
+    int count = 0;
+
+    while (max_size >= 10.0) {
+        max_size /= 10.0;
+        count++;
+    }
+    while (max_size < 1.0) {
+        max_size *= 10.0;
+        count--;
+    }
+
+    double step_size = std::pow(10, count);
+    return step_size;
+}
+
 Point locally_optimize_position(Point steiner, std::vector<Polygon>& triangles, Problem *problem){
 
-    double step_size = 1e-1;
+    double step_size = 1e6;
+    //double step_size = get_step_size(problem);
+    //std::cout << "Step size: " << step_size << std::endl;
     //double step_size = compute_step_size(problem);
     //std::cout << "Computed step size: " << step_size << std::endl;
 
@@ -663,7 +790,7 @@ Point locally_optimize_position(Point steiner, std::vector<Polygon>& triangles, 
 
         } else {*/
         if((is_interior_vertex_with_tolerance(s, problem->get_boundary())) && !is_on_constraint_with_tolerance(s, problem, &constraint)){
-            Point gradient = calculate_gradient_refined_sigmoid(s, neighborhood);
+            Point gradient = calculate_gradient_equilateral(s, neighborhood);
 
             //std::cout << "gradient norm: " << norm(gradient) << std::endl;
             while(norm(gradient) > TOL && iteration < MAX_ITER){
@@ -686,7 +813,7 @@ Point locally_optimize_position(Point steiner, std::vector<Polygon>& triangles, 
                     //break;
                 }
 
-                gradient = calculate_gradient_refined_sigmoid(s, neighborhood);
+                gradient = calculate_gradient_equilateral(s, neighborhood);
 
                 iteration++;
             }

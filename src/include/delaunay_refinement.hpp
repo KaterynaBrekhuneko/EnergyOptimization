@@ -1,5 +1,6 @@
 #include "problem.hpp"
 #include "tinyAD_optimization.hpp"
+#include "mesh_statistics.hpp"
 
 void refine(Problem* problem);
 void step_by_step_mesh(Problem* problem);
@@ -13,3 +14,11 @@ std::pair<Point, bool> find_boundary_point(Problem* problem, Point& a, Point& b,
 bool point_within_segment(Point& a, Point& b, Point& p);
 
 void fix_boundary_refinement(Problem *problem);
+
+Mesh_Statistics uniform_mesh(Problem* problem);
+
+void mesh_equilateral_single(Problem* problem);
+void mesh_cgal(Problem* problem);
+Mesh_Statistics mesh_equilateral(Problem* problem);
+
+double mean_absolute_deviation(Problem* problem);

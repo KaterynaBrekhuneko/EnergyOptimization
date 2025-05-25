@@ -11,6 +11,49 @@
 
 #include "tinyAD_optimization.hpp"
 
+
+// Energy function: f(x) = (x-60)^2
+template <typename T>
+T angle_cost_equilateral( Problem* problem,
+        const Eigen::Vector2<T>& a,
+        const Eigen::Vector2<T>& b,
+        const Eigen::Vector2<T>& c)
+{
+    // Compute all three normalized triangle edge vectors
+    Eigen::Vector2<T> ab = (b - a).normalized();
+    Eigen::Vector2<T> bc = (c - b).normalized();
+    Eigen::Vector2<T> ca = (a - c).normalized();
+
+    // Compute cosine of all 3 angles (unsigned)
+    T cos_angle_a = (-ca).dot(ab);
+    T cos_angle_b = (-ab).dot(bc);
+    T cos_angle_c = (-bc).dot(ca);
+   
+    if(abs(cos_angle_a) >= 1){
+        //std::cout << "Cos out of range for Point a: " << a[0] << " " << a[1] << std::endl;
+        return (T)INFINITY;
+    }
+    if(abs(cos_angle_b) >= 1){
+        //std::cout << "Cos out of range for Point b: " << b[0] << " " << b[1] << std::endl;
+        return (T)INFINITY;
+    }
+    if(abs(cos_angle_c) >= 1){
+        //std::cout << "Cos out of range for Point c: " << c[0] << " " << c[1] << std::endl;
+        return (T)INFINITY;
+    }
+        
+    // Calculate and return the sigmoid term
+    T angle_a = acos(cos_angle_a);
+    T angle_b = acos(cos_angle_b);
+    T angle_c = acos(cos_angle_c);
+
+    T sq_a = (angle_a - M_PI/3)*(angle_a - M_PI/3);
+    T sq_b = (angle_b - M_PI/3)*(angle_b - M_PI/3);
+    T sq_c = (angle_c - M_PI/3)*(angle_c - M_PI/3);
+
+    return sq_a + sq_b + sq_c;
+}
+
 // Energy function: ln(1 + e^(x - π/2))
 template <typename T>
 T angle_cost_ln( Problem* problem,
@@ -46,6 +89,105 @@ T angle_cost_ln( Problem* problem,
     T ln_a = log(1+exp(angle_a - M_PI/2));
     T ln_b = log(1+exp(angle_b - M_PI/2));
     T ln_c = log(1+exp(angle_c - M_PI/2));
+
+    return ln_a + ln_b + ln_c;
+}
+
+// Energy function: ln(1 + e^(x - π/2))
+template <typename T>
+T angle_cost_ln_equilateral( Problem* problem,
+        const Eigen::Vector2<T>& a,
+        const Eigen::Vector2<T>& b,
+        const Eigen::Vector2<T>& c)
+{
+    // Compute all three normalized triangle edge vectors
+    Eigen::Vector2<T> ab = (b - a).normalized();
+    Eigen::Vector2<T> bc = (c - b).normalized();
+    Eigen::Vector2<T> ca = (a - c).normalized();
+
+    // Compute cosine of all 3 angles (unsigned)
+    T cos_angle_a = (-ca).dot(ab);
+    T cos_angle_b = (-ab).dot(bc);
+    T cos_angle_c = (-bc).dot(ca);
+   
+    if(abs(cos_angle_a) >= 1 || abs(cos_angle_b) >= 1 || abs(cos_angle_c) >= 1){
+        return (T)INFINITY;
+    }
+        
+    // Calculate and return the sigmoid term
+    T angle_a = acos(cos_angle_a);
+    T angle_b = acos(cos_angle_b);
+    T angle_c = acos(cos_angle_c);
+
+    T ln_a = -log(angle_a*(M_PI - angle_a));
+    T ln_b = -log(angle_b*(M_PI - angle_b));
+    T ln_c = -log(angle_c*(M_PI - angle_c));
+
+    return ln_a + ln_b + ln_c;
+}
+
+template <typename T>
+T angle_cost_sq_ln_equilateral( Problem* problem,
+        const Eigen::Vector2<T>& a,
+        const Eigen::Vector2<T>& b,
+        const Eigen::Vector2<T>& c)
+{
+    // Compute all three normalized triangle edge vectors
+    Eigen::Vector2<T> ab = (b - a).normalized();
+    Eigen::Vector2<T> bc = (c - b).normalized();
+    Eigen::Vector2<T> ca = (a - c).normalized();
+
+    // Compute cosine of all 3 angles (unsigned)
+    T cos_angle_a = (-ca).dot(ab);
+    T cos_angle_b = (-ab).dot(bc);
+    T cos_angle_c = (-bc).dot(ca);
+   
+    if(abs(cos_angle_a) >= 1 || abs(cos_angle_b) >= 1 || abs(cos_angle_c) >= 1){
+        return (T)INFINITY;
+    }
+        
+    // Calculate and return the sigmoid term
+    T angle_a = acos(cos_angle_a);
+    T angle_b = acos(cos_angle_b);
+    T angle_c = acos(cos_angle_c);
+
+    T ln_a = -log(angle_a*(M_PI - angle_a))+(angle_a - M_PI/3)*(angle_a - M_PI/3);
+    T ln_b = -log(angle_b*(M_PI - angle_b))+(angle_b - M_PI/3)*(angle_b - M_PI/3);;
+    T ln_c = -log(angle_c*(M_PI - angle_c))+(angle_c - M_PI/3)*(angle_c - M_PI/3);;
+
+    return ln_a + ln_b + ln_c;
+}
+
+template <typename T>
+T angle_cost_sq_sigmoid_equilateral( Problem* problem,
+        const Eigen::Vector2<T>& a,
+        const Eigen::Vector2<T>& b,
+        const Eigen::Vector2<T>& c)
+{
+    double k = 1;
+
+    // Compute all three normalized triangle edge vectors
+    Eigen::Vector2<T> ab = (b - a).normalized();
+    Eigen::Vector2<T> bc = (c - b).normalized();
+    Eigen::Vector2<T> ca = (a - c).normalized();
+
+    // Compute cosine of all 3 angles (unsigned)
+    T cos_angle_a = (-ca).dot(ab);
+    T cos_angle_b = (-ab).dot(bc);
+    T cos_angle_c = (-bc).dot(ca);
+   
+    if(abs(cos_angle_a) >= 1 || abs(cos_angle_b) >= 1 || abs(cos_angle_c) >= 1){
+        return (T)INFINITY;
+    }
+        
+    // Calculate and return the sigmoid term
+    T angle_a = acos(cos_angle_a);
+    T angle_b = acos(cos_angle_b);
+    T angle_c = acos(cos_angle_c);
+
+    T ln_a = (1/(1+exp(-k*(angle_a - 0.1))) + 1/(1+exp(-k*(M_PI - angle_a))))*(angle_a - M_PI/3)*(angle_a - M_PI/3);
+    T ln_b = (1/(1+exp(-k*(angle_b - 0.1))) + 1/(1+exp(-k*(M_PI - angle_b))))*(angle_b - M_PI/3)*(angle_b - M_PI/3);;
+    T ln_c = (1/(1+exp(-k*(angle_c - 0.1))) + 1/(1+exp(-k*(M_PI - angle_c))))*(angle_c - M_PI/3)*(angle_c - M_PI/3);;
 
     return ln_a + ln_b + ln_c;
 }
@@ -100,17 +242,14 @@ T angle_cost_sigmoid( Problem* problem,
     return sigmoid_a + sigmoid_b + sigmoid_c;
 }
 
-// Energy function: s / (1 + exp(-k(x - π/2))) + m(x - π/2) / (1 + exp(-k_s(x - π/2)))
+// Energy function: 1 / (1 + exp(-k(x - π/3)))
 template <typename T>
-T angle_cost_refined_sigmoid( Problem* problem,
+T angle_cost_sigmoid_equilateral( Problem* problem,
         const Eigen::Vector2<T>& a,
         const Eigen::Vector2<T>& b,
         const Eigen::Vector2<T>& c)
 {
     double k = 1;
-    double s = 1;
-    double m = 0.1;
-    double k_s = 1;
 
     // Compute all three normalized triangle edge vectors
     Eigen::Vector2<T> ab = (b - a).normalized();
@@ -122,14 +261,64 @@ T angle_cost_refined_sigmoid( Problem* problem,
     T cos_angle_b = (-ab).dot(bc);
     T cos_angle_c = (-bc).dot(ca);
 
-    if(abs(cos_angle_a) >= 1){
-        std::cout << "Cos out of range for Point a: " << a[0] << " " << a[1] << std::endl;
+    // Check if all values are in the interval [-1, 1]
+    /*if(abs(cos_angle_a) >= 1 || abs(cos_angle_b) >= 1 || abs(cos_angle_c) >= 1){
+        auto bbox = problem->get_boundary().bbox();
+        auto scale = std::max(box.xmax() - box.xmin(), box.ymax() - box.ymin());
+        std::cout << "Point: " << Point((p.x() - box.xmin()) * 560 / scale + 16, p.y() * 560 / scale + 272) << std::endl;
+
+        TINYAD_WARNING("cosine out of range!");
+    }*/
+   
+    if(abs(cos_angle_a) >= 1 || abs(cos_angle_b) >= 1 || abs(cos_angle_c) >= 1){
+        return (T)INFINITY;
     }
-    if(abs(cos_angle_b) >= 1){
-        std::cout << "Cos out of range for Point b: " << b[0] << " " << b[1] << std::endl;
+        
+    // Calculate and return the sigmoid term
+    T angle_a = acos(cos_angle_a);
+    T angle_b = acos(cos_angle_b);
+    T angle_c = acos(cos_angle_c);
+
+    T sigmoid_a = 1/(1+exp(-k*(angle_a - M_PI/3)));
+    T sigmoid_b = 1/(1+exp(-k*(angle_b - M_PI/3)));
+    T sigmoid_c = 1/(1+exp(-k*(angle_c - M_PI/3)));
+
+    return sigmoid_a + sigmoid_b + sigmoid_c;
+}
+
+// Energy function: s / (1 + exp(-k(x - π/2))) + m(x - π/2) / (1 + exp(-k_s(x - π/2)))
+template <typename T>
+T angle_cost_refined_sigmoid( Problem* problem,
+        const Eigen::Vector2<T>& a,
+        const Eigen::Vector2<T>& b,
+        const Eigen::Vector2<T>& c)
+{
+    double k = 15;
+    double s = 1.2;
+    double m = 0.1;
+    double k_s = 10;
+
+    // Compute all three normalized triangle edge vectors
+    Eigen::Vector2<T> ab = (b - a).normalized();
+    Eigen::Vector2<T> bc = (c - b).normalized();
+    Eigen::Vector2<T> ca = (a - c).normalized();
+
+    // Compute cosine of all 3 angles (unsigned)
+    T cos_angle_a = (-ca).dot(ab);
+    T cos_angle_b = (-ab).dot(bc);
+    T cos_angle_c = (-bc).dot(ca);
+
+    if(abs(cos_angle_a) >= (T)1.0){
+        //std::cout << "Cos out of range for Point a: " << a[0] << " " << a[1] << std::endl;
+        return (T)INFINITY;
     }
-    if(abs(cos_angle_c) >= 1){
-        std::cout << "Cos out of range for Point c: " << c[0] << " " << c[1] << std::endl;
+    if(abs(cos_angle_b) >= (T)1.0){
+        //std::cout << "Cos out of range for Point b: " << b[0] << " " << b[1] << std::endl;
+        return (T)INFINITY;
+    }
+    if(abs(cos_angle_c) >= (T)1.0){
+        //std::cout << "Cos out of range for Point c: " << c[0] << " " << c[1] << std::endl;
+        return (T)INFINITY;
     }
         
     // Calculate and return the sigmoid term
@@ -140,6 +329,53 @@ T angle_cost_refined_sigmoid( Problem* problem,
     T sigmoid_a = s/(1+exp(-k*(angle_a - M_PI/2))) + (m*(angle_a - M_PI/2))/(1+exp(-k_s*(angle_a - M_PI/2)));
     T sigmoid_b = s/(1+exp(-k*(angle_b - M_PI/2))) + (m*(angle_b - M_PI/2))/(1+exp(-k_s*(angle_b - M_PI/2)));
     T sigmoid_c = s/(1+exp(-k*(angle_c - M_PI/2))) + (m*(angle_c - M_PI/2))/(1+exp(-k_s*(angle_c - M_PI/2)));
+
+    return sigmoid_a + sigmoid_b + sigmoid_c;
+}
+
+// Energy function: s / (1 + exp(-k(x - π/2))) + m(x - π/2) / (1 + exp(-k_s(x - π/2)))
+template <typename T>
+T angle_cost_refined_sigmoid_equilteral( Problem* problem,
+        const Eigen::Vector2<T>& a,
+        const Eigen::Vector2<T>& b,
+        const Eigen::Vector2<T>& c)
+{
+    double k = 15;
+    double s = 1.2;
+    double m = 0.1;
+    double k_s = 10;
+
+    // Compute all three normalized triangle edge vectors
+    Eigen::Vector2<T> ab = (b - a).normalized();
+    Eigen::Vector2<T> bc = (c - b).normalized();
+    Eigen::Vector2<T> ca = (a - c).normalized();
+
+    // Compute cosine of all 3 angles (unsigned)
+    T cos_angle_a = (-ca).dot(ab);
+    T cos_angle_b = (-ab).dot(bc);
+    T cos_angle_c = (-bc).dot(ca);
+
+    if(abs(cos_angle_a) >= (T)1.0){
+        //std::cout << "Cos out of range for Point a: " << a[0] << " " << a[1] << std::endl;
+        return (T)INFINITY;
+    }
+    if(abs(cos_angle_b) >= (T)1.0){
+        //std::cout << "Cos out of range for Point b: " << b[0] << " " << b[1] << std::endl;
+        return (T)INFINITY;
+    }
+    if(abs(cos_angle_c) >= (T)1.0){
+        //std::cout << "Cos out of range for Point c: " << c[0] << " " << c[1] << std::endl;
+        return (T)INFINITY;
+    }
+        
+    // Calculate and return the sigmoid term
+    T angle_a = acos(cos_angle_a);
+    T angle_b = acos(cos_angle_b);
+    T angle_c = acos(cos_angle_c);
+
+    T sigmoid_a = s/(1+exp(-k*(angle_a - M_PI/3))) + (m*(angle_a - M_PI/2))/(1+exp(-k_s*(angle_a - M_PI/3)));
+    T sigmoid_b = s/(1+exp(-k*(angle_b - M_PI/3))) + (m*(angle_b - M_PI/2))/(1+exp(-k_s*(angle_b - M_PI/3)));
+    T sigmoid_c = s/(1+exp(-k*(angle_c - M_PI/3))) + (m*(angle_c - M_PI/2))/(1+exp(-k_s*(angle_c - M_PI/3)));
 
     return sigmoid_a + sigmoid_b + sigmoid_c;
 }
@@ -354,7 +590,7 @@ void optimizeTinyAD(Problem* problem){
         V(i, 1) = CGAL::to_double(steiner[i - points.size()].y()); 
     }
 
-    // Convert triangles to a matrix
+    // Convert triangles into a matrix
     Eigen::MatrixXi F(triangles.size(), 3);
     for (size_t i = 0; i < triangles.size(); ++i) {
         const Polygon& polygon = triangles[i];
@@ -399,9 +635,12 @@ void optimizeTinyAD(Problem* problem){
 
     //std::cout << "Num rows in V: " << V.rows() << " and in F: " << F.rows() << std::endl;
     /*flip_obtuse_triangles(problem, V, F, true);
-    update_problem_tinyAD(problem, V, F);*/
+    update_problem_tinyAD(problem, V, F);
 
-    /*find_minimum(problem, V, F, B, B_VAR);
+    find_minimum(problem, V, F, B, B_VAR, BS, BS_VAR, BS_TANGENT);
+    update_problem_tinyAD(problem, V, F);
+
+    flip_obtuse_triangles(problem, V, F, true);
     update_problem_tinyAD(problem, V, F);*/
 }
 
@@ -437,7 +676,7 @@ void find_minimum(Problem* problem, Eigen::MatrixXd& V, Eigen::MatrixXi& F, Eige
             return (T)INFINITY;
         }
 
-        return angle_cost_refined_sigmoid<T>(problem, a, b, c);
+        return angle_cost_equilateral<T>(problem, a, b, c);
     });
 
     // Add penalty term per constrained vertex
@@ -494,6 +733,7 @@ void find_minimum(Problem* problem, Eigen::MatrixXd& V, Eigen::MatrixXi& F, Eige
     for (int iter = 0; iter < max_iters; ++iter)
     {
         auto [f, g, H_proj] = func.eval_with_hessian_proj(x);
+        //auto [f, g] = func.eval_with_gradient(x);
 
         int s = x.cols();
         int s1 = x.rows();
@@ -501,12 +741,13 @@ void find_minimum(Problem* problem, Eigen::MatrixXd& V, Eigen::MatrixXi& F, Eige
         int s3 = V.rows();
 
         Eigen::VectorXd d = TinyAD::newton_direction(g, H_proj, solver);
-
         double newton_decrement = TinyAD::newton_decrement<double>(d, g);
-        //alter_direction(d, BS, BS_VAR, BS_TANGENT);
-        //TINYAD_DEBUG_OUT("Energy | Newton decrement in iteration " << iter << ": " << f << " | " << newton_decrement);
+
         if(newton_decrement < convergence_eps)
             break;
+        
+        //alter_direction(d, BS, BS_VAR, BS_TANGENT);
+        //TINYAD_DEBUG_OUT("Energy | Newton decrement in iteration " << iter << ": " << f << " | " << newton_decrement);
         /*if(iter == 9){
             func.x_to_data(x, [&] (int v_idx, const Eigen::Vector2d& p) {
                 if(v_idx >= points.size()){

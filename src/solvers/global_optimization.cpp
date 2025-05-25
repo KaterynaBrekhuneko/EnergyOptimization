@@ -95,9 +95,9 @@ std::vector<Point> calculate_gradient(std::vector<Point>& steiner_points, std::v
 std::vector<Point> globally_optimize_position(std::vector<Point>& steiner_points, std::vector<Polygon>& triangles, Problem *problem, bool debug){
     //double stepSize = 1e6;
     double TOL = 1e-7;
-    const int MAX_ITER = 1000;
+    const int MAX_ITER = 100;
 
-    std::vector<double> step_sizes(steiner_points.size(), 1e6);
+    std::vector<double> step_sizes(steiner_points.size(), 1e-1);
     double step_size = 1e-1;
 
     int iteration = 0;
@@ -135,7 +135,7 @@ std::vector<Point> globally_optimize_position(std::vector<Point>& steiner_points
                 }  
                 else{
                     step_sizes[i] = step_sizes[i]/10;
-                    std::cout << "Outside the neighborhood: index - " << i << std::endl; 
+                    //std::cout << "Outside the neighborhood: index - " << i << std::endl; 
                 }  
             }  
 

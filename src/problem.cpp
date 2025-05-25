@@ -67,11 +67,35 @@ void Problem::update_triangulation(Point s, Point new_s){
 }
 
 void Problem::update_steiner(Point s, Point new_s){
+    // If the new_s is already present just remove s otherwise replace s with new_s
+    bool is_present = false;
     for(int i = 0; i< steiner.size(); i++){
         Point steiner_point = steiner[i];
-        if(steiner_point == s){
-            steiner[i] = new_s;
+        if(steiner_point == new_s){
+            is_present = true;
+            break;
         }
+    }
+    for(int i = 0; i< points.size(); i++){
+        Point point = points[i];
+        if(point == new_s){
+            is_present = true;
+            break;
+        }
+    }
+
+    if(is_present){
+        steiner.erase(std::remove(steiner.begin(), steiner.end(), s), steiner.end());
+    } else {
+        for(int i = 0; i< steiner.size(); i++){
+            Point steiner_point = steiner[i];
+            if(steiner_point == s){
+                steiner[i] = new_s;
+                break;
+            }
+        }
+
+        //std::cout << "sss" << std::endl;
     }
 }
 
@@ -173,17 +197,25 @@ void Problem::visualize_solution(){
         }
     }
 
-    to_IPE(path, points, constraints, {}, boundary.vertices(), steiner, triangle_segments, obtuse_triangles);
+    //steiner = {};
+
+    to_IPE(path, points, constraints, {}, boundary.vertices(), {}, triangle_segments, {});
 }
 
-void Problem::save_intermidiate_result(){
-    Problem* new_result = new Problem(this);
-    new_result->set_triangulation(triangulation);
-    for(int i = 0; i<steiner.size(); i++){
-        new_result->add_steiner(steiner[i]);
+void Problem::save_intermidiate_result(std::string path){
+    std::vector<Segment> triangle_segments;
+    std::vector<Polygon> obtuse_triangles;
+
+    for (Polygon triangle : triangulation){
+        for (Segment seg : triangle.edges()){
+            triangle_segments.push_back(seg);
+        }
+        if (is_obtuse_triangle(triangle)){
+            obtuse_triangles.push_back(triangle);
+        }
     }
 
-    new_result->set_num_obtuse(count_obtuse_triangles(this));
+    to_SVG(path, points, constraints, boundary, steiner, triangulation, obtuse_triangles);
 }
 
 void to_IPE(std::string path, std::vector<Point> points, std::vector<Segment> constraints, std::vector<Segment> newConstraints, std::vector<Point> boundary, std::vector<Point> steiner, std::vector<Segment> triangulation, std::vector<Polygon> obtuseTriangles){
@@ -338,7 +370,7 @@ void to_IPE(std::string path, std::vector<Point> points, std::vector<Segment> co
     }
 }
 
-void to_SVG(std::string path, std::vector<Point> points, std::vector<Segment> constraints, Polygon boundary, std::vector<Point> steiner, std::vector<Polygon> triangles) {
+void to_SVG(std::string path, std::vector<Point> points, std::vector<Segment> constraints, Polygon boundary, std::vector<Point> steiner, std::vector<Polygon> triangles, std::vector<Polygon> obtuse_triangles) {
     std::ofstream o(path);
     
     // Compute bounding box
@@ -368,7 +400,16 @@ void to_SVG(std::string path, std::vector<Point> points, std::vector<Segment> co
     auto transform_x = [&](double x) { return ((x - xmin) * 560.0 / scale) + 16.0; };
     auto transform_y = [&](double y) { return height - (((y - ymin) * 560.0 / scale) + 16.0); }; // invert Y axis
 
-    // Draw quads (black edges)
+    // Fill obtuse triangles with pink
+    for (const auto& poly : obtuse_triangles) {
+        o << "<polygon points=\"";
+        for (const auto& p : poly) {
+            o << transform_x(CGAL::to_double(p.x())) << "," << transform_y(CGAL::to_double(p.y())) << " ";
+        }
+        o << "\" fill=\"pink\" stroke=\"none\" opacity=\"1\" />\n";
+    }
+
+    // Draw triangles (black edges)
     for (auto poly : triangles) {
         for (std::size_t i = 0; i < poly.size(); ++i) {
             const Point& a = poly[i];
@@ -407,10 +448,10 @@ void to_SVG(std::string path, std::vector<Point> points, std::vector<Segment> co
     }
 
     // Draw Steiner points (red disks)
-    for (Point a : steiner) {
+    /*for (Point a : steiner) {
         o << "<circle cx=\"" << transform_x(CGAL::to_double(a.x())) << "\" cy=\"" << transform_y(CGAL::to_double(a.y())) 
           << "\" r=\"2\" fill=\"red\" />\n";
-    }
+    }*/
 
     o << "</svg>\n";
     o.close();

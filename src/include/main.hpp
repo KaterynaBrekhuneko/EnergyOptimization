@@ -3,6 +3,7 @@
 #include <iostream>
 #include "problem.hpp"
 #include "miscellaneous.hpp"
+#include "mesh_statistics.hpp"
 
 #include "mesh.hpp"
 #include "stupid.hpp"

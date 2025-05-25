@@ -7,7 +7,12 @@
 
 #include <gmsh.h>
 
+#include <chrono>
+#include <ctime>
+
 namespace fs = std::filesystem;
+
+int num_new_steiner = 0;
 
 Segment find_longest_edge(Polygon& triangle){
     auto ab = CGAL::squared_distance(triangle.vertex(0), triangle.vertex(1));
@@ -61,10 +66,11 @@ double obtuseness_factor(Polygon& triangle) {
     return obtuseness; // If positive, the triangle is obtuse
 }
 
-void flip(Polygon& triangle, std::vector<Polygon>& triangulation, bool ignore){
+std::pair<std::vector<Polygon>, std::vector<Polygon>> flip(Polygon& triangle, std::vector<Polygon>& triangulation, bool ignore){
     Segment longestEdge = find_longest_edge(triangle);
 
     std::vector<Polygon> removed_triangles;
+    std::vector<Polygon> new_triangles;
 
     for (const auto& t : triangulation) {
         if (contains_edge(t, longestEdge.source(), longestEdge.target())) {
@@ -73,9 +79,9 @@ void flip(Polygon& triangle, std::vector<Polygon>& triangulation, bool ignore){
     }
 
     if(removed_triangles.size() == 2){
-        triangulation.erase(std::remove_if(triangulation.begin(), triangulation.end(),
+        /*triangulation.erase(std::remove_if(triangulation.begin(), triangulation.end(),
         [&](const Polygon& tri) { return contains_edge(tri, longestEdge.source(), longestEdge.target()); }),
-        triangulation.end());
+        triangulation.end());*/
 
         Point a = find_opposite_point(removed_triangles[0], longestEdge);
         Point b = find_opposite_point(removed_triangles[1], longestEdge);
@@ -95,23 +101,57 @@ void flip(Polygon& triangle, std::vector<Polygon>& triangulation, bool ignore){
         double obtuseness1 = std::max(obtuseness_factor(t1), obtuseness_factor(t2));
 
         if(obtuseness1 < obtuseness0 || ignore){
-            triangulation.push_back(t1);
-            triangulation.push_back(t2);
+            new_triangles.push_back(t1);
+            new_triangles.push_back(t2);
+            return {removed_triangles, new_triangles};
         } else {
-            triangulation.push_back(removed_triangles[0]);
-            triangulation.push_back(removed_triangles[1]);
+            //new_triangles.push_back(removed_triangles[0]);
+            //new_triangles.push_back(removed_triangles[1]);
+            removed_triangles.clear();
+            new_triangles.clear();
+            return {removed_triangles, new_triangles};
         }
     }
+
+    //removed_triangles.clear();
+    return {removed_triangles, new_triangles};
 }
 
 void perform_edge_flips(Problem *problem, bool ignore){
     std::vector<Polygon> triangulation = problem->get_triangulation();
 
+    std::vector<Polygon> removed_triangles;
+    std::vector<Polygon> new_triangles;
+
     std::vector<Polygon> to_flip = triangulation;
     for(Polygon& triangle : to_flip){
         if(is_obtuse_triangle(triangle)){
-            flip(triangle, triangulation, ignore);
+            auto [current_remove, current_new] = flip(triangle, triangulation, ignore);
+
+            //add and remove if has not been done before
+            for (const Polygon& tri : current_remove) {
+                auto it = std::find(removed_triangles.begin(), removed_triangles.end(), tri);
+                if (it == removed_triangles.end()) {
+                    removed_triangles.push_back(tri);
+                }
+            }
+            for (const Polygon& tri : current_new) {
+                auto it = std::find(new_triangles.begin(), new_triangles.end(), tri);
+                if (it == new_triangles.end()) {
+                    new_triangles.push_back(tri);
+                }
+            }
         }
+    }
+
+    triangulation.erase(
+    std::remove_if(triangulation.begin(), triangulation.end(),
+        [&](const Polygon& tri) {
+            return std::find(removed_triangles.begin(), removed_triangles.end(), tri) != removed_triangles.end();
+        }),triangulation.end());
+
+    for(auto& triangle : new_triangles){
+        triangulation.push_back(triangle);
     }
 
     problem->set_triangulation(triangulation);
@@ -137,6 +177,7 @@ void locally_optimize_solution(Problem *problem){
 void locally_optimize_obtuse(Problem *problem){
     std::vector<Polygon> triangulation = problem->get_triangulation();
     std::vector<Point> points = problem->get_points();
+    std::vector<Point> steiner;
 
     for(Polygon t : triangulation){
         if(is_obtuse_triangle(t)){
@@ -145,16 +186,24 @@ void locally_optimize_obtuse(Problem *problem){
             Point c = t.vertex(2);
 
             if(std::find(points.begin(), points.end(), a) == points.end()){
-                locally_optimize_position(a, triangulation, problem);
+                Point new_s1 = locally_optimize_position(a, triangulation, problem);
+                steiner.push_back(new_s1);
             }
             if(std::find(points.begin(), points.end(), b) == points.end()){
-                locally_optimize_position(b, triangulation, problem);
+                Point new_s2 = locally_optimize_position(b, triangulation, problem);
+                steiner.push_back(new_s2);
             }
             if(std::find(points.begin(), points.end(), c) == points.end()){
-                locally_optimize_position(c, triangulation, problem);
+                Point new_s3 = locally_optimize_position(c, triangulation, problem);
+                steiner.push_back(new_s3);
             }
         }
     }
+    
+    /*problem->clear_solution();
+    for(int i = 0; i < steiner.size(); i++){
+        problem->add_steiner(steiner[i]);
+    }*/
     problem->set_triangulation(triangulation);
 }
 
@@ -225,10 +274,10 @@ void globally_optimize_obtuse(Problem *problem){
 
     std::vector<Point> new_steiner = globally_optimize_position(obtuse_steiner_points, triangulation, problem, false);
     
-    problem->clear_solution();
+    /*problem->clear_solution();
     for(int i = 0; i < new_steiner.size(); i++){
         problem->add_steiner(new_steiner[i]);
-    }
+    }*/
     problem->set_triangulation(triangulation);
 }
 
@@ -287,6 +336,7 @@ void fix_boundary(Problem *problem){
                     problem->add_triangle(t2);
 
                     problem->add_steiner(p);
+                    num_new_steiner++;
                 }
             } 
             // Case 2
@@ -360,19 +410,151 @@ double get_function_value(Problem* problem){
     return cost;
 }
 
-int main(int argc, char **argv)
-{
-    Problem *problem = new Problem("../instances_presentation/simple-polygon-exterior-20_60_53ad6d23.instance.json");
-    problem->visualize_solution();
+void write_to_csv_obtuse(std::string filepath, std::vector<Mesh_Statistics> all_stats) {
+    std::ofstream out(filepath);
+    if (!out) throw std::runtime_error("Could not open file for writing: " + filepath);
+
+    out << "instance,steiner_meshing,steiner_optimized,obtuse_meshing,obtuse_optimized\n";
+    for (Mesh_Statistics stats : all_stats) {
+        out << stats.get_name() << ","
+            << stats.get_steiner_after_meshing() << ","
+            << stats.get_steiner_after_optimization() << ","
+            << stats.get_obtuse_after_meshing() << ","
+            << stats.get_obtuse_after_optimization() << "\n";
+    }
+}
+
+void write_to_csv_equilateral(std::string filepath, std::vector<Mesh_Statistics> all_stats) {
+    std::ofstream out(filepath);
+    if (!out) throw std::runtime_error("Could not open file for writing: " + filepath);
+
+    out << "name,deviation,min_angle,max_angle\n";
+    for (Mesh_Statistics stats : all_stats) {
+        out << stats.get_name() << ","
+            << stats.get_deviation() << ","
+            << stats.get_min_angle() << ","
+            << stats.get_max_angle() << "\n";
+    }
+}
+
+void print_current_time(){
+    auto now = std::chrono::system_clock::now();              // get current time_point
+    std::time_t now_c = std::chrono::system_clock::to_time_t(now); // convert to time_t
+
+    std::tm* local_time = std::localtime(&now_c);             // convert to local time
+
+    std::cout << "Current time: "
+              << std::put_time(local_time, "%Y-%m-%d %H:%M:%S")
+              << std::endl;
+}
+
+int main(int argc, char **argv){
+    //* Calculate mean angle deviation for equilateral meshes
+    print_current_time();
+    std::vector<Mesh_Statistics> all_stats;
+
+    // Sort instance files in the directory in alphabetical order
+    std::vector<fs::directory_entry> entries;
+    for (const auto& entry : fs::directory_iterator("../instances/point-set")) {
+        entries.push_back(entry);
+    }
+    std::sort(entries.begin(), entries.end(),
+              [](const fs::directory_entry& a, const fs::directory_entry& b) {
+                  return a.path().filename() < b.path().filename(); // alphabetical by name
+              });
+          
+
+    for (const auto& entry : entries) {
+        if (entry.is_regular_file() && entry.path().extension() == ".json") {
+            Problem *problem = new Problem("../instances/point-set/" + entry.path().filename().string());
+
+            //Problem *problem = new Problem("../instances/ortho/ortho_10_d2723dcc.instance.json");
+            std::cout << "current instance: " << problem->get_name() << std::endl;
+
+            //refine(problem);
+
+            Mesh_Statistics stats  = mesh_equilateral(problem);
+            all_stats.push_back(stats);
+            write_to_csv_equilateral("../results/mean_deviations_lloyd_point_set.csv", all_stats);
+        }
+    }
+
+    write_to_csv_equilateral("../results/mean_deviations_lloyd_point_set.csv", all_stats);
+
+    print_current_time();
+
+    all_stats.clear();
+    // Sort instance files in the directory in alphabetical order
+    entries.clear();
+    for (const auto& entry : fs::directory_iterator("../instances/simple-exterior")) {
+        entries.push_back(entry);
+    }
+    std::sort(entries.begin(), entries.end(),
+              [](const fs::directory_entry& a, const fs::directory_entry& b) {
+                  return a.path().filename() < b.path().filename(); // alphabetical by name
+              });
+          
+
+    for (const auto& entry : entries) {
+        if (entry.is_regular_file() && entry.path().extension() == ".json") {
+            Problem *problem = new Problem("../instances/simple-exterior/" + entry.path().filename().string());
+
+            //Problem *problem = new Problem("../instances/ortho/ortho_10_d2723dcc.instance.json");
+            std::cout << "current instance: " << problem->get_name() << std::endl;
+
+            //refine(problem);
+
+            Mesh_Statistics stats  = mesh_equilateral(problem);
+            all_stats.push_back(stats);
+            write_to_csv_equilateral("../results/mean_deviations_lloyd_simple_exterior.csv", all_stats);
+        }
+    }
+
+    write_to_csv_equilateral("../results/mean_deviations_lloyd_simple_exterior.csv", all_stats);
+
+    print_current_time();
+
+
+    //* Calculate angle stats for individual equilateral meshes
+    /*Problem *problem = new Problem("../instances/ortho/ortho_10_d2723dcc.instance.json");
+
+    mesh_equilateral_single(problem);*/
+
+    //Problem *problem = new Problem("../instances/challenge_instances_cgshop25/ortho_60_f744490d.instance.json");
+    //problem->visualize_solution();
     //Problem *problem = new Problem(argv[1]);
 
-    /*for (const auto& entry : fs::directory_iterator("../instances/challenge_instances_cgshop25")) {
+
+    
+    //* Test all instances
+    /*print_current_time();
+    std::vector<Mesh_Statistics> all_stats;
+
+    // Sort instance files in the directory in alphabetical order
+    std::vector<fs::directory_entry> entries;
+    for (const auto& entry : fs::directory_iterator("../instances/ortho")) {
+        entries.push_back(entry);
+    }
+    std::sort(entries.begin(), entries.end(),
+              [](const fs::directory_entry& a, const fs::directory_entry& b) {
+                  return a.path().filename() < b.path().filename(); // alphabetical by name
+              });
+
+    for (const auto& entry : entries) {
         if (entry.is_regular_file() && entry.path().extension() == ".json") {
-            Problem *problem = new Problem("../instances/challenge_instances_cgshop25/" + entry.path().filename().string());
-            build_quad_mesh_gmsh(problem);
-            //std::cout << entry.path().filename().string() << std::endl;
+            Problem *problem = new Problem("../instances/ortho/" + entry.path().filename().string());
+
+            //Problem *problem = new Problem("../instances/ortho/ortho_60_f744490d.instance.json");
+            std::cout << "current instance: " << problem->get_name() << std::endl;
+
+            Mesh_Statistics stats = uniform_mesh(problem);
+            all_stats.push_back(stats);
+            write_to_csv_obtuse("../results/ortho_uniform_tinyAD.csv", all_stats);
         }
-    }*/
+    }
+
+    write_to_csv_obtuse("../results/ortho_uniform_tinyAD.csv", all_stats);
+    print_current_time();*/
 
     //* Quad Mesh
     //build_quad_mesh_gmsh(problem);
@@ -419,81 +601,97 @@ int main(int argc, char **argv)
         problem->output();
     }*/
 
-    /*Problem *problem = new Problem("../instances_presentation/simple-polygon_250_432b4814.instance.json");
-    //problem->load_solution();
+   /*std::vector<Mesh_Statistics> all_stats;
 
-    Solver* solver = new Mesh();
-    solver->solve(problem);
+    for (const auto& entry : fs::directory_iterator("../instances/ortho")) {
+        if (entry.is_regular_file() && entry.path().extension() == ".json") {
+            Problem *problem = new Problem("../instances/ortho/" + entry.path().filename().string());*/
+            //Problem *problem = new Problem("../instances/ortho/ortho_60_c423f527.instance.json");
+            
+            /*Solver* solver = new Mesh();
+            solver->solve(problem);
+            std::cout << "Instance name: " << problem->get_name() << std::endl;*/
 
-    //std::cout << "triangles size: " << (problem->get_triangulation()).size() << " steiner size: " << (problem->get_steiner()).size() << std::endl;
+            //step_by_step_mesh(problem);
 
-    //problem->visualize_solution();
-    std::cout << "Num obtuse before: " << countObtuse(problem->get_triangulation()) << std::endl;
+            /*Mesh_Statistics stats;
+            stats.set_name(problem->get_name());
+            stats.set_steiner_after_meshing(problem->get_steiner().size());
+            stats.set_obtuse_after_meshing(countObtuse(problem->get_triangulation()));*/
 
-    /*int num = 0;
-    int num_exact = 0;
-    for(Point s : problem->get_steiner()){
-        if(is_boundary_vertex_with_tolerance(s, problem->get_boundary())){
-            num++;
-        }
-        if(!is_interior_vertex(s, problem->get_boundary())){
-            num_exact++;
+           
+            
+            /*std::cout << "Num obtuse before: " << countObtuse(problem->get_triangulation()) << std::endl;
+            problem->visualize_solution();
+
+            std::cout << "num_steiner: " << problem->get_steiner().size() << std::endl;
+
+            locally_optimize_solution(problem);
+            //globally_optimize_solution(problem);
+            std::cout << "Num obtuse after optimization 1: " << countObtuse(problem->get_triangulation()) << std::endl;
+            problem->visualize_solution();
+
+            locally_optimize_obtuse(problem);
+            //globally_optimize_obtuse(problem);
+            std::cout << "Num obtuse after optimization 2: " << countObtuse(problem->get_triangulation()) << std::endl;
+            problem->visualize_solution();
+
+            locally_optimize_obtuse(problem);
+            //globally_optimize_obtuse(problem);
+            std::cout << "Num obtuse after optimization 3: " << countObtuse(problem->get_triangulation()) << std::endl;
+            problem->visualize_solution();
+
+            perform_edge_flips(problem, false);
+            std::cout << "Num obtuse after flips 1: " << countObtuse(problem->get_triangulation()) << std::endl;
+            problem->visualize_solution();
+
+            fix_boundary(problem);
+            std::cout << "Num obtuse after fixing boundary 1: " << countObtuse(problem->get_triangulation()) << std::endl;
+            problem->visualize_solution();
+
+            locally_optimize_obtuse(problem);
+            //globally_optimize_obtuse(problem);
+            std::cout << "Num obtuse after optimization 4: " << countObtuse(problem->get_triangulation()) << std::endl;
+            problem->visualize_solution();
+
+            fix_boundary(problem);
+            std::cout << "Num obtuse after fixing boundary 2: " << countObtuse(problem->get_triangulation()) << std::endl;
+            problem->visualize_solution();
+
+            perform_edge_flips(problem, false);
+            std::cout << "Num obtuse after flips 2: " << countObtuse(problem->get_triangulation()) << std::endl;
+            problem->visualize_solution();
+
+            locally_optimize_obtuse(problem);
+            //globally_optimize_obtuse(problem);
+            std::cout << "Num obtuse after optimization 5: " << countObtuse(problem->get_triangulation()) << std::endl;
+            problem->visualize_solution();
+
+            fix_boundary(problem);
+            std::cout << "Num obtuse after fixing boundary 3: " << countObtuse(problem->get_triangulation()) << std::endl;
+            problem->visualize_solution();
+            //std::cout << "new_steiner : " << problem->get_steiner().size() << std::endl;
+
+            locally_optimize_obtuse(problem);
+            //globally_optimize_obtuse(problem);
+            std::cout << "Num obtuse after optimization 6: " << countObtuse(problem->get_triangulation()) << std::endl;
+            problem->visualize_solution();
+
+            fix_boundary(problem);
+            std::cout << "Num obtuse after fixing boundary 4: " << countObtuse(problem->get_triangulation()) << std::endl;
+            problem->visualize_solution();
+
+            std::cout << "new_steiner : " << problem->get_steiner().size() << "\n\n" << std::endl;*/
+
+            /*stats.set_steiner_after_optimization(problem->get_steiner().size());
+            stats.set_obtuse_after_optimization(countObtuse(problem->get_triangulation()));
+
+            all_stats.push_back(stats);
+            write_to_csv_obtuse("../results/ortho_uniform_step.csv", all_stats);
         }
     }
 
-    std::cout << "num_exact: " << num_exact << " num: " << num << std::endl;*/
-
-    /*locally_optimize_solution(problem);
-    //globally_optimize_solution(problem);
-    std::cout << "Num obtuse after first optimization: " << countObtuse(problem->get_triangulation()) << std::endl;
-    problem->visualize_solution();
-
-    /*globally_optimize_obtuse(problem);
-    std::cout << "Num obtuse after second optimization: " << countObtuse(problem->get_triangulation()) << std::endl;
-    problem->visualize_solution();
-
-    globally_optimize_obtuse(problem);
-    std::cout << "Num obtuse after second optimization: " << countObtuse(problem->get_triangulation()) << std::endl;
-    problem->visualize_solution();*/
-
-    /*perform_edge_flips(problem, true);
-    std::cout << "Num obtuse after flips 1: " << countObtuse(problem->get_triangulation()) << std::endl;
-    problem->visualize_solution();
-
-    fix_boundary(problem);
-    std::cout << "Num obtuse after fixing boundary 1: " << countObtuse(problem->get_triangulation()) << std::endl;
-    problem->visualize_solution();
-
-    locally_optimize_obtuse(problem);
-    //globally_optimize_obtuse(problem);
-    std::cout << "Num obtuse after second optimization: " << countObtuse(problem->get_triangulation()) << std::endl;
-    problem->visualize_solution();
-
-    fix_boundary(problem);
-    std::cout << "Num obtuse after fixing boundary 2: " << countObtuse(problem->get_triangulation()) << std::endl;
-    problem->visualize_solution();
-
-    perform_edge_flips(problem, false);
-    std::cout << "Num obtuse after flips 2: " << countObtuse(problem->get_triangulation()) << std::endl;
-    problem->visualize_solution();
-
-    locally_optimize_obtuse(problem);
-    //globally_optimize_obtuse(problem);
-    std::cout << "Num obtuse after third optimization: " << countObtuse(problem->get_triangulation()) << std::endl;
-    problem->visualize_solution();
-
-    fix_boundary(problem);
-    std::cout << "Num obtuse after fixing boundary 3: " << countObtuse(problem->get_triangulation()) << std::endl;
-    problem->visualize_solution();
-
-    locally_optimize_obtuse(problem);
-    //globally_optimize_obtuse(problem);
-    std::cout << "Num obtuse after third optimization: " << countObtuse(problem->get_triangulation()) << std::endl;
-    problem->visualize_solution();
-
-    fix_boundary(problem);
-    std::cout << "Num obtuse after fixing boundary 3: " << countObtuse(problem->get_triangulation()) << std::endl;
-    problem->visualize_solution();*/
+    write_to_csv_obtuse("../results/ortho_uniform_step.csv", all_stats);*/
 
 
     //Problem *problem = new Problem(argv[1]);

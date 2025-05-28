@@ -181,9 +181,9 @@ double distance(Point& a, Point& b){
     return std::sqrt(CGAL::to_double(CGAL::squared_distance(a, b)));
 }
 
-void Problem::visualize_solution(){
+void Problem::visualize_solution(std::vector<Polygon> problematic_triangles){
     // assuming run from build folder
-    std::string path = "../solutions/ipe/MESH2-" + name + ".ipe";
+    std::string path = "../solutions/ipe/MESH-eq_penalty-" + name + ".ipe";
 
     std::vector<Segment> triangle_segments;
     std::vector<Polygon> obtuse_triangles;
@@ -199,7 +199,7 @@ void Problem::visualize_solution(){
 
     //steiner = {};
 
-    to_IPE(path, points, constraints, {}, boundary.vertices(), {}, triangle_segments, {});
+    to_IPE(path, points, constraints, {}, boundary.vertices(), {}, triangle_segments, {}, problematic_triangles);
 }
 
 void Problem::save_intermidiate_result(std::string path){
@@ -218,7 +218,7 @@ void Problem::save_intermidiate_result(std::string path){
     to_SVG(path, points, constraints, boundary, steiner, triangulation, obtuse_triangles);
 }
 
-void to_IPE(std::string path, std::vector<Point> points, std::vector<Segment> constraints, std::vector<Segment> newConstraints, std::vector<Point> boundary, std::vector<Point> steiner, std::vector<Segment> triangulation, std::vector<Polygon> obtuseTriangles){
+void to_IPE(std::string path, std::vector<Point> points, std::vector<Segment> constraints, std::vector<Segment> newConstraints, std::vector<Point> boundary, std::vector<Point> steiner, std::vector<Segment> triangulation, std::vector<Polygon> obtuseTriangles, std::vector<Polygon> problematic_triangles){
     std::ofstream o(path);
 
     auto xmin = boundary[0].x();
@@ -287,7 +287,19 @@ void to_IPE(std::string path, std::vector<Point> points, std::vector<Segment> co
     o << "<layer name=\"triangulation\"/>\n";
     o << "<layer name=\"obtuse\"/>\n";
     o << "<layer name=\"blub\"/>\n";
+    o << "<layer name=\"problems\"/>\n";
     o << "<view layers=\"hull constraints triangulation obtuse blub\" active=\"triangulation\"/>\n";
+
+    for (Polygon p : problematic_triangles){
+        Point a = p[0];
+        Point b = p[1];
+        Point c = p[2];
+        o << "<path layer=\"problems\" fill=\"red\" stroke-opacity=\"opaque\">\n";
+        o << ((a.x() - xmin) * 560 / scale + 16) << " " << (a.y() * 560 / scale + 272) << " m \n";
+        o << ((b.x() - xmin) * 560 / scale + 16) << " " << (b.y() * 560 / scale + 272) << " l \n";
+        o << ((c.x() - xmin) * 560 / scale + 16) << " " << (c.y() * 560 / scale + 272) << " l \n";
+        o << "</path>\n";
+    }
 
     for (Polygon p : obtuseTriangles){
         Point a = p[0];
@@ -359,7 +371,7 @@ void to_IPE(std::string path, std::vector<Point> points, std::vector<Segment> co
 
     o.close();
 
-    std::string systemCom = "ipe " + path + " > /dev/null 2>&1";
+    /*std::string systemCom = "ipe " + path + " > /dev/null 2>&1";
 #if __APPLE__
     systemCom = "open -W /Applications/Ipe.app " + path;
 #endif
@@ -367,7 +379,7 @@ void to_IPE(std::string path, std::vector<Point> points, std::vector<Segment> co
 
     if (systemRet == -1){
         printf("Could not open IPE");
-    }
+    }*/
 }
 
 void to_SVG(std::string path, std::vector<Point> points, std::vector<Segment> constraints, Polygon boundary, std::vector<Point> steiner, std::vector<Polygon> triangles, std::vector<Polygon> obtuse_triangles) {

@@ -51,7 +51,39 @@ T angle_cost_equilateral( Problem* problem,
     T sq_b = (angle_b - M_PI/3)*(angle_b - M_PI/3);
     T sq_c = (angle_c - M_PI/3)*(angle_c - M_PI/3);
 
-    return sq_a + sq_b + sq_c;
+    return (sq_a + sq_b + sq_c);
+}
+
+template <typename T>
+T angle_cost_equilateral_inverse_penalty( Problem* problem,
+        const Eigen::Vector2<T>& a,
+        const Eigen::Vector2<T>& b,
+        const Eigen::Vector2<T>& c)
+{
+    // Compute all three normalized triangle edge vectors
+    Eigen::Vector2<T> ab = (b - a).normalized();
+    Eigen::Vector2<T> bc = (c - b).normalized();
+    Eigen::Vector2<T> ca = (a - c).normalized();
+
+    // Compute cosine of all 3 angles (unsigned)
+    T cos_angle_a = (-ca).dot(ab);
+    T cos_angle_b = (-ab).dot(bc);
+    T cos_angle_c = (-bc).dot(ca);
+   
+    if(abs(cos_angle_a) >= 1 || abs(cos_angle_b) >= 1 || abs(cos_angle_c) >= 1){
+        return (T)INFINITY;
+    }
+        
+    // Calculate and return the sigmoid term
+    T angle_a = acos(cos_angle_a);
+    T angle_b = acos(cos_angle_b);
+    T angle_c = acos(cos_angle_c);
+
+    T sq_a = (angle_a - M_PI/3)*(angle_a - M_PI/3)/(angle_a*(M_PI - angle_a));
+    T sq_b = (angle_b - M_PI/3)*(angle_b - M_PI/3)/(angle_b*(M_PI - angle_b));
+    T sq_c = (angle_c - M_PI/3)*(angle_c - M_PI/3)/(angle_c*(M_PI - angle_c));
+
+    return (sq_a + sq_b + sq_c);
 }
 
 // Energy function: ln(1 + e^(x - π/2))
@@ -260,15 +292,6 @@ T angle_cost_sigmoid_equilateral( Problem* problem,
     T cos_angle_a = (-ca).dot(ab);
     T cos_angle_b = (-ab).dot(bc);
     T cos_angle_c = (-bc).dot(ca);
-
-    // Check if all values are in the interval [-1, 1]
-    /*if(abs(cos_angle_a) >= 1 || abs(cos_angle_b) >= 1 || abs(cos_angle_c) >= 1){
-        auto bbox = problem->get_boundary().bbox();
-        auto scale = std::max(box.xmax() - box.xmin(), box.ymax() - box.ymin());
-        std::cout << "Point: " << Point((p.x() - box.xmin()) * 560 / scale + 16, p.y() * 560 / scale + 272) << std::endl;
-
-        TINYAD_WARNING("cosine out of range!");
-    }*/
    
     if(abs(cos_angle_a) >= 1 || abs(cos_angle_b) >= 1 || abs(cos_angle_c) >= 1){
         return (T)INFINITY;
@@ -676,7 +699,7 @@ void find_minimum(Problem* problem, Eigen::MatrixXd& V, Eigen::MatrixXi& F, Eige
             return (T)INFINITY;
         }
 
-        return angle_cost_equilateral<T>(problem, a, b, c);
+        return angle_cost_equilateral_inverse_penalty<T>(problem, a, b, c);
     });
 
     // Add penalty term per constrained vertex
@@ -740,7 +763,13 @@ void find_minimum(Problem* problem, Eigen::MatrixXd& V, Eigen::MatrixXi& F, Eige
         int s2 = V.cols();
         int s3 = V.rows();
 
-        Eigen::VectorXd d = TinyAD::newton_direction(g, H_proj, solver);
+        Eigen::VectorXd d;
+        try {
+            d = TinyAD::newton_direction(g, H_proj, solver);
+        } catch (const std::runtime_error& e) {
+            std::cerr << "Caught runtime_error: " << e.what() << std::endl;
+            break;
+        }
         double newton_decrement = TinyAD::newton_decrement<double>(d, g);
 
         if(newton_decrement < convergence_eps)

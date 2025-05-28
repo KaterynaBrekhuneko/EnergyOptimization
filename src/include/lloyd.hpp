@@ -38,6 +38,9 @@ void iterate_lloyd(CDT& cdt, Problem *problem, std::vector<Segment>& constraints
     std::vector<Point> points = problem->get_points();
     Polygon boundary = problem->get_boundary();
 
+    std::vector<Segment> all_constraints = constraints;
+    for (int i = 0; i < boundary.size(); i++) all_constraints.push_back(Segment(boundary[i], boundary[(i+1)%boundary.size()]));
+
     for (int iter = 0; iter < iterations; ++iter) {
         std::vector<Point> new_positions;
 
@@ -45,7 +48,12 @@ void iterate_lloyd(CDT& cdt, Problem *problem, std::vector<Segment>& constraints
             Point current = v->point();
 
             if(std::find(points.begin(), points.end(), current) == points.end() && !is_on_boundary_lloyd(current, boundary) && !is_on_constraint_lloyd(current, problem)){
-                new_positions.push_back(compute_voronoi_centroid<CDT, Vertex_handle, Vertex_circulator>(v, cdt));
+                Point new_point = compute_voronoi_centroid<CDT, Vertex_handle, Vertex_circulator>(v, cdt);
+                if(boundary.bounded_side(new_point) != CGAL::ON_UNBOUNDED_SIDE){
+                    new_positions.push_back(new_point);
+                } else {
+                    new_positions.push_back(v->point());
+                }
             } else {
                 new_positions.push_back(v->point());
             }
@@ -54,7 +62,7 @@ void iterate_lloyd(CDT& cdt, Problem *problem, std::vector<Segment>& constraints
 
         // Clear and reinsert points while preserving constraints
         cdt.clear();
+        cdt.insert_constraints(all_constraints.begin(), all_constraints.end());
         cdt.insert(new_positions.begin(), new_positions.end());
-        cdt.insert_constraints(constraints.begin(), constraints.end());
     }
 }

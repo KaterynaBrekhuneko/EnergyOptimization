@@ -3,64 +3,75 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 # Load data
-df1 = pd.read_csv("../results/angle_data_before.csv")
+df1 = pd.read_csv("../results/angle_data_initial.csv")
 
-# Print min and max angle
 min_angle1 = df1['angle'].min()
 max_angle1 = df1['angle'].max()
 print(f"Min angle before opt: {min_angle1:.2f}°")
 print(f"Max angle before opt: {max_angle1:.2f}°")
 
-# Histogram bin edges (1° bins from 0° to 180°)
 bins1 = np.arange(0, 181, 1)
 hist1, bin_edges1 = np.histogram(df1['angle'], bins=bins1)
 
-# X = bin centers
 bin_centers1 = (bin_edges1[:-1] + bin_edges1[1:]) / 2
 
-# after optimization lloyd
-# Load data
+# after optimization sigmoid or lloyd
 df2 = pd.read_csv("../results/angle_data_lloyd.csv")
 
-# Print min and max angle
 min_angle2 = df2['angle'].min()
 max_angle2 = df2['angle'].max()
-print(f"Min angle after lloyd: {min_angle2:.2f}°")
-print(f"Max angle fter lloyd: {max_angle2:.2f}°")
+print(f"Min angle after sigmoid: {min_angle2:.2f}°")
+print(f"Max angle after sigmoid: {max_angle2:.2f}°")
 
-# Histogram bin edges (1° bins from 0° to 180°)
 bins2 = np.arange(0, 181, 1)
 hist2, bin_edges2 = np.histogram(df2['angle'], bins=bins2)
 
-# X = bin centers
 bin_centers2 = (bin_edges2[:-1] + bin_edges2[1:]) / 2
 
-# after optimization energy
-# Load data
+# after optimization quadratic
 df3 = pd.read_csv("../results/angle_data_equilateral.csv")
 
-# Print min and max angle
 min_angle3 = df3['angle'].min()
 max_angle3 = df3['angle'].max()
-print(f"Min angle energy: {min_angle3:.2f}°")
-print(f"Max angle energy: {max_angle3:.2f}°")
+print(f"Min angle quadratic: {min_angle3:.2f}°")
+print(f"Max angle quadratic: {max_angle3:.2f}°")
 
-# Histogram bin edges (1° bins from 0° to 180°)
 bins3 = np.arange(0, 181, 1)
 hist3, bin_edges3 = np.histogram(df3['angle'], bins=bins3)
 
-# X = bin centers
 bin_centers3 = (bin_edges3[:-1] + bin_edges3[1:]) / 2
+
+# after optimization quadratic with penalty
+df4 = pd.read_csv("../results/angle_data_equilateral_mod.csv")
+
+min_angle4 = df4['angle'].min()
+max_angle4 = df4['angle'].max()
+print(f"Min angle quadratic with penalty: {min_angle4:.2f}°")
+print(f"Max angle quadratic with penalty: {max_angle4:.2f}°")
+
+bins4 = np.arange(0, 181, 1)
+hist4, bin_edges4 = np.histogram(df4['angle'], bins=bins4)
+
+bin_centers4 = (bin_edges4[:-1] + bin_edges4[1:]) / 2
 
 # Plot as line chart
 plt.figure(figsize=(10, 6))
-plt.plot(bin_centers1, hist1, linestyle='-', linewidth=1.5, color='blue')
-plt.plot(bin_centers2, hist2, linestyle='-', linewidth=1.5, color='red')
-plt.plot(bin_centers3, hist3, linestyle='-', linewidth=1.5, color='green')
+plt.plot(bin_centers1, hist1, linestyle='-', linewidth=1.5, color='blue', label=r'$\mathbf{Before\ Optimization}$' + f'\nangles in [{min_angle1:.2f}°, {max_angle1:.2f}°]')
+plt.plot(bin_centers2, hist2, linestyle='-', linewidth=1.5, color='#fc03b1', label=r'$\mathbf{Lloyd}$' + f'\n angles in [{min_angle2:.2f}°, {max_angle2:.2f}°]')
+plt.plot(bin_centers3, hist3, linestyle='-', linewidth=1.5, color='green', label=r'$\mathbf{Quadratic}$' + f'\n angles in [{min_angle3:.2f}°, {max_angle3:.2f}°]')
+plt.plot(bin_centers4, hist4, linestyle='-', linewidth=1.5, color='orange', label=r'$\mathbf{Quadratic\ with\ inverse\ penalty}$' + f'\n angles in [{min_angle4:.2f}°, {max_angle4:.2f}°]')
+#plt.plot(bin_centers3, hist3, linestyle='-', linewidth=1.5, color='green')
+
+#plt.fill_between(bin_centers1, hist1, color='blue', alpha=0.1)
+#plt.fill_between(bin_centers2, hist2, color='red', alpha=0.1)
+#plt.fill_between(bin_centers3, hist3, color='green', alpha=0.1)
+#plt.fill_between(bin_centers4, hist4, color='orange', alpha=0.1)
 
 # Labels and grid
-plt.title("Triangle Mesh Angle Distribution")
 plt.xlabel("Angle (degrees)")
 plt.ylabel("# Angles")
+# Set x-axis ticks every 30 degrees
+plt.xticks(np.arange(0, 181, 30))
+plt.legend()
 #plt.tight_layout()
-plt.savefig("angle_distribution_line_chart.png", dpi=300)
+plt.savefig("angle_distribution_point-set_80_837b0f11.png", dpi=600, bbox_inches='tight')

@@ -67,7 +67,7 @@ void Lloyd::solve(Problem *problem) {
         problem->add_triangle(Polygon(triangle.begin(), triangle.end()));
     }
 
-    problem->visualize_solution();
+    problem->visualize_solution({});
 
     iterate_lloyd<CDT, Vertex_handle, Vertex_circulator>(cdt, problem, constraints, 10);
 
@@ -81,7 +81,7 @@ void Lloyd::solve(Problem *problem) {
         problem->add_triangle(Polygon(triangle.begin(), triangle.end()));
     }
 
-    problem->visualize_solution();
+    problem->visualize_solution({});
     
     //return SolveStatus::Feasible;
 }

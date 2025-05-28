@@ -85,7 +85,7 @@ public:
     void remove_triangle(Polygon t);
 
     void load_solution();
-    void visualize_solution();
+    void visualize_solution(std::vector<Polygon> problematic_triangles);
 
     void save_intermidiate_result(std::string path);
 
@@ -150,5 +150,5 @@ int count_obtuse_triangles(Problem* problem);
 double squared_distance(Point& a, Point& b);
 double distance(Point& a, Point& b);
 
-void to_IPE(std::string path, std::vector<Point> points, std::vector<Segment> constraints, std::vector<Segment> newConstraints, std::vector<Point> boundary, std::vector<Point> steiner, std::vector<Segment> triangulation, std::vector<Polygon> obtuseTriangles);
+void to_IPE(std::string path, std::vector<Point> points, std::vector<Segment> constraints, std::vector<Segment> newConstraints, std::vector<Point> boundary, std::vector<Point> steiner, std::vector<Segment> triangulation, std::vector<Polygon> obtuseTriangles, std::vector<Polygon> problematic_triangles);
 void to_SVG(std::string path, std::vector<Point> points, std::vector<Segment> constraints, Polygon boundary, std::vector<Point> steiner, std::vector<Polygon> triangles, std::vector<Polygon> obtuse_triangles);

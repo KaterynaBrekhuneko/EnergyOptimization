@@ -33,7 +33,7 @@ double get_sizing(Problem* problem) {
     auto bbox = boundary.bbox();
     double max_size = std::sqrt(std::pow(bbox.x_span(), 2) + std::pow(bbox.y_span(), 2)) * 0.1;
 
-    std::cout << RED << "sizing: " << max_size/2 << " xmin: " << bbox.xmin() << " scale: " << std::max(bbox.xmax() - bbox.xmin(), bbox.ymax() - bbox.ymin()) << RESET << std::endl;
+    //std::cout << RED << "sizing: " << max_size/2 << " xmin: " << bbox.xmin() << " scale: " << std::max(bbox.xmax() - bbox.xmin(), bbox.ymax() - bbox.ymin()) << RESET << std::endl;
     
     return max_size / 2;
 }
@@ -124,7 +124,7 @@ void mesh(Problem* problem, CDT& cdt, double sizing, double target_sizing){
     std::unordered_map<Edge, double, EdgeHash, EdgeEqual> edge_to_ratio_map = create_edge_map(cdt, sizing);
     std::unordered_map<Face_handle, double> face_to_ratio_map = create_face_map(problem, cdt, sizing);
 
-    std::cout << RED << "target ratio: " << target_sizing << RESET << std::endl;
+    //std::cout << RED << "target ratio: " << target_sizing << RESET << std::endl;
 
     std::vector<Point> points_to_insert;
 
@@ -209,9 +209,9 @@ bool next_refinement_point(Problem* problem, CDT& cdt){
     return true;
 }
 
-void refine(Problem* problem){
+void refine(Problem* problem, CDT& cdt){
     // Preprocess the input instance, compute cdt
-    std::vector<Point> points = problem->get_points();
+    /*std::vector<Point> points = problem->get_points();
     std::set<Point> point_set(points.begin(), points.end());
     std::set<Point> steiner_point_set;
     std::vector<Point> boundary_points = problem->get_boundary().vertices();
@@ -224,10 +224,13 @@ void refine(Problem* problem){
     auto box = problem->get_boundary().bbox();
     auto scale = std::max(box.xmax() - box.xmin(), box.ymax() - box.ymin());
 
-    std::cout << "scale: " << scale << " min: " << box.xmin() << "\n" << std::endl;
+    //std::cout << "scale: " << scale << " min: " << box.xmin() << "\n" << std::endl;
 
     CDT cdt = problem->generate_CDT<CDT>();
-    std::cout  << "Num of points in cdt before: " << cdt.number_of_vertices() << std::endl;
+    //std::cout  << "Num of points in cdt before: " << cdt.number_of_vertices() << std::endl;*/
+
+    std::vector<Point> points = problem->get_points();
+    std::set<Point> point_set(points.begin(), points.end());
 
     double sizing, max_sizing, target_sizing;
     int i = 0;
@@ -242,11 +245,11 @@ void refine(Problem* problem){
         }
 
         mesh(problem, cdt, sizing, target_sizing);
-        std::cout << BLUE  << "Num of points in cdt after " << i << ": " << cdt.number_of_vertices()  << RESET << std::endl;
+        //std::cout << BLUE  << "Num of points in cdt after " << i << ": " << cdt.number_of_vertices()  << RESET << std::endl;
         problem->update_problem<CDT, Face_handle>(cdt, point_set);
 
         /*problem->update_problem<CDT, Face_handle>(cdt, point_set);
-        problem->visualize_solution();
+        problem->visualize_solution({});
 
         // LLoyd optimization
         iterate_lloyd<CDT, Vertex_handle, Vertex_circulator>(cdt, problem, constraints, 1000);
@@ -255,28 +258,29 @@ void refine(Problem* problem){
         cdt = problem->generate_CDT<CDT>();
         std::cout << "Num obtuse after regenerating CDT after optimization " << i << ": " << count_obtuse_triangles(problem) << std::endl;
         problem->update_problem<CDT, Face_handle>(cdt, point_set);
-        problem->visualize_solution();*/
+        problem->visualize_solution({});*/
         /*iterate_lloyd<CDT, Vertex_handle, Vertex_circulator>(cdt, problem, constraints, 1000);
         problem->update_problem<CDT, Face_handle>(cdt, point_set);
-        problem->visualize_solution();*/
+        problem->visualize_solution({});*/
         //!For this first need to convert to an inexact kernel
         /*CGAL::lloyd_optimize_mesh_2(cdt, CGAL::parameters::number_of_iterations(1000));
         problem->update_problem<CDT, Face_handle>(cdt, point_set);
-        problem->visualize_solution();*/
+        problem->visualize_solution({});*/
         i++;
     }
 
-    iterate_lloyd<CDT, Vertex_handle, Vertex_circulator>(cdt, problem, constraints, 1000);
+    /*iterate_lloyd<CDT, Vertex_handle, Vertex_circulator>(cdt, problem, constraints, 1000);
     problem->update_problem<CDT, Face_handle>(cdt, point_set);
     std::cout << "End of meshing" << std::endl;
 
     std::cout << "Deviation: " << mean_absolute_deviation(problem) << std::endl;
-    problem->visualize_solution();
+    problem->visualize_solution({});*/
+
     //optimizeTinyAD(problem);
     // LLoyd optimization
     /*CGAL::lloyd_optimize_mesh_2(cdt, CGAL::parameters::number_of_iterations(1000));
     update_problem(problem, cdt, point_set);
-    problem->visualize_solution();*/
+    problem->visualize_solution({});*/
 
     // Regenerate CDT after optimization
     /*steiner_point_set.clear();
@@ -307,7 +311,7 @@ void classic_delaunay_refinement(Problem* problem){
     std::cout  << "Num of points in cdt before: " << cdt.number_of_vertices() << std::endl;
 
     problem->update_problem<CDT, Face_handle>(cdt, point_set);
-    problem->visualize_solution();
+    problem->visualize_solution({});
 
     for(int i = 0; i < 30; i++){
         next_refinement_point(problem, cdt);
@@ -320,18 +324,18 @@ void classic_delaunay_refinement(Problem* problem){
     fix_boundary_refinement(problem);
     cdt = problem->generate_CDT<CDT>();
     problem->update_problem<CDT, Face_handle>(cdt, point_set);
-    problem->visualize_solution();
+    problem->visualize_solution({});
 
     iterate_lloyd<CDT, Vertex_handle, Vertex_circulator>(cdt, problem, constraints, 1000);
     problem->update_problem<CDT, Face_handle>(cdt, point_set);
     optimizeTinyAD(problem);
     cdt = problem->generate_CDT<CDT>();
-    problem->visualize_solution();
+    problem->visualize_solution({});
 
     fix_boundary_refinement(problem);
     cdt = problem->generate_CDT<CDT>();
     problem->update_problem<CDT, Face_handle>(cdt, point_set);
-    problem->visualize_solution();
+    problem->visualize_solution({});
 }
 
 //***************************CGAL step-for-step********************************************************
@@ -590,32 +594,32 @@ void step_by_step_mesh(Problem* problem){
 
         /*if(iter >= 20){
             problem->update_problem<CDT, Face_handle>(cdt, point_set);
-            problem->visualize_solution();
+            problem->visualize_solution({});
         }*/
 
         if(iter%10 == 0){
             // Optimize
             std::cout << "Num obtuse before optimization " << opt_count << ": " << count_obtuse_triangles(problem) << std::endl;
-            problem->visualize_solution();
+            problem->visualize_solution({});
             //bool debug = (opt_count == 9);
             //globally_optimize_triangles(problem, debug);
             optimizeTinyAD(problem);
 
             std::cout << "Num obtuse after optimization " << opt_count << ": " << count_obtuse_triangles(problem) << std::endl;
-            problem->visualize_solution();
+            problem->visualize_solution({});
 
             // Update CDT
             cdt = problem->generate_CDT<CDT>();
             std::cout << "Num obtuse after regenerating CDT after optimization " << opt_count << ": " << count_obtuse_triangles(problem) << std::endl;
             problem->update_problem<CDT, Face_handle>(cdt, point_set);
-            //problem->visualize_solution();
+            //problem->visualize_solution({});
 
             // Fix boundary
             fix_boundary_refinement(problem);
             cdt = problem->generate_CDT<CDT>();
             problem->update_problem<CDT, Face_handle>(cdt, point_set);
             std::cout << "Num obtuse after fixing boundary " << opt_count << ": " << count_obtuse_triangles(problem) << "\n" << std::endl;
-            problem->visualize_solution();
+            problem->visualize_solution({});
 
             opt_count++;
 
@@ -727,6 +731,7 @@ void mesh_cgal(Problem* problem){
     mesher.refine_mesh();
 
     problem->update_problem<CDT, Face_handle>(cdt, point_set);
+    problem->visualize_solution({});
 }
 
 double angle_degrees(const Point& a, const Point& b, const Point& c) {
@@ -737,6 +742,60 @@ double angle_degrees(const Point& a, const Point& b, const Point& c) {
     double norm_v = std::sqrt(CGAL::to_double(v.squared_length()));
     double cos_angle = std::max(-1.0, std::min(1.0, dot / (norm_u * norm_v))); // clamp
     return std::acos(cos_angle) * 180.0 / M_PI;
+}
+
+double get_triangle_area(const Point& p1, const Point& p2, const Point& p3){
+    auto area = (p1.x() * (p2.y() - p3.y()) + p2.x() * (p3.y() - p1.y()) + p3.x() * (p1.y() - p2.y()))/2.0;
+    return std::abs(CGAL::to_double(area));
+}
+
+double get_shortest_edge(const Point& a, const Point& b, const Point& c){
+    auto ab = CGAL::squared_distance(a, b);
+    auto bc = CGAL::squared_distance(b, c);
+    auto ac = CGAL::squared_distance(a, c);
+
+    if(ab <= bc && ab <= ac){
+        return std::sqrt(CGAL::to_double(ab));
+    } else if (bc <= ab && bc <= ac) {
+        return std::sqrt(CGAL::to_double(bc));
+    } else {
+        return std::sqrt(CGAL::to_double(ac));
+    }
+}
+
+double get_aspect_ratio(const Point& a, const Point& b, const Point& c){
+    if(get_triangle_area(a, b, c) < 1e-6){
+        return INFINITY;
+    }
+    double shortest_edge = get_shortest_edge(a, b, c);
+    if(shortest_edge < 1e-6){
+        return INFINITY;
+    }
+    double radius = std::sqrt(CGAL::to_double(CGAL::squared_radius(a, b, c)));  
+    return radius/shortest_edge;
+}
+
+void save_aspect_ratios_for_plot(Problem* problem, std::string path){
+    auto triangulation = problem->get_triangulation();
+
+    std::vector<double> ratios;
+
+    for (const Polygon& triangle : triangulation) {
+        if (triangle.size() != 3) continue; // skip non-triangles
+
+        const Point& A = triangle[0];
+        const Point& B = triangle[1];
+        const Point& C = triangle[2];
+
+        ratios.push_back(get_aspect_ratio(A, B, C));
+    }
+
+    std::ofstream out(path);
+    out << "ratio\n"; 
+    for (double ratio : ratios) {
+        out << ratio << "\n";
+    }
+    out.close();
 }
 
 void save_angle_stats_for_plot(Problem* problem, std::string path){
@@ -764,8 +823,10 @@ void save_angle_stats_for_plot(Problem* problem, std::string path){
     out.close();
 }
 
-void save_min_max_angle(Problem* problem, Mesh_Statistics* stats){
+std::vector<Polygon> save_min_max_angle(Problem* problem, Mesh_Statistics* stats){
     auto triangulation = problem->get_triangulation();
+
+    std::vector<Polygon> problematic_triangles;
 
     double min_angle = 360.0;
     double max_angle = 0.0;
@@ -781,6 +842,13 @@ void save_min_max_angle(Problem* problem, Mesh_Statistics* stats){
         auto angle_b = angle_degrees(A, B, C);
         auto angle_c = angle_degrees(B, C, A);
 
+        /*if(angle_a<1.0 || angle_b<1.0 || angle_c<1.0){
+            problematic_triangles.push_back(triangle);
+        }
+        if(angle_a < min_angle && angle_a>=1.0) min_angle = angle_a;
+        if(angle_b < min_angle && angle_b>=1.0) min_angle = angle_b;
+        if(angle_c < min_angle && angle_c>=1.0) min_angle = angle_c;*/
+
         if(angle_a < min_angle) min_angle = angle_a;
         if(angle_b < min_angle) min_angle = angle_b;
         if(angle_c < min_angle) min_angle = angle_c;
@@ -792,6 +860,7 @@ void save_min_max_angle(Problem* problem, Mesh_Statistics* stats){
 
     stats->set_min_angle(min_angle);
     stats->set_max_angle(max_angle);
+    return problematic_triangles;
 }
 
 double mean_absolute_deviation(Problem* problem){
@@ -816,26 +885,39 @@ double mean_absolute_deviation(Problem* problem){
 }
 
 void mesh_equilateral_single(Problem* problem){
+    auto constraints = problem->get_constraints();
     std::vector<Point> points = problem->get_points();
     std::set<Point> point_set(points.begin(), points.end());
     mesh_cgal(problem);
 
+    std::cout << "num initial: " << problem->get_points().size() << " num steiner: " << problem->get_steiner().size() << std::endl;
+    std::cout << "mean absolute deviation initial: " << mean_absolute_deviation(problem) << std::endl;
     // Stats after initial meshing
-    save_angle_stats_for_plot(problem, "../results/angle_data_before.csv");
-    problem->visualize_solution();
+    //save_angle_stats_for_plot(problem, "../results/angle_data_initial.csv");
+    //save_aspect_ratios_for_plot(problem, "../results/aspect_ratios_initial.csv");
+    //problem->visualize_solution({});
 
     // Stats after optimization meshing
-    /*iterate_lloyd<CDT, Vertex_handle, Vertex_circulator>(cdt, problem, constraints, 1000);
-    problem->update_problem<CDT, Face_handle>(cdt, point_set);*/
+    /*CDT cdt = problem->generate_CDT<CDT>();
+    iterate_lloyd<CDT, Vertex_handle, Vertex_circulator>(cdt, problem, constraints, 1000);
+    problem->update_problem<CDT, Face_handle>(cdt, point_set);
     /*CGAL::lloyd_optimize_mesh_2(cdt, CGAL::parameters::number_of_iterations(1000));
     problem->update_problem<CDT, Face_handle>(cdt, point_set);*/
+    
     optimizeTinyAD(problem);
-    //locally_optimize_triangles(problem);
     CDT cdt = problem->generate_CDT<CDT>();
     problem->update_problem<CDT, Face_handle>(cdt, point_set);
+    optimizeTinyAD(problem);
+    cdt = problem->generate_CDT<CDT>();
+    problem->update_problem<CDT, Face_handle>(cdt, point_set);
+    optimizeTinyAD(problem);
+    cdt = problem->generate_CDT<CDT>();
+    problem->update_problem<CDT, Face_handle>(cdt, point_set);
+    std::cout << "mean absolute deviation lloyd: " << mean_absolute_deviation(problem) << std::endl;
 
-    save_angle_stats_for_plot(problem, "../results/angle_data_equilateral.csv");
-    problem->visualize_solution();
+    //save_angle_stats_for_plot(problem, "../results/angle_data_lloyd.csv");
+    //save_aspect_ratios_for_plot(problem, "../results/aspect_ratios_lloyd.csv");
+    problem->visualize_solution({});
 }
 
 Mesh_Statistics mesh_equilateral(Problem* problem){
@@ -846,16 +928,32 @@ Mesh_Statistics mesh_equilateral(Problem* problem){
     std::set<Point> point_set(points.begin(), points.end());
 
     mesh_cgal(problem);
-
-    //optimizeTinyAD(problem);
-
     CDT cdt = problem->generate_CDT<CDT>();
+    //refine(problem, cdt);
+    //problem->visualize_solution({});
+
+    /*optimizeTinyAD(problem);
+    cdt = problem->generate_CDT<CDT>();
+    problem->update_problem<CDT, Face_handle>(cdt, point_set);
+    optimizeTinyAD(problem);
+    cdt = problem->generate_CDT<CDT>();
+    problem->update_problem<CDT, Face_handle>(cdt, point_set);*/
+    /*optimizeTinyAD(problem);
+    cdt = problem->generate_CDT<CDT>();
+    problem->update_problem<CDT, Face_handle>(cdt, point_set);*/
+
+    cdt = problem->generate_CDT<CDT>();
     iterate_lloyd<CDT, Vertex_handle, Vertex_circulator>(cdt, problem, constraints, 1000);
     problem->update_problem<CDT, Face_handle>(cdt, point_set);
 
     stats.set_name(problem->get_name());
+    stats.set_steiner_after_meshing(problem->get_steiner().size());
     stats.set_deviation(mean_absolute_deviation(problem));
-    save_min_max_angle(problem, &stats);
+    std::vector<Polygon> problematic_triangles = save_min_max_angle(problem, &stats);
+
+    //problem->visualize_solution({});
+
+    //std::cout << "deviation: " << stats.get_deviation() << " min angle: " << stats.get_min_angle() << " max angle: " << stats.get_max_angle() << std::endl;
 
     return stats;
 }

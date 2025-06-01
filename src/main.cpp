@@ -428,13 +428,15 @@ void write_to_csv_equilateral(std::string filepath, std::vector<Mesh_Statistics>
     std::ofstream out(filepath);
     if (!out) throw std::runtime_error("Could not open file for writing: " + filepath);
 
-    out << "name,deviation,min_angle,max_angle\n";
+    out << "name,deviation,aspect_ratio,min_angle,max_angle,num_steiner,max_length\n";
     for (Mesh_Statistics stats : all_stats) {
         out << stats.get_name() << ","
             << stats.get_deviation() << ","
+            << stats.get_aspect_ratio() << ","
             << stats.get_min_angle() << ","
             << stats.get_max_angle() << ","
-            << stats.get_steiner_after_meshing() <<"\n";
+            << stats.get_steiner_after_meshing() <<","
+            << stats.get_max_length() <<"\n";
     }
 }
 
@@ -456,7 +458,38 @@ int main(int argc, char **argv){
 
     // Sort instance files in the directory in alphabetical order
     std::vector<fs::directory_entry> entries;
-    for (const auto& entry : fs::directory_iterator("../instances/simple-exterior")) {
+    for (const auto& entry : fs::directory_iterator("../instances/simple")) {
+        entries.push_back(entry);
+    }
+    std::sort(entries.begin(), entries.end(),
+              [](const fs::directory_entry& a, const fs::directory_entry& b) {
+                  return a.path().filename() < b.path().filename(); // alphabetical by name
+              });
+          
+
+    /*for (const auto& entry : entries) {
+        if (entry.is_regular_file() && entry.path().extension() == ".json") {
+            Problem *problem = new Problem("../instances/simple/" + entry.path().filename().string());*/
+
+            Problem *problem = new Problem("../instances/simple/simple-polygon_20_4bd3c2e5.instance.json");
+            std::cout << "current instance: " << problem->get_name() << std::endl;
+
+            Mesh_Statistics stats  = refine(problem);
+
+            //Mesh_Statistics stats  = mesh_equilateral(problem);
+            /*all_stats.push_back(stats);
+            write_to_csv_equilateral("../results/mean_deviations_initial_ortho.csv", all_stats);
+        }
+    }
+
+    write_to_csv_equilateral("../results/mean_deviations_initial_ortho.csv", all_stats);*/
+
+    print_current_time();
+
+    /*all_stats.clear();
+    // Sort instance files in the directory in alphabetical order
+    entries.clear();
+    for (const auto& entry : fs::directory_iterator("../instances/simple")) {
         entries.push_back(entry);
     }
     std::sort(entries.begin(), entries.end(),
@@ -467,20 +500,19 @@ int main(int argc, char **argv){
 
     for (const auto& entry : entries) {
         if (entry.is_regular_file() && entry.path().extension() == ".json") {
-            Problem *problem = new Problem("../instances/simple-exterior/" + entry.path().filename().string());
+            Problem *problem = new Problem("../instances/simple/" + entry.path().filename().string());
 
-            //Problem *problem = new Problem("../instances/ortho/ortho_60_5c5796a0.instance.json");
             std::cout << "current instance: " << problem->get_name() << std::endl;
 
-            //refine(problem);
+            Mesh_Statistics stats  = refine(problem);
 
-            Mesh_Statistics stats  = mesh_equilateral(problem);
+            //Mesh_Statistics stats  = mesh_equilateral(problem);
             all_stats.push_back(stats);
-            write_to_csv_equilateral("../results/mean_deviations_lloyd_simple_exterior.csv", all_stats);
+            write_to_csv_equilateral("../results/mean_deviations_initial_simple.csv", all_stats);
         }
     }
 
-    write_to_csv_equilateral("../results/mean_deviations_lloyd_simple_exterior.csv", all_stats);
+    write_to_csv_equilateral("../results/mean_deviations_initial_simple.csv", all_stats);
 
     print_current_time();
 
@@ -500,25 +532,24 @@ int main(int argc, char **argv){
         if (entry.is_regular_file() && entry.path().extension() == ".json") {
             Problem *problem = new Problem("../instances/point-set/" + entry.path().filename().string());
 
-            //Problem *problem = new Problem("../instances/ortho/ortho_10_d2723dcc.instance.json");
             std::cout << "current instance: " << problem->get_name() << std::endl;
 
-            //refine(problem);
+            Mesh_Statistics stats  = refine(problem);
 
-            Mesh_Statistics stats  = mesh_equilateral(problem);
+            //Mesh_Statistics stats  = mesh_equilateral(problem);
             all_stats.push_back(stats);
-            write_to_csv_equilateral("../results/mean_deviations_lloyd_point_set.csv", all_stats);
+            write_to_csv_equilateral("../results/mean_deviations_initial_point_set.csv", all_stats);
         }
     }
 
-    write_to_csv_equilateral("../results/mean_deviations_lloyd_point_set.csv", all_stats);
+    write_to_csv_equilateral("../results/mean_deviations_initial_point_set.csv", all_stats);
 
     print_current_time();
 
-    /*all_stats.clear();
+    all_stats.clear();
     // Sort instance files in the directory in alphabetical order
     entries.clear();
-    for (const auto& entry : fs::directory_iterator("../instances/point-set")) {
+    for (const auto& entry : fs::directory_iterator("../instances/simple-exterior")) {
         entries.push_back(entry);
     }
     std::sort(entries.begin(), entries.end(),
@@ -529,20 +560,19 @@ int main(int argc, char **argv){
 
     for (const auto& entry : entries) {
         if (entry.is_regular_file() && entry.path().extension() == ".json") {
-            Problem *problem = new Problem("../instances/point set/" + entry.path().filename().string());
+            Problem *problem = new Problem("../instances/simple-exterior/" + entry.path().filename().string());
 
-            //Problem *problem = new Problem("../instances/ortho/ortho_10_d2723dcc.instance.json");
             std::cout << "current instance: " << problem->get_name() << std::endl;
 
-            //refine(problem);
+            Mesh_Statistics stats  = refine(problem);
 
-            Mesh_Statistics stats  = mesh_equilateral(problem);
+            //Mesh_Statistics stats  = mesh_equilateral(problem);
             all_stats.push_back(stats);
-            write_to_csv_equilateral("../results/mean_deviations_lloyd_point_set.csv", all_stats);
+            write_to_csv_equilateral("../results/mean_deviations_initial_simple_exterior.csv", all_stats);
         }
     }
 
-    write_to_csv_equilateral("../results/mean_deviations_lloyd_point_set.csv", all_stats);
+    write_to_csv_equilateral("../results/mean_deviations_initial_simple_exterior.csv", all_stats);
 
     print_current_time();*/
 

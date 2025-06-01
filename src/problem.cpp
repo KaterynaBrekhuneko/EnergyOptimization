@@ -183,7 +183,7 @@ double distance(Point& a, Point& b){
 
 void Problem::visualize_solution(std::vector<Polygon> problematic_triangles){
     // assuming run from build folder
-    std::string path = "../solutions/ipe/MESH-eq_penalty-" + name + ".ipe";
+    std::string path = "../solutions/ipe/MESH-better-mesh-sq-penalty-" + name + ".ipe";
 
     std::vector<Segment> triangle_segments;
     std::vector<Polygon> obtuse_triangles;
@@ -371,15 +371,12 @@ void to_IPE(std::string path, std::vector<Point> points, std::vector<Segment> co
 
     o.close();
 
-    /*std::string systemCom = "ipe " + path + " > /dev/null 2>&1";
-#if __APPLE__
-    systemCom = "open -W /Applications/Ipe.app " + path;
-#endif
+    std::string systemCom = "ipe " + path + " > /dev/null 2>&1";
     int systemRet = system(systemCom.c_str());
 
     if (systemRet == -1){
         printf("Could not open IPE");
-    }*/
+    }
 }
 
 void to_SVG(std::string path, std::vector<Point> points, std::vector<Segment> constraints, Polygon boundary, std::vector<Point> steiner, std::vector<Polygon> triangles, std::vector<Polygon> obtuse_triangles) {

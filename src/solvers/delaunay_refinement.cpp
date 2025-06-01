@@ -33,9 +33,9 @@ double get_sizing(Problem* problem) {
     auto bbox = boundary.bbox();
     double max_size = std::sqrt(std::pow(bbox.x_span(), 2) + std::pow(bbox.y_span(), 2)) * 0.1;
 
-    //std::cout << RED << "sizing: " << max_size/2 << " xmin: " << bbox.xmin() << " scale: " << std::max(bbox.xmax() - bbox.xmin(), bbox.ymax() - bbox.ymin()) << RESET << std::endl;
+    std::cout << RED << "sizing: " << max_size/2 << std::endl;
     
-    return max_size / 2;
+    return max_size/(2);
 }
 
 double get_sizing_ratio_triangle(const Face_handle& triangle, double sizing){
@@ -52,6 +52,23 @@ double get_sizing_ratio_edge(const Edge& edge, double sizing){
     Point p2 = edge.first->vertex((edge.second + 2) % 3)->point();
     double edge_length = std::sqrt(CGAL::to_double(CGAL::squared_distance(p1, p2)));
     return edge_length/sizing;
+}
+
+double get_max_edge_ength(Problem* problem){
+    double max_len = 0.0;
+    for(const auto& t : problem->get_triangulation()){
+        Point p1 = t[0];
+        Point p2 = t[1];
+        Point p3 = t[2];
+        double len1 = CGAL::to_double(CGAL::squared_distance(p1, p2));
+        double len2 = CGAL::to_double(CGAL::squared_distance(p1, p3));
+        double len3 = CGAL::to_double(CGAL::squared_distance(p2, p3));
+
+        max_len = std::max(max_len, len1);
+        max_len = std::max(max_len, len2);
+        max_len = std::max(max_len, len3);
+    }
+    return std::sqrt(max_len);
 }
 
 double compute_max_sizing_ratio(Problem* problem, CDT& cdt, double sizing){
@@ -138,8 +155,14 @@ void mesh(Problem* problem, CDT& cdt, double sizing, double target_sizing){
             // Update sizing ratios
             Face_handle t1 = c.first;
             Face_handle t2 = c.first->neighbor(c.second);
-            face_to_ratio_map[t1] += 0.5*(current_ratio_constraint/std::sqrt(3) - target_sizing);
-            face_to_ratio_map[t2] += 0.5*(current_ratio_constraint/std::sqrt(3) - target_sizing);
+            if(cdt.is_infinite(t1)){
+                face_to_ratio_map[t2] += (current_ratio_constraint/std::sqrt(3) - target_sizing);
+            } else if(cdt.is_infinite(t2)){
+                face_to_ratio_map[t1] += (current_ratio_constraint/std::sqrt(3) - target_sizing);
+            } else {
+                face_to_ratio_map[t1] += 0.5*(current_ratio_constraint/std::sqrt(3) - target_sizing);
+                face_to_ratio_map[t2] += 0.5*(current_ratio_constraint/std::sqrt(3) - target_sizing);
+            }   
         }
     }   
     for(Face_handle t : cdt.finite_face_handles()){
@@ -160,9 +183,30 @@ void mesh(Problem* problem, CDT& cdt, double sizing, double target_sizing){
                 Face_handle t1 = t->neighbor(0);
                 Face_handle t2 = t->neighbor(1);
                 Face_handle t3 = t->neighbor(2);
-                face_to_ratio_map[t1] += (1/3)*(current_ratio_face/std::sqrt(3) - target_sizing);
-                face_to_ratio_map[t2] += (1/3)*(current_ratio_face/std::sqrt(3) - target_sizing);
-                face_to_ratio_map[t3] += (1/3)*(current_ratio_face/std::sqrt(3) - target_sizing);
+                if(cdt.is_infinite(t1)){
+                    if(cdt.is_infinite(t2)){
+                        face_to_ratio_map[t3] += (current_ratio_face/std::sqrt(3) - target_sizing);
+                    } else if(cdt.is_infinite(t3)){
+                        face_to_ratio_map[t2] += (current_ratio_face/std::sqrt(3) - target_sizing);
+                    } else {
+                        face_to_ratio_map[t2] += (1/2)*(current_ratio_face/std::sqrt(3) - target_sizing);
+                        face_to_ratio_map[t3] += (1/2)*(current_ratio_face/std::sqrt(3) - target_sizing);
+                    }
+                } else if(cdt.is_infinite(t2)){
+                    if(cdt.is_infinite(t3)){
+                        face_to_ratio_map[t1] += (current_ratio_face/std::sqrt(3) - target_sizing);
+                    } else {
+                        face_to_ratio_map[t1] += (1/2)*(current_ratio_face/std::sqrt(3) - target_sizing);
+                        face_to_ratio_map[t3] += (1/2)*(current_ratio_face/std::sqrt(3) - target_sizing);
+                    }
+                } else if(cdt.is_infinite(t3)){
+                    face_to_ratio_map[t1] += (1/2)*(current_ratio_face/std::sqrt(3) - target_sizing);
+                    face_to_ratio_map[t2] += (1/2)*(current_ratio_face/std::sqrt(3) - target_sizing);
+                } else {
+                    face_to_ratio_map[t1] += (1/3)*(current_ratio_face/std::sqrt(3) - target_sizing);
+                    face_to_ratio_map[t2] += (1/3)*(current_ratio_face/std::sqrt(3) - target_sizing);
+                    face_to_ratio_map[t3] += (1/3)*(current_ratio_face/std::sqrt(3) - target_sizing);
+                }
             }
         }
     }
@@ -209,85 +253,81 @@ bool next_refinement_point(Problem* problem, CDT& cdt){
     return true;
 }
 
-void refine(Problem* problem, CDT& cdt){
-    // Preprocess the input instance, compute cdt
-    /*std::vector<Point> points = problem->get_points();
-    std::set<Point> point_set(points.begin(), points.end());
-    std::set<Point> steiner_point_set;
-    std::vector<Point> boundary_points = problem->get_boundary().vertices();
-    std::vector<Segment> constraints = problem->get_constraints();
-    Polygon boundary = problem->get_boundary();
-    for (size_t i = 0; i < boundary_points.size(); i++) {
-        constraints.push_back(Segment(boundary_points[i], boundary_points[(i + 1) % boundary_points.size()]));
-    }
-
-    auto box = problem->get_boundary().bbox();
-    auto scale = std::max(box.xmax() - box.xmin(), box.ymax() - box.ymin());
-
-    //std::cout << "scale: " << scale << " min: " << box.xmin() << "\n" << std::endl;
-
-    CDT cdt = problem->generate_CDT<CDT>();
-    //std::cout  << "Num of points in cdt before: " << cdt.number_of_vertices() << std::endl;*/
+Mesh_Statistics refine(Problem* problem){
+    Mesh_Statistics stats;
 
     std::vector<Point> points = problem->get_points();
     std::set<Point> point_set(points.begin(), points.end());
+    auto constraints = problem->get_constraints();
 
-    double sizing, max_sizing, target_sizing;
+    CDT cdt = problem->generate_CDT<CDT>();
+    problem->update_problem<CDT, Face_handle>(cdt, point_set);
+
+    /*mesh_cgal(problem);
+    cdt = problem->generate_CDT<CDT>();
+    problem->update_problem<CDT, Face_handle>(cdt, point_set);*/
+
+    problem->visualize_solution({});
+
+    double sizing = get_sizing(problem);
+    double max_sizing, target_sizing;
     int i = 0;
 
     while(true){
-        sizing = get_sizing(problem);
         max_sizing = compute_max_sizing_ratio(problem, cdt, sizing);
         target_sizing = std::max(max_sizing/std::sqrt(3), 1.0);
 
-        if(target_sizing <= 1.0){
+        if(max_sizing <= 1.0){
             break;
         }
 
         mesh(problem, cdt, sizing, target_sizing);
         //std::cout << BLUE  << "Num of points in cdt after " << i << ": " << cdt.number_of_vertices()  << RESET << std::endl;
         problem->update_problem<CDT, Face_handle>(cdt, point_set);
-
-        /*problem->update_problem<CDT, Face_handle>(cdt, point_set);
         problem->visualize_solution({});
 
         // LLoyd optimization
-        iterate_lloyd<CDT, Vertex_handle, Vertex_circulator>(cdt, problem, constraints, 1000);
+        /*iterate_lloyd<CDT, Vertex_handle, Vertex_circulator>(cdt, problem, constraints, 1000);
+        problem->update_problem<CDT, Face_handle>(cdt, point_set);*/
+
+        // Energy
+        /*optimizeTinyAD(problem);
+        cdt = problem->generate_CDT<CDT>();
         problem->update_problem<CDT, Face_handle>(cdt, point_set);
         optimizeTinyAD(problem);
         cdt = problem->generate_CDT<CDT>();
-        std::cout << "Num obtuse after regenerating CDT after optimization " << i << ": " << count_obtuse_triangles(problem) << std::endl;
         problem->update_problem<CDT, Face_handle>(cdt, point_set);
-        problem->visualize_solution({});*/
-        /*iterate_lloyd<CDT, Vertex_handle, Vertex_circulator>(cdt, problem, constraints, 1000);
-        problem->update_problem<CDT, Face_handle>(cdt, point_set);
-        problem->visualize_solution({});*/
+        optimizeTinyAD(problem);
+        cdt = problem->generate_CDT<CDT>();
+        problem->update_problem<CDT, Face_handle>(cdt, point_set);*/
+
+        //problem->visualize_solution({});
+
         //!For this first need to convert to an inexact kernel
-        /*CGAL::lloyd_optimize_mesh_2(cdt, CGAL::parameters::number_of_iterations(1000));
+        CGAL::lloyd_optimize_mesh_2(cdt, CGAL::parameters::number_of_iterations(1000));
         problem->update_problem<CDT, Face_handle>(cdt, point_set);
-        problem->visualize_solution({});*/
+        problem->visualize_solution({});
         i++;
     }
 
     /*iterate_lloyd<CDT, Vertex_handle, Vertex_circulator>(cdt, problem, constraints, 1000);
-    problem->update_problem<CDT, Face_handle>(cdt, point_set);
-    std::cout << "End of meshing" << std::endl;
+    problem->update_problem<CDT, Face_handle>(cdt, point_set);*/
 
-    std::cout << "Deviation: " << mean_absolute_deviation(problem) << std::endl;
-    problem->visualize_solution({});*/
+    stats.set_name(problem->get_name());
+    stats.set_steiner_after_meshing(problem->get_steiner().size());
+    stats.set_deviation(mean_absolute_deviation(problem));
+    stats.set_aspect_ratio(mean_aspect_ratio(problem));
+    save_min_max_angle(problem, &stats);
 
-    //optimizeTinyAD(problem);
-    // LLoyd optimization
-    /*CGAL::lloyd_optimize_mesh_2(cdt, CGAL::parameters::number_of_iterations(1000));
-    update_problem(problem, cdt, point_set);
-    problem->visualize_solution({});*/
+    stats.set_max_length(get_max_edge_ength(problem));
 
-    // Regenerate CDT after optimization
-    /*steiner_point_set.clear();
-    for(const auto& steiner : problem->get_steiner()){
-        steiner_point_set.insert(steiner);
-    }
-    cdt = generate_triangulation(point_set, steiner_point_set, constraints);*/
+    //problem->visualize_solution({});
+
+    std::cout << "num steiner: "  << problem->get_steiner().size() << std::endl;
+    std::cout << "deviation: "  << mean_absolute_deviation(problem) << std::endl;
+    std::cout << "max_edge_length: "  << get_max_edge_ength(problem) << RESET << std::endl;
+
+    return stats;
 }
 
 void classic_delaunay_refinement(Problem* problem){
@@ -731,7 +771,7 @@ void mesh_cgal(Problem* problem){
     mesher.refine_mesh();
 
     problem->update_problem<CDT, Face_handle>(cdt, point_set);
-    problem->visualize_solution({});
+    //problem->visualize_solution({});
 }
 
 double angle_degrees(const Point& a, const Point& b, const Point& c) {
@@ -796,6 +836,26 @@ void save_aspect_ratios_for_plot(Problem* problem, std::string path){
         out << ratio << "\n";
     }
     out.close();
+}
+
+double mean_aspect_ratio(Problem* problem){
+    double sum = 0.0;
+
+    auto triangulation = problem->get_triangulation();
+
+    std::vector<double> ratios;
+
+    for (const Polygon& triangle : triangulation) {
+        if (triangle.size() != 3) continue;
+
+        const Point& A = triangle[0];
+        const Point& B = triangle[1];
+        const Point& C = triangle[2];
+
+        sum += get_aspect_ratio(A, B, C);
+    }
+
+    return sum/(triangulation.size());
 }
 
 void save_angle_stats_for_plot(Problem* problem, std::string path){

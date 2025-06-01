@@ -1,4 +1,4 @@
-name,deviation,min_angle,max_angle
+name,deviation,min_angle,max_angle,num_steiner
 simple-polygon-exterior_10_310dc6c7,9.50717,11.9442,109.769,328
 simple-polygon-exterior_10_40642b31,9.99832,11.7987,112.301,298
 simple-polygon-exterior_10_8b098f5e,13.6298,0.771378,118.22,613

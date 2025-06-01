@@ -2,7 +2,7 @@
 #include "tinyAD_optimization.hpp"
 #include "mesh_statistics.hpp"
 
-void refine(Problem* problem);
+Mesh_Statistics refine(Problem* problem);
 void step_by_step_mesh(Problem* problem);
 void classic_delaunay_refinement(Problem* problem);
 
@@ -22,3 +22,5 @@ void mesh_cgal(Problem* problem);
 Mesh_Statistics mesh_equilateral(Problem* problem);
 
 double mean_absolute_deviation(Problem* problem);
+double mean_aspect_ratio(Problem* problem);
+std::vector<Polygon> save_min_max_angle(Problem* problem, Mesh_Statistics* stats);

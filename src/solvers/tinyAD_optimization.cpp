@@ -747,7 +747,7 @@ void find_minimum(Problem* problem, Eigen::MatrixXd& V, Eigen::MatrixXi& F, Eige
     std::cout << "\npoints size:\n";
     std::cout << points.size();*/
 
-    TINYAD_DEBUG_OUT("Start energy: " << func.eval(x));
+    //*TINYAD_DEBUG_OUT("Start energy: " << func.eval(x));
 
     // Projected Newton
     TinyAD::LinearSolver solver;
@@ -791,7 +791,7 @@ void find_minimum(Problem* problem, Eigen::MatrixXd& V, Eigen::MatrixXi& F, Eige
         //x = TinyAD::line_search(x, d, f, g, func, 1.0, 0.8, 256);
         x = TinyAD::line_search(x, d, f, g, func);
     }
-    TINYAD_DEBUG_OUT("Final energy: " << func.eval(x));
+    //*TINYAD_DEBUG_OUT("Final energy: " << func.eval(x));
 
     // Write final vertex positions to mesh.
     func.x_to_data(x, [&] (int v_idx, const Eigen::Vector2d& p) {

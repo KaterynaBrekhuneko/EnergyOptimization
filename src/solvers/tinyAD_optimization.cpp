@@ -655,6 +655,9 @@ void optimizeTinyAD(Problem* problem){
 
     find_minimum(problem, V, F, B, B_VAR, BS, BS_VAR, BS_TANGENT);
     update_problem_tinyAD(problem, V, F);
+    
+    /*find_minimum_2(problem, V, F, B, B_VAR, BS, BS_VAR, BS_TANGENT);
+    update_problem_tinyAD(problem, V, F);*/
 
     //std::cout << "Num rows in V: " << V.rows() << " and in F: " << F.rows() << std::endl;
     /*flip_obtuse_triangles(problem, V, F, true);
@@ -699,7 +702,7 @@ void find_minimum(Problem* problem, Eigen::MatrixXd& V, Eigen::MatrixXi& F, Eige
             return (T)INFINITY;
         }
 
-        return angle_cost_equilateral_inverse_penalty<T>(problem, a, b, c);
+        return angle_cost_refined_sigmoid<T>(problem, a, b, c);
     });
 
     // Add penalty term per constrained vertex
@@ -747,7 +750,7 @@ void find_minimum(Problem* problem, Eigen::MatrixXd& V, Eigen::MatrixXi& F, Eige
     std::cout << "\npoints size:\n";
     std::cout << points.size();*/
 
-    //*TINYAD_DEBUG_OUT("Start energy: " << func.eval(x));
+    TINYAD_DEBUG_OUT("Start energy: " << func.eval(x));
 
     // Projected Newton
     TinyAD::LinearSolver solver;
@@ -791,7 +794,7 @@ void find_minimum(Problem* problem, Eigen::MatrixXd& V, Eigen::MatrixXi& F, Eige
         //x = TinyAD::line_search(x, d, f, g, func, 1.0, 0.8, 256);
         x = TinyAD::line_search(x, d, f, g, func);
     }
-    //*TINYAD_DEBUG_OUT("Final energy: " << func.eval(x));
+    TINYAD_DEBUG_OUT("Final energy: " << func.eval(x));
 
     // Write final vertex positions to mesh.
     func.x_to_data(x, [&] (int v_idx, const Eigen::Vector2d& p) {
@@ -842,4 +845,100 @@ void update_problem_tinyAD(Problem* problem, Eigen::MatrixXd& V, Eigen::MatrixXi
         }
         problem->add_triangle(poly);
     }
+}
+
+//----------------------------------------------------------------------------------------
+void find_minimum_2(Problem* problem, Eigen::MatrixXd& V, Eigen::MatrixXi& F, Eigen::VectorXi& B, Eigen::MatrixXd& B_VAR, Eigen::VectorXi& BS, Eigen::MatrixXd& BS_VAR, Eigen::MatrixXd& BS_TANGENT){
+    auto points = problem->get_points(); 
+    auto steiner = problem->get_steiner(); 
+    auto triangles = problem->get_triangulation();
+    auto boundary = problem->get_boundary();
+    auto constraints = problem->get_constraints();
+    
+    // Objective settings
+    const double w_penalty = 1e5;
+    const double epsilon = 1e-6;
+    
+    // Objective
+    auto func = TinyAD::scalar_function<2>(TinyAD::range(V.rows()));
+
+    // Add objective term per triangle
+    func.add_elements<3>(TinyAD::range(F.rows()), [&] (auto& element) -> TINYAD_SCALAR_TYPE(element) {
+        // Evaluate element using either double or TinyAD::Double
+        using T = TINYAD_SCALAR_TYPE(element);
+
+        Eigen::Index f_idx = element.handle;
+        Eigen::Vector2<T> a = element.variables(F(f_idx, 0));
+        Eigen::Vector2<T> b = element.variables(F(f_idx, 1));
+        Eigen::Vector2<T> c = element.variables(F(f_idx, 2));
+
+        // Triangle flipped?
+        Eigen::Matrix2<T> M = TinyAD::col_mat(b - a, c - a);
+        if (M.determinant() <= 0.0){ 
+            return (T)INFINITY;
+        }
+
+        return angle_cost_equilateral<T>(problem, a, b, c);
+    });
+
+    // Add penalty term per constrained vertex
+    func.add_elements<1>(TinyAD::range(B.size()), [&] (auto& element) -> TINYAD_SCALAR_TYPE(element) {
+        using T = TINYAD_SCALAR_TYPE(element);
+        Eigen::Vector2<T> p = element.variables(B[element.handle]);
+        Eigen::Vector2d p_target = B_VAR.row(element.handle);
+        return w_penalty * (p_target - p).squaredNorm();
+    });
+
+    func.add_elements<1>(TinyAD::range(BS.size()), [&] (auto& element) -> TINYAD_SCALAR_TYPE(element) {
+        using T = TINYAD_SCALAR_TYPE(element);
+        Eigen::Vector2<T> p = element.variables(BS[element.handle]);
+        Eigen::Vector2d p_target = BS_VAR.row(element.handle);
+        
+        return w_penalty * (p_target - p).squaredNorm();
+    });
+
+    // Initialize x with the 2D vertex positions
+    Eigen::VectorXd x = func.x_from_data([&] (int v_idx) {
+        return V.row(v_idx);
+    });
+
+    // Projected Newton
+    TinyAD::LinearSolver solver;
+    const int max_iters = 1000;
+    const double convergence_eps = 1e-6;
+    for (int iter = 0; iter < max_iters; ++iter)
+    {
+        auto [f, g, H_proj] = func.eval_with_hessian_proj(x);
+        //auto [f, g] = func.eval_with_gradient(x);
+
+        int s = x.cols();
+        int s1 = x.rows();
+        int s2 = V.cols();
+        int s3 = V.rows();
+
+        Eigen::VectorXd d;
+        try {
+            d = TinyAD::newton_direction(g, H_proj, solver);
+        } catch (const std::runtime_error& e) {
+            std::cerr << "Caught runtime_error: " << e.what() << std::endl;
+            break;
+        }
+        double newton_decrement = TinyAD::newton_decrement<double>(d, g);
+
+        if(newton_decrement < convergence_eps)
+            break;
+        
+        x = TinyAD::line_search(x, d, f, g, func);
+    }
+
+    // Write final vertex positions to mesh.
+    func.x_to_data(x, [&] (int v_idx, const Eigen::Vector2d& p) {
+        if(v_idx >= points.size()){
+            Point start_p = steiner[v_idx - points.size()];
+            Segment c;
+            if(!is_constrained_point(start_p, boundary, constraints, &c)){
+                V.row(v_idx) = p;
+            }
+        }
+    });
 }

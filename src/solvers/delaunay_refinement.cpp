@@ -267,7 +267,7 @@ Mesh_Statistics refine(Problem* problem){
     cdt = problem->generate_CDT<CDT>();
     problem->update_problem<CDT, Face_handle>(cdt, point_set);*/
 
-    problem->visualize_solution({});
+    //problem->visualize_solution({});
 
     double sizing = get_sizing(problem);
     double max_sizing, target_sizing;
@@ -284,7 +284,7 @@ Mesh_Statistics refine(Problem* problem){
         mesh(problem, cdt, sizing, target_sizing);
         //std::cout << BLUE  << "Num of points in cdt after " << i << ": " << cdt.number_of_vertices()  << RESET << std::endl;
         problem->update_problem<CDT, Face_handle>(cdt, point_set);
-        problem->visualize_solution({});
+        //problem->visualize_solution({});
 
         // LLoyd optimization
         /*iterate_lloyd<CDT, Vertex_handle, Vertex_circulator>(cdt, problem, constraints, 1000);
@@ -306,7 +306,7 @@ Mesh_Statistics refine(Problem* problem){
         //!For this first need to convert to an inexact kernel
         CGAL::lloyd_optimize_mesh_2(cdt, CGAL::parameters::number_of_iterations(1000));
         problem->update_problem<CDT, Face_handle>(cdt, point_set);
-        problem->visualize_solution({});
+        //problem->visualize_solution({});
         i++;
     }
 
@@ -326,6 +326,9 @@ Mesh_Statistics refine(Problem* problem){
     std::cout << "num steiner: "  << problem->get_steiner().size() << std::endl;
     std::cout << "deviation: "  << mean_absolute_deviation(problem) << std::endl;
     std::cout << "max_edge_length: "  << get_max_edge_ength(problem) << RESET << std::endl;
+
+    save_angle_stats_for_plot(problem, "../results/angle_stats_lloyd_simple-polygon_20_4bd3c2e5");
+    save_aspect_ratios_for_plot(problem, "../results/aspect_ratios_lloyd_simple-polygon_20_4bd3c2e5");
 
     return stats;
 }
@@ -598,6 +601,39 @@ void locally_optimize_triangles(Problem *problem){
     problem->set_triangulation(triangulation);
 }
 
+void locally_optimize_obtuse_refinement(Problem *problem){
+    std::vector<Polygon> triangulation = problem->get_triangulation();
+    std::vector<Point> points = problem->get_points();
+    std::vector<Point> steiner;
+
+    for(Polygon t : triangulation){
+        if(is_obtuse_triangle(t)){
+            Point a = t.vertex(0);
+            Point b = t.vertex(1);
+            Point c = t.vertex(2);
+
+            if(std::find(points.begin(), points.end(), a) == points.end()){
+                Point new_s1 = locally_optimize_position(a, triangulation, problem);
+                steiner.push_back(new_s1);
+            }
+            if(std::find(points.begin(), points.end(), b) == points.end()){
+                Point new_s2 = locally_optimize_position(b, triangulation, problem);
+                steiner.push_back(new_s2);
+            }
+            if(std::find(points.begin(), points.end(), c) == points.end()){
+                Point new_s3 = locally_optimize_position(c, triangulation, problem);
+                steiner.push_back(new_s3);
+            }
+        }
+    }
+    
+    /*problem->clear_solution();
+    for(int i = 0; i < steiner.size(); i++){
+        problem->add_steiner(steiner[i]);
+    }*/
+    problem->set_triangulation(triangulation);
+}
+
 void step_by_step_mesh(Problem* problem){
     // Preprocess the input instance, compute and compute cdt
     std::vector<Point> points = problem->get_points();
@@ -704,11 +740,15 @@ Mesh_Statistics uniform_mesh(Problem* problem){
     statistics.set_obtuse_after_meshing(obtuse_meshing);
     statistics.set_steiner_after_meshing(problem->get_steiner().size());
 
-    std::string path1 = "../results/MESH-" + problem->get_name() + ".svg";
-    problem->save_intermidiate_result(path1);
+    //std::string path1 = "../results/MESH-" + problem->get_name() + ".svg";
+    //problem->save_intermidiate_result(path1);
 
     optimizeTinyAD(problem);
     cdt = problem->generate_CDT<CDT>();
+    problem->update_problem<CDT, Face_handle>(cdt, point_set);
+    optimizeTinyAD(problem);
+    cdt = problem->generate_CDT<CDT>();
+    problem->update_problem<CDT, Face_handle>(cdt, point_set);
 
     int obtuse_opt = count_obtuse_triangles(problem);
     problem->set_num_obtuse(obtuse_opt);
@@ -731,6 +771,16 @@ Mesh_Statistics uniform_mesh(Problem* problem){
 
     cdt = problem->generate_CDT<CDT>();
     problem->update_problem<CDT, Face_handle>(cdt, point_set);
+
+    std::cout << RED << "num obtuse: " << count_obtuse_triangles(problem) << std::endl;
+
+    /*locally_optimize_obtuse_refinement(problem);
+    cdt = problem->generate_CDT<CDT>();
+    problem->update_problem<CDT, Face_handle>(cdt, point_set);
+
+    fix_boundary_refinement(problem);
+    cdt = problem->generate_CDT<CDT>();
+    problem->update_problem<CDT, Face_handle>(cdt, point_set);*/
 
     obtuse_opt = count_obtuse_triangles(problem);
     problem->set_num_obtuse(obtuse_opt);

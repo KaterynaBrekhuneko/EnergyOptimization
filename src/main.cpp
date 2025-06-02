@@ -456,8 +456,71 @@ int main(int argc, char **argv){
     print_current_time();
     std::vector<Mesh_Statistics> all_stats;
 
+    Problem *problem = new Problem("../instances/ortho/ortho_10_d2723dcc.instance.json");
+
+    uniform_mesh(problem);
+
+    print_current_time();
+
+    /*locally_optimize_solution(problem);
+    //globally_optimize_solution(problem);
+    std::cout << "Num obtuse after optimization 1: " << countObtuse(problem->get_triangulation()) << std::endl;
+    problem->visualize_solution({});
+
+    locally_optimize_obtuse(problem);
+    //globally_optimize_obtuse(problem);
+    std::cout << "Num obtuse after optimization 2: " << countObtuse(problem->get_triangulation()) << std::endl;
+    problem->visualize_solution({});
+
+    locally_optimize_obtuse(problem);
+    //globally_optimize_obtuse(problem);
+    std::cout << "Num obtuse after optimization 3: " << countObtuse(problem->get_triangulation()) << std::endl;
+    problem->visualize_solution({});
+
+    perform_edge_flips(problem, false);
+    std::cout << "Num obtuse after flips 1: " << countObtuse(problem->get_triangulation()) << std::endl;
+    problem->visualize_solution({});
+
+    fix_boundary(problem);
+    std::cout << "Num obtuse after fixing boundary 1: " << countObtuse(problem->get_triangulation()) << std::endl;
+    problem->visualize_solution({});
+
+    locally_optimize_obtuse(problem);
+    //globally_optimize_obtuse(problem);
+    std::cout << "Num obtuse after optimization 4: " << countObtuse(problem->get_triangulation()) << std::endl;
+    problem->visualize_solution({});
+
+    fix_boundary(problem);
+    std::cout << "Num obtuse after fixing boundary 2: " << countObtuse(problem->get_triangulation()) << std::endl;
+    problem->visualize_solution({});
+
+    perform_edge_flips(problem, false);
+    std::cout << "Num obtuse after flips 2: " << countObtuse(problem->get_triangulation()) << std::endl;
+    problem->visualize_solution({});
+
+    locally_optimize_obtuse(problem);
+    //globally_optimize_obtuse(problem);
+    std::cout << "Num obtuse after optimization 5: " << countObtuse(problem->get_triangulation()) << std::endl;
+    problem->visualize_solution({});
+
+    fix_boundary(problem);
+    std::cout << "Num obtuse after fixing boundary 3: " << countObtuse(problem->get_triangulation()) << std::endl;
+    problem->visualize_solution({});
+    //std::cout << "new_steiner : " << problem->get_steiner().size() << std::endl;
+
+    locally_optimize_obtuse(problem);
+    //globally_optimize_obtuse(problem);
+    std::cout << "Num obtuse after optimization 6: " << countObtuse(problem->get_triangulation()) << std::endl;
+    problem->visualize_solution({});
+
+    fix_boundary(problem);
+    std::cout << "Num obtuse after fixing boundary 4: " << countObtuse(problem->get_triangulation()) << std::endl;
+    problem->visualize_solution({});
+
+    std::cout << "new_steiner : " << problem->get_steiner().size() << "\n\n" << std::endl;
+
     // Sort instance files in the directory in alphabetical order
-    std::vector<fs::directory_entry> entries;
+    /*std::vector<fs::directory_entry> entries;
     for (const auto& entry : fs::directory_iterator("../instances/simple")) {
         entries.push_back(entry);
     }
@@ -467,11 +530,11 @@ int main(int argc, char **argv){
               });
           
 
-    /*for (const auto& entry : entries) {
+    for (const auto& entry : entries) {
         if (entry.is_regular_file() && entry.path().extension() == ".json") {
-            Problem *problem = new Problem("../instances/simple/" + entry.path().filename().string());*/
+            Problem *problem = new Problem("../instances/simple/" + entry.path().filename().string());
 
-            Problem *problem = new Problem("../instances/simple/simple-polygon_20_4bd3c2e5.instance.json");
+            //Problem *problem = new Problem("../instances/simple/simple-polygon_20_4bd3c2e5.instance.json");
             std::cout << "current instance: " << problem->get_name() << std::endl;
 
             Mesh_Statistics stats  = refine(problem);
@@ -482,9 +545,9 @@ int main(int argc, char **argv){
         }
     }
 
-    write_to_csv_equilateral("../results/mean_deviations_initial_ortho.csv", all_stats);*/
+    write_to_csv_equilateral("../results/mean_deviations_initial_ortho.csv", all_stats);
 
-    print_current_time();
+    print_current_time();*/
 
     /*all_stats.clear();
     // Sort instance files in the directory in alphabetical order
@@ -586,7 +649,6 @@ int main(int argc, char **argv){
     //problem->visualize_solution();
     //Problem *problem = new Problem(argv[1]);
 
-
     
     //* Test all instances
     /*print_current_time();
@@ -629,7 +691,6 @@ int main(int argc, char **argv){
     //step_by_step_mesh(problem);
     //refine(problem);
     //classic_delaunay_refinement(problem);
-
 
     //* Just testing optimization
     /*Solver* solver = new Mesh();
@@ -680,8 +741,6 @@ int main(int argc, char **argv){
             stats.set_name(problem->get_name());
             stats.set_steiner_after_meshing(problem->get_steiner().size());
             stats.set_obtuse_after_meshing(countObtuse(problem->get_triangulation()));*/
-
-           
             
             /*std::cout << "Num obtuse before: " << countObtuse(problem->get_triangulation()) << std::endl;
             problem->visualize_solution();

@@ -6,6 +6,8 @@ Mesh_Statistics refine(Problem* problem);
 void step_by_step_mesh(Problem* problem);
 void classic_delaunay_refinement(Problem* problem);
 
+void locally_optimize_obtuse_refinement(Problem *problem);
+
 Point project_onto_segment_refinement(const Point p, const Segment& s);
 bool is_on_constraint_refinement(const Point& steiner, Problem* problem);
 bool is_on_boundary_refinement(Point& p, Polygon& boundary);
@@ -24,3 +26,6 @@ Mesh_Statistics mesh_equilateral(Problem* problem);
 double mean_absolute_deviation(Problem* problem);
 double mean_aspect_ratio(Problem* problem);
 std::vector<Polygon> save_min_max_angle(Problem* problem, Mesh_Statistics* stats);
+
+void save_angle_stats_for_plot(Problem* problem, std::string path);
+void save_aspect_ratios_for_plot(Problem* problem, std::string path);

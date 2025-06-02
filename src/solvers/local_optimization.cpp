@@ -790,7 +790,7 @@ Point locally_optimize_position(Point steiner, std::vector<Polygon>& triangles, 
 
         } else {*/
         if((is_interior_vertex_with_tolerance(s, problem->get_boundary())) && !is_on_constraint_with_tolerance(s, problem, &constraint)){
-            Point gradient = calculate_gradient_equilateral(s, neighborhood);
+            Point gradient = calculate_gradient_refined_sigmoid(s, neighborhood);
 
             //std::cout << "gradient norm: " << norm(gradient) << std::endl;
             while(norm(gradient) > TOL && iteration < MAX_ITER){
@@ -813,7 +813,7 @@ Point locally_optimize_position(Point steiner, std::vector<Polygon>& triangles, 
                     //break;
                 }
 
-                gradient = calculate_gradient_equilateral(s, neighborhood);
+                gradient = calculate_gradient_refined_sigmoid(s, neighborhood);
 
                 iteration++;
             }

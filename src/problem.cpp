@@ -38,7 +38,55 @@ Problem::Problem(std::string file_name)
         constraints.push_back(Segment(points[constraint[0]], points[constraint[1]]));
     }
 
+    for (int i = 0; i < data["steiner_x"].size(); i++){
+        int x = data["steiner_x"][i];
+        int y = data["steiner_y"][i];
+        steiner.push_back(Point(x, y));
+    }
+
     num_obtuse = -1;
+}
+
+void Problem::write_problem_to_json(const std::string& output_file) {
+    json data;
+
+    // Basic fields
+    data["instance_uid"] = name;
+
+    // Points
+    data["num_points"] = points.size();
+    data["points_x"] = json::array();
+    data["points_y"] = json::array();
+    for (const auto& p : points) {
+        data["points_x"].emplace_back(CGAL::to_double(p.x()));
+        data["points_y"].emplace_back(CGAL::to_double(p.y()));
+    }
+
+    // Boundary indices
+    data["region_boundary"] = boundary_indices;
+
+    // Constraints
+    data["num_constraints"] = constraints.size();
+    data["additional_constraints"] = json::array();
+    for (const auto& constraint : constraints_indices) {
+        data["additional_constraints"].push_back(constraint);
+    }
+
+    // Steiner points
+    data["steiner_x"] = json::array();
+    data["steiner_y"] = json::array();
+    for (const auto& s : steiner) {
+        data["steiner_x"].emplace_back(CGAL::to_double(s.x()));
+        data["steiner_y"].emplace_back(CGAL::to_double(s.y()));
+    }
+
+    // Write to file
+    std::ofstream out(output_file);
+    if (!out) {
+        std::cerr << "Could not open output file for writing.\n";
+        return;
+    }
+    out << std::setw(2) << data << std::endl;
 }
 
 void Problem::remove_triangle(Polygon t){
@@ -199,7 +247,7 @@ void Problem::visualize_solution(std::vector<Polygon> problematic_triangles){
 
     //steiner = {};
 
-    to_IPE(path, points, constraints, {}, boundary.vertices(), {}, triangle_segments, {}, problematic_triangles);
+    to_IPE(path, points, constraints, {}, boundary.vertices(), {}, triangle_segments, obtuse_triangles, problematic_triangles);
 }
 
 void Problem::save_intermidiate_result(std::string path){

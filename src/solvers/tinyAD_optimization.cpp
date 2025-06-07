@@ -103,14 +103,8 @@ T angle_cost_ln( Problem* problem,
     T cos_angle_b = (-ab).dot(bc);
     T cos_angle_c = (-bc).dot(ca);
    
-    if(abs(cos_angle_a) >= 1){
-        std::cout << "Cos out of range for Point a: " << a[0] << " " << a[1] << std::endl;
-    }
-    if(abs(cos_angle_b) >= 1){
-        std::cout << "Cos out of range for Point b: " << b[0] << " " << b[1] << std::endl;
-    }
-    if(abs(cos_angle_c) >= 1){
-        std::cout << "Cos out of range for Point c: " << c[0] << " " << c[1] << std::endl;
+    if(abs(cos_angle_a) >= 1 || abs(cos_angle_b) >= 1 || abs(cos_angle_c) >= 1){
+        return (T)INFINITY;
     }
         
     // Calculate and return the sigmoid term
@@ -252,14 +246,17 @@ T angle_cost_sigmoid( Problem* problem,
         TINYAD_WARNING("cosine out of range!");
     }*/
    
-    if(abs(cos_angle_a) >= 1){
-        std::cout << "Cos out of range for Point a: " << a[0] << " " << a[1] << std::endl;
+    if(abs(cos_angle_a) >= (T)1.0){
+        //std::cout << "Cos out of range for Point a: " << a[0] << " " << a[1] << std::endl;
+        return (T)INFINITY;
     }
-    if(abs(cos_angle_b) >= 1){
-        std::cout << "Cos out of range for Point b: " << b[0] << " " << b[1] << std::endl;
+    if(abs(cos_angle_b) >= (T)1.0){
+        //std::cout << "Cos out of range for Point b: " << b[0] << " " << b[1] << std::endl;
+        return (T)INFINITY;
     }
-    if(abs(cos_angle_c) >= 1){
-        std::cout << "Cos out of range for Point c: " << c[0] << " " << c[1] << std::endl;
+    if(abs(cos_angle_c) >= (T)1.0){
+        //std::cout << "Cos out of range for Point c: " << c[0] << " " << c[1] << std::endl;
+        return (T)INFINITY;
     }
         
     // Calculate and return the sigmoid term
@@ -316,10 +313,10 @@ T angle_cost_refined_sigmoid( Problem* problem,
         const Eigen::Vector2<T>& b,
         const Eigen::Vector2<T>& c)
 {
-    double k = 15;
-    double s = 1.2;
-    double m = 0.1;
-    double k_s = 10;
+    double k = 5;
+    double s = 1.5;
+    double m = 0.3;
+    double k_s = 2.5;
 
     // Compute all three normalized triangle edge vectors
     Eigen::Vector2<T> ab = (b - a).normalized();
@@ -521,8 +518,8 @@ void flip_edge(Problem* problem, Eigen::MatrixXd& V, Eigen::MatrixXi& F, int tri
     int d = F(tri2, (v2 + 2) % 3);
 
     // Only flip if it benefits energy
-    double energy_before = angle_cost_refined_sigmoid<double>(problem, V.row(a), V.row(b), V.row(c)) + angle_cost_refined_sigmoid<double>(problem, V.row(d), V.row(b), V.row(c));
-    double energy_after = angle_cost_refined_sigmoid<double>(problem, V.row(a), V.row(b), V.row(d)) + angle_cost_refined_sigmoid<double>(problem, V.row(a), V.row(c), V.row(d));
+    double energy_before = angle_cost_sigmoid<double>(problem, V.row(a), V.row(b), V.row(c)) + angle_cost_sigmoid<double>(problem, V.row(d), V.row(b), V.row(c));
+    double energy_after = angle_cost_sigmoid<double>(problem, V.row(a), V.row(b), V.row(d)) + angle_cost_sigmoid<double>(problem, V.row(a), V.row(c), V.row(d));
 
     if(!consider_energy || energy_after <= energy_before){
         // Replace the triangles with the flipped configuration 
@@ -702,7 +699,7 @@ void find_minimum(Problem* problem, Eigen::MatrixXd& V, Eigen::MatrixXi& F, Eige
             return (T)INFINITY;
         }
 
-        return angle_cost_refined_sigmoid<T>(problem, a, b, c);
+        return angle_cost_sigmoid<T>(problem, a, b, c);
     });
 
     // Add penalty term per constrained vertex

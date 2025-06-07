@@ -16,7 +16,7 @@
 #define RESET   "\033[0m"
 
 using json = nlohmann::json;
-typedef CGAL::Exact_predicates_inexact_constructions_kernel K;
+typedef CGAL::Exact_predicates_exact_constructions_kernel K;
 typedef CGAL::Exact_predicates_inexact_constructions_kernel K_i;
 typedef CGAL::Polygon_2<K> Polygon;
 typedef Polygon::Vertex_iterator VertexIterator;
@@ -66,6 +66,7 @@ public:
     std::vector<std::tuple<int, int>> get_constraints_indices() { return constraints_indices; };
 
     std::vector<Point> get_steiner() { return steiner; };
+    void set_steiner(std::vector<Point> new_steiner) { steiner = new_steiner; };
     void add_steiner(Point s) { steiner.push_back(s); };
     void update_steiner(Point s, Point new_s);
 
@@ -88,6 +89,7 @@ public:
     void visualize_solution(std::vector<Polygon> problematic_triangles);
 
     void save_intermidiate_result(std::string path);
+    void write_problem_to_json(const std::string& output_file);
 
     template <typename CDT>
     CDT generate_CDT() {

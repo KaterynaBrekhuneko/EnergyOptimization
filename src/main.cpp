@@ -456,11 +456,126 @@ int main(int argc, char **argv){
     print_current_time();
     std::vector<Mesh_Statistics> all_stats;
 
-    Problem *problem = new Problem("../instances/ortho/ortho_10_d2723dcc.instance.json");
+    //Problem *problem = new Problem("../instances/ortho/ortho_10_d2723dcc.instance.json");
+    //uniform_mesh(problem);
 
-    uniform_mesh(problem);
+    std::vector<fs::directory_entry> entries;
+    for (const auto& entry : fs::directory_iterator("../instances/simple-exterior")) {
+        entries.push_back(entry);
+    }
+    std::sort(entries.begin(), entries.end(),
+              [](const fs::directory_entry& a, const fs::directory_entry& b) {
+                  return a.path().filename() < b.path().filename(); // alphabetical by name
+              });
+          
+
+    for (const auto& entry : entries) {
+        if (entry.is_regular_file() && entry.path().extension() == ".json") {
+            Problem *problem = new Problem("../instances/simple-exterior/" + entry.path().filename().string());
+
+            //Problem *problem = new Problem("../instances/point-set/point-set_10_7451a2a9.instance.json");
+            std::string name = problem->get_name();
+            //if(!(name == "simple-polygon_100_4b4ba391" || name == "simple-polygon_10_297edd18" || name == "simple-polygon_20_4bd3c2e5")){
+            //if(!(name == "point-set_10_c04b0024" || name == "point-set_20_54ab0b47" || name == "point-set_40_1b92b629" || name == "point-set_60_ac318d72" || name == "point-set_80_1675b331")){
+                std::cout << "current instance: " << problem->get_name() << std::endl;
+                Mesh_Statistics stats  = uniform_mesh(problem);
+
+                all_stats.push_back(stats);
+                write_to_csv_obtuse("../results/modified3_initial_sigmoid_simple_exterior.csv", all_stats); 
+            //}
+        }
+    }
+
+    write_to_csv_obtuse("../results/modified3_initial_sigmoid_simple_exterior.csv", all_stats);
 
     print_current_time();
+
+    /*all_stats.clear();
+    entries.clear();
+    for (const auto& entry : fs::directory_iterator("../instances/ortho")) {
+        entries.push_back(entry);
+    }
+    std::sort(entries.begin(), entries.end(),
+              [](const fs::directory_entry& a, const fs::directory_entry& b) {
+                  return a.path().filename() < b.path().filename(); // alphabetical by name
+              });
+          
+
+    for (const auto& entry : entries) {
+        if (entry.is_regular_file() && entry.path().extension() == ".json") {
+            Problem *problem = new Problem("../instances/ortho/" + entry.path().filename().string());
+
+            //Problem *problem = new Problem("../instances/point-set/point-set_10_7451a2a9.instance.json");
+            std::string name = problem->get_name();
+            std::cout << "current instance: " << problem->get_name() << std::endl;
+            Mesh_Statistics stats  = uniform_mesh(problem);
+
+            all_stats.push_back(stats);
+            write_to_csv_obtuse("../results/modified3_initial_ln_ortho.csv", all_stats); 
+        }
+    }
+
+    write_to_csv_obtuse("../results/modified3_initial_ln_ortho.csv", all_stats);
+
+    print_current_time();
+
+    all_stats.clear();
+    entries.clear();
+    for (const auto& entry : fs::directory_iterator("../instances/point-set")) {
+        entries.push_back(entry);
+    }
+    std::sort(entries.begin(), entries.end(),
+              [](const fs::directory_entry& a, const fs::directory_entry& b) {
+                  return a.path().filename() < b.path().filename(); // alphabetical by name
+              });
+          
+
+    for (const auto& entry : entries) {
+        if (entry.is_regular_file() && entry.path().extension() == ".json") {
+            Problem *problem = new Problem("../instances/point-set/" + entry.path().filename().string());
+
+            //Problem *problem = new Problem("../instances/point-set/point-set_10_7451a2a9.instance.json");
+            std::string name = problem->get_name();
+            std::cout << "current instance: " << problem->get_name() << std::endl;
+            Mesh_Statistics stats  = uniform_mesh(problem);
+
+            all_stats.push_back(stats);
+            write_to_csv_obtuse("../results/modified3_initial_ln_point_set.csv", all_stats); 
+        }
+    }
+
+    write_to_csv_obtuse("../results/modified3_initial_ln_point_set.csv", all_stats);
+
+    print_current_time();
+
+    all_stats.clear();
+    entries.clear();
+    for (const auto& entry : fs::directory_iterator("../instances/simple")) {
+        entries.push_back(entry);
+    }
+    std::sort(entries.begin(), entries.end(),
+              [](const fs::directory_entry& a, const fs::directory_entry& b) {
+                  return a.path().filename() < b.path().filename(); // alphabetical by name
+              });
+          
+
+    for (const auto& entry : entries) {
+        if (entry.is_regular_file() && entry.path().extension() == ".json") {
+            Problem *problem = new Problem("../instances/simple/" + entry.path().filename().string());
+
+            //Problem *problem = new Problem("../instances/point-set/point-set_10_7451a2a9.instance.json");
+            std::string name = problem->get_name();
+            std::cout << "current instance: " << problem->get_name() << std::endl;
+            Mesh_Statistics stats  = uniform_mesh(problem);
+
+            all_stats.push_back(stats);
+            write_to_csv_obtuse("../results/modified3_initial_ln_simple.csv", all_stats); 
+        }
+    }
+
+    write_to_csv_obtuse("../results/modified3_initial_ln_simple.csv", all_stats);
+
+    print_current_time();*/
 
     /*locally_optimize_solution(problem);
     //globally_optimize_solution(problem);

@@ -531,7 +531,7 @@ Point calculate_gradient_sigmoid(Point& s, std::vector<Polygon>& triangles){
     double dx = 0.0;
     double dy = 0.0;
 
-    double k = 15;
+    double k = 5;
 
     for(const Polygon& triangle : triangles){
 
@@ -575,9 +575,9 @@ Point calculate_gradient_sigmoid(Point& s, std::vector<Polygon>& triangles){
 }
 
 Point calculate_gradient_refined_sigmoid(Point& s, std::vector<Polygon>& triangles){
-    double scale = 1.2;
-    double m = 0.1;
-    double k_s = 10;
+    double scale = 1.5;
+    double m = 0.3;
+    double k_s = 2.5;
 
     Point gradSigmoid = calculate_gradient_sigmoid(s, triangles);
     double dx = scale*CGAL::to_double(gradSigmoid.x());
@@ -758,7 +758,7 @@ double get_step_size(Problem* problem){
 
 Point locally_optimize_position(Point steiner, std::vector<Polygon>& triangles, Problem *problem){
 
-    double step_size = 1e6;
+    double step_size = 1e2;
     //double step_size = get_step_size(problem);
     //std::cout << "Step size: " << step_size << std::endl;
     //double step_size = compute_step_size(problem);
@@ -808,7 +808,7 @@ Point locally_optimize_position(Point steiner, std::vector<Polygon>& triangles, 
                     s = tmp;
                 }
                 else{
-                    std::cout << "I'm outside!!!\n";
+                    //std::cout << "I'm outside!!!\n";
                     step_size /= 10;
                     //break;
                 }

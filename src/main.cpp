@@ -481,12 +481,12 @@ int main(int argc, char **argv){
                 Mesh_Statistics stats  = uniform_mesh(problem);
 
                 all_stats.push_back(stats);
-                write_to_csv_obtuse("../results/modified3_initial_sigmoid_simple_exterior.csv", all_stats); 
+                write_to_csv_obtuse("../results/modified3_initial_ln_simple_exterior.csv", all_stats); 
             //}
         }
     }
 
-    write_to_csv_obtuse("../results/modified3_initial_sigmoid_simple_exterior.csv", all_stats);
+    write_to_csv_obtuse("../results/modified3_initial_ln_simple_exterior.csv", all_stats);
 
     print_current_time();
 

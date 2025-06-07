@@ -518,8 +518,8 @@ void flip_edge(Problem* problem, Eigen::MatrixXd& V, Eigen::MatrixXi& F, int tri
     int d = F(tri2, (v2 + 2) % 3);
 
     // Only flip if it benefits energy
-    double energy_before = angle_cost_sigmoid<double>(problem, V.row(a), V.row(b), V.row(c)) + angle_cost_sigmoid<double>(problem, V.row(d), V.row(b), V.row(c));
-    double energy_after = angle_cost_sigmoid<double>(problem, V.row(a), V.row(b), V.row(d)) + angle_cost_sigmoid<double>(problem, V.row(a), V.row(c), V.row(d));
+    double energy_before = angle_cost_ln<double>(problem, V.row(a), V.row(b), V.row(c)) + angle_cost_ln<double>(problem, V.row(d), V.row(b), V.row(c));
+    double energy_after = angle_cost_ln<double>(problem, V.row(a), V.row(b), V.row(d)) + angle_cost_ln<double>(problem, V.row(a), V.row(c), V.row(d));
 
     if(!consider_energy || energy_after <= energy_before){
         // Replace the triangles with the flipped configuration 
@@ -699,7 +699,7 @@ void find_minimum(Problem* problem, Eigen::MatrixXd& V, Eigen::MatrixXi& F, Eige
             return (T)INFINITY;
         }
 
-        return angle_cost_sigmoid<T>(problem, a, b, c);
+        return angle_cost_ln<T>(problem, a, b, c);
     });
 
     // Add penalty term per constrained vertex

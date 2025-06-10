@@ -518,8 +518,8 @@ void flip_edge(Problem* problem, Eigen::MatrixXd& V, Eigen::MatrixXi& F, int tri
     int d = F(tri2, (v2 + 2) % 3);
 
     // Only flip if it benefits energy
-    double energy_before = angle_cost_ln<double>(problem, V.row(a), V.row(b), V.row(c)) + angle_cost_ln<double>(problem, V.row(d), V.row(b), V.row(c));
-    double energy_after = angle_cost_ln<double>(problem, V.row(a), V.row(b), V.row(d)) + angle_cost_ln<double>(problem, V.row(a), V.row(c), V.row(d));
+    double energy_before = angle_cost_refined_sigmoid<double>(problem, V.row(a), V.row(b), V.row(c)) + angle_cost_refined_sigmoid<double>(problem, V.row(d), V.row(b), V.row(c));
+    double energy_after = angle_cost_refined_sigmoid<double>(problem, V.row(a), V.row(b), V.row(d)) + angle_cost_refined_sigmoid<double>(problem, V.row(a), V.row(c), V.row(d));
 
     if(!consider_energy || energy_after <= energy_before){
         // Replace the triangles with the flipped configuration 
@@ -652,6 +652,12 @@ void optimizeTinyAD(Problem* problem){
 
     find_minimum(problem, V, F, B, B_VAR, BS, BS_VAR, BS_TANGENT);
     update_problem_tinyAD(problem, V, F);
+
+    /*flip_obtuse_triangles(problem, V, F, true);
+    update_problem_tinyAD(problem, V, F);
+
+    find_minimum(problem, V, F, B, B_VAR, BS, BS_VAR, BS_TANGENT);
+    update_problem_tinyAD(problem, V, F);*/
     
     /*find_minimum_2(problem, V, F, B, B_VAR, BS, BS_VAR, BS_TANGENT);
     update_problem_tinyAD(problem, V, F);*/
@@ -699,7 +705,7 @@ void find_minimum(Problem* problem, Eigen::MatrixXd& V, Eigen::MatrixXi& F, Eige
             return (T)INFINITY;
         }
 
-        return angle_cost_ln<T>(problem, a, b, c);
+        return angle_cost_refined_sigmoid<T>(problem, a, b, c);
     });
 
     // Add penalty term per constrained vertex
@@ -747,7 +753,7 @@ void find_minimum(Problem* problem, Eigen::MatrixXd& V, Eigen::MatrixXi& F, Eige
     std::cout << "\npoints size:\n";
     std::cout << points.size();*/
 
-    TINYAD_DEBUG_OUT("Start energy: " << func.eval(x));
+    //TINYAD_DEBUG_OUT("Start energy: " << func.eval(x));
 
     // Projected Newton
     TinyAD::LinearSolver solver;
@@ -767,7 +773,7 @@ void find_minimum(Problem* problem, Eigen::MatrixXd& V, Eigen::MatrixXi& F, Eige
         try {
             d = TinyAD::newton_direction(g, H_proj, solver);
         } catch (const std::runtime_error& e) {
-            std::cerr << "Caught runtime_error: " << e.what() << std::endl;
+            //std::cerr << "Caught runtime_error: " << e.what() << std::endl;
             break;
         }
         double newton_decrement = TinyAD::newton_decrement<double>(d, g);
@@ -791,7 +797,7 @@ void find_minimum(Problem* problem, Eigen::MatrixXd& V, Eigen::MatrixXi& F, Eige
         //x = TinyAD::line_search(x, d, f, g, func, 1.0, 0.8, 256);
         x = TinyAD::line_search(x, d, f, g, func);
     }
-    TINYAD_DEBUG_OUT("Final energy: " << func.eval(x));
+    //TINYAD_DEBUG_OUT("Final energy: " << func.eval(x));
 
     // Write final vertex positions to mesh.
     func.x_to_data(x, [&] (int v_idx, const Eigen::Vector2d& p) {

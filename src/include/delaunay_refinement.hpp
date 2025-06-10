@@ -10,12 +10,15 @@ void locally_optimize_obtuse_refinement(Problem *problem);
 
 Point project_onto_segment_refinement(const Point p, const Segment& s);
 bool is_on_constraint_refinement(const Point& steiner, Problem* problem);
+bool is_constrained_segment(Problem* problem, Point& a, Point& b);
 bool is_on_boundary_refinement(Point& p, Polygon& boundary);
 bool is_boundary_segment(Polygon& boundary, Point& a, Point& b);
 std::pair<Point, bool> find_boundary_point(Problem* problem, Point& a, Point& b, Point& c);
 bool point_within_segment(Point& a, Point& b, Point& p);
 
 void fix_boundary_refinement(Problem *problem);
+void fix_constraint_refinement(Problem *problem);
+//void fix_rhombus(Problem* problem, CDT& cdt);
 
 Mesh_Statistics uniform_mesh(Problem* problem);
 

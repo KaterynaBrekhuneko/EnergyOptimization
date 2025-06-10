@@ -460,7 +460,7 @@ int main(int argc, char **argv){
     //uniform_mesh(problem);
 
     std::vector<fs::directory_entry> entries;
-    for (const auto& entry : fs::directory_iterator("../instances/simple-exterior")) {
+    for (const auto& entry : fs::directory_iterator("../instances/point-set-current")) {
         entries.push_back(entry);
     }
     std::sort(entries.begin(), entries.end(),
@@ -469,26 +469,35 @@ int main(int argc, char **argv){
               });
           
 
-    for (const auto& entry : entries) {
+    /*for (const auto& entry : entries) {
         if (entry.is_regular_file() && entry.path().extension() == ".json") {
-            Problem *problem = new Problem("../instances/simple-exterior/" + entry.path().filename().string());
+            Problem *problem = new Problem("../instances/point-set-current/" + entry.path().filename().string());*/
 
-            //Problem *problem = new Problem("../instances/point-set/point-set_10_7451a2a9.instance.json");
+            Problem *problem = new Problem("../instances/simple-exterior/simple-polygon-exterior_10_40642b31.instance.json");
             std::string name = problem->get_name();
             //if(!(name == "simple-polygon_100_4b4ba391" || name == "simple-polygon_10_297edd18" || name == "simple-polygon_20_4bd3c2e5")){
             //if(!(name == "point-set_10_c04b0024" || name == "point-set_20_54ab0b47" || name == "point-set_40_1b92b629" || name == "point-set_60_ac318d72" || name == "point-set_80_1675b331")){
-                std::cout << "current instance: " << problem->get_name() << std::endl;
-                Mesh_Statistics stats  = uniform_mesh(problem);
+                std::cout << BLUE << "\ncurrent instance: " << problem->get_name() << RESET << std::endl;
+                //Mesh_Statistics stats  = uniform_mesh(problem);
+                auto start = std::chrono::high_resolution_clock::now();
+                classic_delaunay_refinement(problem);
+                auto end = std::chrono::high_resolution_clock::now();
 
-                all_stats.push_back(stats);
-                write_to_csv_obtuse("../results/modified3_initial_ln_simple_exterior.csv", all_stats); 
+                std::chrono::duration<double> duration = end - start;
+                auto total_seconds = duration.count();
+                int minutes = total_seconds/60;
+                int seconds = total_seconds - minutes*60;
+                std::cout << GREEN << "Execution time: " << minutes << " minutes " << seconds << " seconds" << RESET << std::endl;
+
+                /*all_stats.push_back(stats);
+                write_to_csv_obtuse("../results/modified3_initial_ln_simple_exterior.csv", all_stats);*/ 
             //}
-        }
-    }
+        //}
+    //}
 
-    write_to_csv_obtuse("../results/modified3_initial_ln_simple_exterior.csv", all_stats);
+    //write_to_csv_obtuse("../results/modified3_initial_ln_simple_exterior.csv", all_stats);
 
-    print_current_time();
+    //print_current_time();
 
     /*all_stats.clear();
     entries.clear();

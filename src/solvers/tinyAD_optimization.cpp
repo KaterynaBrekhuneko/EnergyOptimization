@@ -653,11 +653,11 @@ void optimizeTinyAD(Problem* problem){
     find_minimum(problem, V, F, B, B_VAR, BS, BS_VAR, BS_TANGENT);
     update_problem_tinyAD(problem, V, F);
 
-    /*flip_obtuse_triangles(problem, V, F, true);
+    flip_obtuse_triangles(problem, V, F, true);
     update_problem_tinyAD(problem, V, F);
 
     find_minimum(problem, V, F, B, B_VAR, BS, BS_VAR, BS_TANGENT);
-    update_problem_tinyAD(problem, V, F);*/
+    update_problem_tinyAD(problem, V, F);
     
     /*find_minimum_2(problem, V, F, B, B_VAR, BS, BS_VAR, BS_TANGENT);
     update_problem_tinyAD(problem, V, F);*/
@@ -757,7 +757,7 @@ void find_minimum(Problem* problem, Eigen::MatrixXd& V, Eigen::MatrixXi& F, Eige
 
     // Projected Newton
     TinyAD::LinearSolver solver;
-    const int max_iters = 1000;
+    const int max_iters = 350;
     const double convergence_eps = 1e-6;
     for (int iter = 0; iter < max_iters; ++iter)
     {

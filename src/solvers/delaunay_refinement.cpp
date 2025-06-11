@@ -333,7 +333,7 @@ std::pair<bool, Point> point_on_other_side_of_constraint(Problem* problem, Point
 bool next_refinement_point(Problem* problem, CDT& cdt){
     auto boundary = problem->get_boundary();
 
-    for(Face_handle t : cdt.finite_face_handles()){
+    /*for(Face_handle t : cdt.finite_face_handles()){
         if(!problem->triangle_is_inside<CDT, Face_handle>(cdt, t)){
             continue;
         }
@@ -358,7 +358,7 @@ bool next_refinement_point(Problem* problem, CDT& cdt){
                 return false;
             }
         }
-    }
+    }*/
 
 
 
@@ -531,7 +531,7 @@ void classic_delaunay_refinement(Problem* problem){
 
     CDT cdt = problem->generate_CDT<CDT>();
     problem->update_problem<CDT, Face_handle>(cdt, point_set);
-    problem->visualize_solution({});
+    //problem->visualize_solution({});
     std::cout  << "Num of obtuse in cdt before: " << count_obtuse_triangles(problem) << std::endl;
 
     int obtuse_after_fix = count_obtuse_triangles(problem);
@@ -550,9 +550,9 @@ void classic_delaunay_refinement(Problem* problem){
         j++;
     }
 
-    problem->visualize_solution({});
+    //problem->visualize_solution({});
 
-    for(int i = 0; i < 10; i++){
+    for(int i = 0; i < 400; i++){
         bool is_refinement_done = next_refinement_point(problem, cdt);
         problem->update_problem<CDT, Face_handle>(cdt, point_set);
 
@@ -560,7 +560,8 @@ void classic_delaunay_refinement(Problem* problem){
             break;
         }
 
-        problem->visualize_solution({});
+        //std::cout << "inserted point " << i << std::endl;
+        //problem->visualize_solution({});
 
         optimizeTinyAD(problem);
         cdt = problem->generate_CDT<CDT>();
@@ -606,8 +607,8 @@ void classic_delaunay_refinement(Problem* problem){
             j++;
         }
 
-        problem->visualize_solution({});
-        std::cout << "finished " << i << std::endl;
+        //std::cout << "finished " << i << std::endl;
+        //problem->visualize_solution({});
     }
 
     std::cout << RED << "num obtuse: " << count_obtuse_triangles(problem) << RESET << std::endl;

@@ -333,7 +333,7 @@ std::pair<bool, Point> point_on_other_side_of_constraint(Problem* problem, Point
 bool next_refinement_point(Problem* problem, CDT& cdt){
     auto boundary = problem->get_boundary();
 
-    /*for(Face_handle t : cdt.finite_face_handles()){
+    for(Face_handle t : cdt.finite_face_handles()){
         if(!problem->triangle_is_inside<CDT, Face_handle>(cdt, t)){
             continue;
         }
@@ -358,7 +358,7 @@ bool next_refinement_point(Problem* problem, CDT& cdt){
                 return false;
             }
         }
-    }*/
+    }
 
 
 

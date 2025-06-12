@@ -3,55 +3,55 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 # Initial
-df1 = pd.read_csv("../results/modified3_initial_ln_ortho.csv", index_col=False)
+#df1 = pd.read_csv("../results/modified3_initial_ln_ortho.csv", index_col=False)
 #df1 = pd.read_csv("../results/modified3_initial_ln_simple.csv", index_col=False)
 #df1 = pd.read_csv("../results/modified3_initial_ln_point_set.csv", index_col=False)
 #df1 = pd.read_csv("../results/modified3_initial_ln_simple_exterior_pt1.csv", index_col=False)
-#df1 = pd.read_csv("../results/modified3_initial_ln_simple_exterior_pt2.csv", index_col=False)
-names1 = df1['instance'].str.removeprefix("ortho_")
+df1 = pd.read_csv("../results/modified3_initial_ln_simple_exterior_pt2.csv", index_col=False)
+#names1 = df1['instance'].str.removeprefix("ortho_")
 #names1 = df1['instance'].str.removeprefix("simple-polygon_")
 #names1 = df1['instance'].str.removeprefix("point-set_")
 #names1 = df1['instance'].str.removeprefix("simple-polygon-exterior_")
-#names1 = df1['instance'].str.removeprefix("simple-polygon-exterior-")
+names1 = df1['instance'].str.removeprefix("simple-polygon-exterior-")
 steiner1 = df1['steiner_meshing']
 
 # f1
-df2 = pd.read_csv("../results/modified3_initial_ln_ortho.csv", index_col=False)
+#df2 = pd.read_csv("../results/modified3_initial_ln_ortho.csv", index_col=False)
 #df2 = pd.read_csv("../results/modified3_initial_ln_simple.csv", index_col=False)
 #df2 = pd.read_csv("../results/modified3_initial_ln_point_set.csv", index_col=False)
 #df2 = pd.read_csv("../results/modified3_initial_ln_simple_exterior_pt1.csv", index_col=False)
-#df2 = pd.read_csv("../results/modified3_initial_ln_simple_exterior_pt2.csv", index_col=False)
-names2 = df2['instance'].str.removeprefix("ortho_")
+df2 = pd.read_csv("../results/modified3_initial_ln_simple_exterior_pt2.csv", index_col=False)
+#names2 = df2['instance'].str.removeprefix("ortho_")
 #names2 = df2['instance'].str.removeprefix("simple-polygon_")
 #names2 = df2['instance'].str.removeprefix("point-set_")
 #names2 = df2['instance'].str.removeprefix("simple-polygon-exterior_")
-#names2 = df2['instance'].str.removeprefix("simple-polygon-exterior-")
+names2 = df2['instance'].str.removeprefix("simple-polygon-exterior-")
 steiner2 = df2['obtuse_optimized']
 
 # f2
-df3 = pd.read_csv("../results/modified3_initial_sigmoid_ortho.csv", index_col=False)
+#df3 = pd.read_csv("../results/modified3_initial_sigmoid_ortho.csv", index_col=False)
 #df3 = pd.read_csv("../results/modified3_initial_sigmoid_simple.csv", index_col=False)
 #df3 = pd.read_csv("../results/modified3_initial_sigmoid_point_set.csv", index_col=False)
 #df3 = pd.read_csv("../results/modified3_initial_sigmoid_simple_exterior_pt1.csv", index_col=False)
-#df3 = pd.read_csv("../results/modified3_initial_sigmoid_simple_exterior_pt2.csv", index_col=False)
-names3 = df3['instance'].str.removeprefix("ortho_")
+df3 = pd.read_csv("../results/modified3_initial_sigmoid_simple_exterior_pt2.csv", index_col=False)
+#names3 = df3['instance'].str.removeprefix("ortho_")
 #names3 = df3['instance'].str.removeprefix("simple-polygon_")
 #names3 = df3['instance'].str.removeprefix("point-set_")
 #names3 = df3['instance'].str.removeprefix("simple-polygon-exterior_")
-#names3 = df3['instance'].str.removeprefix("simple-polygon-exterior-")
+names3 = df3['instance'].str.removeprefix("simple-polygon-exterior-")
 steiner3 = df3['obtuse_optimized']
 
 # f3
-df4 = pd.read_csv("../results/modified3_initial_refined_sigmoid_ortho.csv", index_col=False)
+#df4 = pd.read_csv("../results/modified3_initial_refined_sigmoid_ortho.csv", index_col=False)
 #df4 = pd.read_csv("../results/modified3_initial_refined_sigmoid_simple.csv", index_col=False)
 #df4 = pd.read_csv("../results/modified3_initial_refined_sigmoid_point_set.csv", index_col=False)
 #df4 = pd.read_csv("../results/modified3_initial_refined_sigmoid_simple_exterior_pt1.csv", index_col=False)
-#df4 = pd.read_csv("../results/modified3_initial_refined_sigmoid_simple_exterior_pt2.csv", index_col=False)
-names4 = df4['instance'].str.removeprefix("ortho_")
+df4 = pd.read_csv("../results/modified3_initial_refined_sigmoid_simple_exterior_pt2.csv", index_col=False)
+#names4 = df4['instance'].str.removeprefix("ortho_")
 #names4 = df4['instance'].str.removeprefix("simple-polygon_")
 #names4 = df4['instance'].str.removeprefix("point-set_")
 #names4 = df4['instance'].str.removeprefix("simple-polygon-exterior_")
-#names4 = df4['instance'].str.removeprefix("simple-polygon-exterior-")
+names4 = df4['instance'].str.removeprefix("simple-polygon-exterior-")
 steiner4 = df4['obtuse_optimized']
 
 # Plot
@@ -62,7 +62,7 @@ plt.plot(names3, steiner3, marker='o', linestyle='-', color='blue', label=r'$\ma
 plt.plot(names4, steiner4, marker='o', linestyle='-', color='red', label=r'$\mathbf{f_3}$')
 
 # Formatting
-plt.title("Number of steiner before and after different optimizations (Orthogonal Polygons)")
+plt.title("Number of obtuse traingles before and after different optimizations (Simlple Polygons with Constraints (Part 2))")
 plt.xlabel("Instance")
 plt.ylabel("# Steiner")
 plt.xticks(rotation=45, ha='right')
@@ -70,7 +70,7 @@ plt.tight_layout()
 plt.legend()
 
 # Save or show
-plt.savefig("2_steiner_initial_ortho.png", dpi=600, bbox_inches='tight')
+plt.savefig("2_steiner_initial_simple_exterior_pt2.png", dpi=600, bbox_inches='tight')
 
 # --- Prepare for Bar Plot ---
 """x = np.arange(len(names1))  # Instance indices

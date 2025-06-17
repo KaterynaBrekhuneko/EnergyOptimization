@@ -9,6 +9,8 @@
 #include <CGAL/lloyd_optimize_mesh_2.h>
 #include <CGAL/Meshes/Double_map_container.h>
 #include <CGAL/intersections.h>
+#include <CGAL/Boolean_set_operations_2.h>
+#include <CGAL/Polygon_with_holes_2.h>
 
 #include <unordered_map>
 #include <limits>
@@ -32,6 +34,9 @@ typedef CDT::Vertex_handle Vertex_handle;
 typedef CDT::Vertex_circulator Vertex_circulator;
 typedef CDT::Edge Edge;
 
+typedef CGAL::Polygon_with_holes_2<K> Polygon_with_holes;
+typedef K::Circle_2 Circle;
+
 void print_current_time_refinement(){
     auto now = std::chrono::system_clock::now();              // get current time_point
     std::time_t now_c = std::chrono::system_clock::to_time_t(now); // convert to time_t
@@ -41,6 +46,20 @@ void print_current_time_refinement(){
     std::cout << "Current time: "
               << std::put_time(local_time, "%Y-%m-%d %H:%M:%S")
               << std::endl;
+}
+
+Segment get_shortest_edge(const Point& a, const Point& b, const Point& c){
+    auto ab = CGAL::squared_distance(a, b);
+    auto bc = CGAL::squared_distance(b, c);
+    auto ac = CGAL::squared_distance(a, c);
+
+    if(ab <= bc && ab <= ac){
+        return Segment(a, b);
+    } else if (bc <= ab && bc <= ac) {
+        return Segment(b, c);
+    } else {
+        return Segment(a, c);
+    }
 }
 
 double get_sizing(Problem* problem) {
@@ -618,26 +637,621 @@ void classic_delaunay_refinement(Problem* problem){
 
     std::string path = "../normal_delaunay_refinement/svg/" + problem->get_name() + ".svg";
     problem->save_intermidiate_result(path);
-
-    /*fix_boundary_refinement(problem);
-    cdt = problem->generate_CDT<CDT>();
-    problem->update_problem<CDT, Face_handle>(cdt, point_set);
-    fix_boundary_refinement(problem);
-    cdt = problem->generate_CDT<CDT>();
-    problem->update_problem<CDT, Face_handle>(cdt, point_set);
-    problem->visualize_solution({});
-
-    iterate_lloyd<CDT, Vertex_handle, Vertex_circulator>(cdt, problem, constraints, 1000);
-    problem->update_problem<CDT, Face_handle>(cdt, point_set);
-    optimizeTinyAD(problem);
-    cdt = problem->generate_CDT<CDT>();
-    problem->visualize_solution({});
-
-    fix_boundary_refinement(problem);
-    cdt = problem->generate_CDT<CDT>();
-    problem->update_problem<CDT, Face_handle>(cdt, point_set);
-    problem->visualize_solution({});*/
 }
+
+//****************************************Offcenters*****************************************************
+
+bool is_encroached(CDT& cdt, Point& p){
+    for (auto eit = cdt.finite_edges_begin(); eit != cdt.finite_edges_end(); ++eit) {
+        Face_handle f = eit->first;
+        int i = eit->second;
+
+        Face_handle neighbor = f->neighbor(i);
+        // check if this is a boundary edge
+        if (cdt.is_infinite(f) || cdt.is_infinite(neighbor)) {
+            // check if the edge encroaches p
+            Point a = f->vertex(cdt.cw(i))->point();
+            Point b = f->vertex(cdt.ccw(i))->point();
+            Point midpoint = CGAL::midpoint(a, b);
+            FT radius_squared = CGAL::squared_distance(a, b) / 4.0;
+            FT dist_squared = CGAL::squared_distance(p, midpoint);
+            if(dist_squared <= radius_squared){
+                return true;
+            }
+        }
+    }
+    return false;
+}
+
+double circumradius(const Point& p, const Point& q, const Point& r) {
+    Point c = CGAL::circumcenter(p, q, r);
+    return std::sqrt(CGAL::to_double(CGAL::squared_distance(p, c)));
+}
+
+Point find_offcenter(const Point& P, const Point& Q, const Point& C1) {
+    Point midPQ = CGAL::midpoint(P, Q);
+    Vector dir = midPQ - C1;
+
+    double target_ratio = std::sqrt(2.0);
+    double pq_length = std::sqrt(CGAL::to_double(CGAL::squared_distance(P, Q)));
+
+    // Check bounds
+    auto ratio_at = [&](double t) {
+        Point C = C1 + t * dir;
+        double R = circumradius(P, Q, C);
+        return R / pq_length;
+    };
+
+    /*double r0 = ratio_at(0.0);
+    double r1 = ratio_at(1.0);
+    if (r0 > target_ratio || r1 < target_ratio) {
+        throw std::runtime_error("No such point C exists on [C1, midpoint(PQ)]");
+    }*/
+
+    // Binary search in [0, 1]
+    double t_low = 0.0, t_high = 1.0, eps = 1e-8;
+    Point best_point;
+
+    double ratio = ratio_at(0.0);
+
+    while (t_high - t_low > eps) {
+        double t = 0.5 * (t_low + t_high);
+        ratio = ratio_at(t);
+
+        if (std::abs(ratio - target_ratio) < eps) {
+            best_point = C1 + t * dir;
+            break;
+        }
+
+        if (ratio < target_ratio)
+            t_high = t;
+        else
+            t_low = t;
+    }
+
+
+    return C1 + 0.5 * (t_low + t_high) * dir; // fallback: midpoint of final interval
+}
+
+bool next_refinement_point_offcenter(Problem* problem, CDT& cdt){
+    auto boundary = problem->get_boundary();
+
+    // Not sqrt(2) because we compare squared lengths
+    double beta = 2;
+
+    std::vector<Point> encroached_points;
+
+    for(Face_handle t : cdt.finite_face_handles()){
+        if(!problem->triangle_is_inside<CDT, Face_handle>(cdt, t)){
+            continue;
+        }
+
+        Polygon triangle;
+        triangle.push_back(t->vertex(0)->point());
+        triangle.push_back(t->vertex(1)->point());
+        triangle.push_back(t->vertex(2)->point());
+
+        int obtuse_angle = find_obtuse_angle(triangle);
+        
+        if(obtuse_angle != -1){
+            Point s = triangle[obtuse_angle];
+            Point a = triangle[(obtuse_angle + 1)%3];
+            Point b = triangle[(obtuse_angle + 2)%3];
+
+            if(is_on_boundary_refinement(a, boundary) && is_on_boundary_refinement(b, boundary) && is_boundary_segment(boundary, a, b)){
+                Segment segment(a, b);
+                Point p = project_onto_segment_refinement(s, segment);
+                cdt.insert(p);
+                problem->add_steiner(p);
+            } else {
+                // Calculate new steiner point which is offsenter
+                Point c;
+
+                Segment pq = get_shortest_edge(a, b, s);
+                Point p = pq[0];
+                Point q = pq[1];
+                Point c1 = CGAL::circumcenter(t->vertex(0)->point(), t->vertex(1)->point(), t->vertex(2)->point());
+
+                Point c2 = CGAL::circumcenter(p, q, c1);
+
+                // Check the ratio
+                auto ratio = CGAL::to_double(CGAL::squared_distance(c1, c2) / pq.squared_length());
+                if((CGAL::squared_distance(c1, c2) / pq.squared_length()) <= beta){
+                    c = c1;
+                } else {
+                    c = find_offcenter(p, q, c1);
+                }
+
+                if(is_encroached(cdt, c)){
+                    encroached_points.push_back(c);
+                    continue;
+                }
+
+                auto side = problem->get_boundary().oriented_side(c);
+
+                if(side == CGAL::POSITIVE || side == CGAL::ZERO){
+                    auto [is_valid, new_point] = point_on_other_side_of_constraint(problem, s, c);
+                    if(is_valid){
+                        problem->add_steiner(new_point);
+                        cdt.insert(new_point);
+                        return false;
+                    } else {
+                        continue;
+                    }
+                } else {
+                    Point proj = project_point_onto_boundary(problem, c);
+                    problem->add_steiner(proj);
+                    cdt.insert(proj);
+                    return false;
+                }
+            }
+        }
+    }
+
+    for(Point c : encroached_points){
+        auto side = problem->get_boundary().oriented_side(c);
+
+        if(side == CGAL::POSITIVE || side == CGAL::ZERO){
+            problem->add_steiner(c);
+            cdt.insert(c);
+            return false;
+        } else {
+            Point proj = project_point_onto_boundary(problem, c);
+            problem->add_steiner(proj);
+            cdt.insert(proj);
+            return false;
+        }
+    }
+
+
+    return true;
+}
+
+Mesh_Statistics offcenter_delaunay_refinement(Problem* problem){
+    // Preprocess the input instance, compute cdt
+    std::vector<Point> points = problem->get_points();
+    std::set<Point> point_set(points.begin(), points.end());
+    std::set<Point> steiner_point_set;
+    std::vector<Point> boundary_points = problem->get_boundary().vertices();
+    std::vector<Segment> constraints = problem->get_constraints();
+    Polygon boundary = problem->get_boundary();
+    for (size_t i = 0; i < boundary_points.size(); i++) {
+        constraints.push_back(Segment(boundary_points[i], boundary_points[(i + 1) % boundary_points.size()]));
+    }
+
+    auto box = problem->get_boundary().bbox();
+    auto scale = std::max(box.xmax() - box.xmin(), box.ymax() - box.ymin());
+
+    //std::cout << "scale: " << scale << " min: " << box.xmin() << "\n" << std::endl;
+
+    CDT cdt = problem->generate_CDT<CDT>();
+    problem->update_problem<CDT, Face_handle>(cdt, point_set);
+    //problem->visualize_solution({});
+    std::cout  << "Num of obtuse in cdt before: " << count_obtuse_triangles(problem) << std::endl;
+
+    int obtuse_after_fix = count_obtuse_triangles(problem);
+    int j = 0;
+    while(j != 10){
+        fix_boundary_refinement(problem);
+        cdt = problem->generate_CDT<CDT>();
+        problem->update_problem<CDT, Face_handle>(cdt, point_set);
+
+        int current_obtuse = problem->get_num_obtuse();
+        if(current_obtuse < obtuse_after_fix){
+            obtuse_after_fix = current_obtuse;
+        } else {
+            break;
+        }
+        j++;
+    }
+
+    //problem->visualize_solution({});
+
+    for(int i = 0; i < 400; i++){
+        bool is_refinement_done = next_refinement_point_offcenter(problem, cdt);
+        problem->update_problem<CDT, Face_handle>(cdt, point_set);
+
+        if(count_obtuse_triangles(problem) == 0 /*|| is_refinement_done*/){
+            break;
+        }
+
+        //std::cout << "inserted point " << i << std::endl;
+        //problem->visualize_solution({});
+
+        optimizeTinyAD(problem);
+        cdt = problem->generate_CDT<CDT>();
+        problem->update_problem<CDT, Face_handle>(cdt, point_set);
+
+        obtuse_after_fix = count_obtuse_triangles(problem);
+        j = 0;
+        while(j != 10){
+            fix_boundary_refinement(problem);
+            cdt = problem->generate_CDT<CDT>();
+            problem->update_problem<CDT, Face_handle>(cdt, point_set);
+
+            int current_obtuse = problem->get_num_obtuse();
+            if(current_obtuse < obtuse_after_fix){
+                obtuse_after_fix = current_obtuse;
+            } else {
+                break;
+            }
+            j++;
+        }
+
+        optimizeTinyAD(problem);
+        cdt = problem->generate_CDT<CDT>();
+        problem->update_problem<CDT, Face_handle>(cdt, point_set);
+
+        obtuse_after_fix = count_obtuse_triangles(problem);
+        j = 0;
+        while(j != 10){
+            fix_boundary_refinement(problem);
+            cdt = problem->generate_CDT<CDT>();
+            problem->update_problem<CDT, Face_handle>(cdt, point_set);
+
+            int current_obtuse = problem->get_num_obtuse();
+            if(current_obtuse < obtuse_after_fix){
+                obtuse_after_fix = current_obtuse;
+            } else {
+                break;
+            }
+            j++;
+        }
+
+        //std::cout << "finished " << i << std::endl;
+        //problem->visualize_solution({});
+    }
+
+    int final_obtuse = count_obtuse_triangles(problem);
+    int final_num_steiner = problem->get_steiner().size();
+
+    std::cout << RED << "num obtuse: " << final_obtuse << RESET << std::endl;
+    std::cout << RED << "num steiner: " << final_num_steiner << RESET << std::endl;
+
+    Mesh_Statistics stats;
+    stats.set_name(problem->get_name());
+    stats.set_obtuse_after_meshing(final_obtuse);
+    stats.set_steiner_after_meshing(final_num_steiner);
+
+    print_current_time_refinement();
+    problem->visualize_solution({});
+
+    std::string path = "../offcenter_delaunay_refinement/svg/" + problem->get_name() + ".svg";
+    problem->save_intermidiate_result(path);
+
+    return stats;
+}
+
+//*******************************************************************************************************
+
+
+//****************************************Pentagon point insertion***************************************
+
+bool is_obtuse_refinement(CDT::Face_handle fh) {
+    // Retrieve the points of the triangle
+    const Point& p0 = fh->vertex(0)->point();
+    const Point& p1 = fh->vertex(1)->point();
+    const Point& p2 = fh->vertex(2)->point();
+
+    // Compute the squared lengths of the edges
+    K::FT d0 = CGAL::squared_distance(p1, p2); // Opposite p0
+    K::FT d1 = CGAL::squared_distance(p0, p2); // Opposite p1
+    K::FT d2 = CGAL::squared_distance(p0, p1); // Opposite p2
+
+    // Check if the triangle is obtuse
+    if (d0 > d1 + d2 || d1 > d0 + d2 || d2 > d0 + d1) {
+        return true; // The triangle is obtuse
+    }
+
+    return false; // The triangle is not obtuse
+}
+
+Polygon combine_faces_to_polygon_refinement(const std::vector<CDT::Face_handle>& faces) {
+    // Collect unique vertices
+    std::set<Point> unique_vertices;
+    for (const auto& face : faces) {
+        for (int i = 0; i < 3; ++i) {
+            unique_vertices.insert(face->vertex(i)->point());
+        }
+    }
+
+    // Convert set to vector for sorting
+    std::vector<Point> vertices(unique_vertices.begin(), unique_vertices.end());
+
+    // Compute the centroid
+    Point centroid(0, 0);
+    for (const auto& vertex : vertices) {
+        centroid = Point(centroid.x() + vertex.x(), centroid.y() + vertex.y());
+    }
+    centroid = Point(CGAL::to_double(centroid.x()) / vertices.size(), CGAL::to_double(centroid.y()) / vertices.size());
+
+    // Sort vertices by polar angle relative to the centroid
+    std::sort(vertices.begin(), vertices.end(), [&centroid](const Point& a, const Point& b) {
+        K::FT angle_a = std::atan2(CGAL::to_double(a.y() - centroid.y()), CGAL::to_double(a.x() - centroid.x()));
+        K::FT angle_b = std::atan2(CGAL::to_double(b.y() - centroid.y()), CGAL::to_double(b.x() - centroid.x()));
+        return angle_a < angle_b;
+    });
+
+    // Construct the polygon
+    Polygon polygon;
+    for (const auto& vertex : vertices) {
+        polygon.push_back(vertex);
+    }
+
+    return polygon;
+}
+
+Polygon build_magic_polygon_refinement(CDT::Face_handle fh, CDT* cdt) {
+    CDT::Face_handle neighbor1;
+    K::FT max_length_squared = 0;
+
+    // Iterate over the edges of the face
+    for (int i = 0; i < 3; ++i) {
+        K::FT length_squared = cdt->segment(fh, i).squared_length();
+        if (length_squared > max_length_squared && !cdt->is_constrained(CDT::Edge(fh, i))) {
+            max_length_squared = length_squared;
+            neighbor1 = fh->neighbor(i);
+        }
+    }
+
+    if (max_length_squared == 0)
+        return Polygon();
+
+    CDT::Face_handle neighbor2;
+    max_length_squared = 0;
+
+    // Iterate over the edges of the face
+    for (int i = 0; i < 3; ++i) {
+        auto edge = CDT::Edge(neighbor1, i);
+        K::FT length_squared = cdt->segment(neighbor1, i).squared_length();
+        CDT::Face_handle potential_neighbor = neighbor1->neighbor(i);
+        if (length_squared > max_length_squared && potential_neighbor != fh && !cdt->is_constrained(CDT::Edge(neighbor1, i))) {
+            max_length_squared = length_squared;
+            neighbor2 = potential_neighbor;
+        }
+    }
+
+    if (max_length_squared == 0)
+        return Polygon();
+
+    return combine_faces_to_polygon_refinement({fh, neighbor1, neighbor2});
+}
+
+Polygon create_ngon_approximation_refinement(const Point& center, K::FT radius, int n) {
+    double inradius = CGAL::to_double(radius);
+    double circumradius = inradius / std::cos(M_PI / n);
+
+    Polygon ngon;
+    for (int i = 0; i < n; ++i) {
+        double angle = 2 * M_PI * i / n;
+        K::FT x = center.x() + circumradius * std::cos(angle);
+        K::FT y = center.y() + circumradius * std::sin(angle);
+        ngon.push_back(Point(x, y));
+    }
+    return ngon;
+}
+
+Vector inward_perpendicular_refinement(const Point& p1, const Point& p2, double length) {
+    Vector edge(p2.x() - p1.x(), p2.y() - p1.y());
+    Vector perpendicular(-edge.y(), edge.x());
+    perpendicular = perpendicular / CGAL::approximate_sqrt(perpendicular.squared_length());  // Normalize
+    return perpendicular * length;
+}
+
+Polygon compute_shadow_refinement(const Point& p1, const Point& p2, double shadow_length) {
+    Vector inward = inward_perpendicular_refinement(p1, p2, shadow_length);
+    Point p1_inward = p1 + inward;
+    Point p2_inward = p2 + inward;
+
+    Polygon shadow;
+    shadow.push_back(p1);
+    shadow.push_back(p2);
+    shadow.push_back(p2_inward);
+    shadow.push_back(p1_inward);
+    return shadow;
+}
+
+Polygon subtract_circles_from_polygon_refinement(const Polygon& polygon) {
+    std::vector<Polygon_with_holes> result;
+    result.push_back(Polygon_with_holes(polygon));
+
+    for (auto edge = polygon.edges_begin(); edge != polygon.edges_end(); ++edge) {
+
+        // std::cout << "result size: " << result.size() << std::endl;
+
+        K::FT radius = CGAL::approximate_sqrt(edge->squared_length()) / 2;
+        Point midpoint = CGAL::midpoint(edge->source(), edge->target());
+        Circle circle(midpoint, radius);
+
+        Polygon circle_polygon = create_ngon_approximation_refinement(midpoint, radius, 16); // Approximate with 16 segments
+
+        std::vector<Polygon_with_holes> temp_result;
+        for (const auto& poly_with_holes : result) {
+            std::vector<Polygon_with_holes> diff;
+            CGAL::difference(poly_with_holes, circle_polygon, std::back_inserter(diff));
+            temp_result.insert(temp_result.end(), diff.begin(), diff.end());
+        }
+
+        Polygon shadow = compute_shadow_refinement(edge->source(), edge->target(), polygon.bbox().x_span() + polygon.bbox().y_span());
+
+        // Take the union of temp_result and shadow
+        std::vector<Polygon_with_holes> union_result;
+        for (const auto& poly_with_holes : temp_result) {
+            std::vector<Polygon_with_holes> joined;
+            CGAL::intersection(poly_with_holes, shadow, std::back_inserter(joined));
+            union_result.insert(union_result.end(), joined.begin(), joined.end());
+        }
+        result = union_result;
+    }
+
+    Polygon final_polygon;
+    if (!result.empty()) {
+        final_polygon = result.front().outer_boundary();
+    }
+    return final_polygon;
+}
+
+Point find_point_inside_polygon_refinement(const Polygon& polygon) {
+    assert(!polygon.is_empty());
+
+    Point p;
+
+    for (int i = 0; i < polygon.size(); i++) {
+        Point p1 = polygon[i];
+        Point p2 = polygon[(i+1)%polygon.size()];
+        Point p3 = polygon[(i+2)%polygon.size()];
+
+        K::FT x = (p1.x() + p2.x() + p3.x()) / 3;
+        K::FT y = (p1.y() + p2.y() + p3.y()) / 3;
+
+        p = Point(x,y);
+        if (polygon.bounded_side(p) == CGAL::ON_BOUNDED_SIDE) break;
+    }
+
+    return p;
+}
+
+bool next_point_magic(CDT* cdt){
+    for (auto fh : cdt->finite_face_handles()) {
+        if (fh->is_in_domain() && is_obtuse_refinement(fh)) {
+            Polygon magic_polygon = build_magic_polygon_refinement(fh, cdt);
+            Polygon subtracted_polygon = subtract_circles_from_polygon_refinement(magic_polygon);
+            if (subtracted_polygon.area() > 0) {
+                Point point_inside = find_point_inside_polygon_refinement(subtracted_polygon);
+                cdt->insert(point_inside);
+                return true;
+            }
+        }
+    }
+    return false;
+}
+
+void pentagon_refinement(Problem* problem){
+    // Preprocess the input instance, compute cdt
+    std::vector<Point> points = problem->get_points();
+    std::set<Point> point_set(points.begin(), points.end());
+    std::set<Point> steiner_point_set;
+    std::vector<Point> boundary_points = problem->get_boundary().vertices();
+    std::vector<Segment> constraints = problem->get_constraints();
+    Polygon boundary = problem->get_boundary();
+    for (size_t i = 0; i < boundary_points.size(); i++) {
+        constraints.push_back(Segment(boundary_points[i], boundary_points[(i + 1) % boundary_points.size()]));
+    }
+
+    auto box = problem->get_boundary().bbox();
+    auto scale = std::max(box.xmax() - box.xmin(), box.ymax() - box.ymin());
+
+    //std::cout << "scale: " << scale << " min: " << box.xmin() << "\n" << std::endl;
+
+    CDT cdt = problem->generate_CDT<CDT>();
+    problem->update_problem<CDT, Face_handle>(cdt, point_set);
+    //problem->visualize_solution({});
+    std::cout  << "Num of obtuse in cdt before: " << count_obtuse_triangles(problem) << std::endl;
+
+    int obtuse_after_fix = count_obtuse_triangles(problem);
+    int j = 0;
+    /*while(j != 10){
+        fix_boundary_refinement(problem);
+        cdt = problem->generate_CDT<CDT>();
+        problem->update_problem<CDT, Face_handle>(cdt, point_set);
+
+        int current_obtuse = problem->get_num_obtuse();
+        if(current_obtuse < obtuse_after_fix){
+            obtuse_after_fix = current_obtuse;
+        } else {
+            break;
+        }
+        j++;
+    }*/
+
+    //problem->visualize_solution({});
+
+    for(int i = 0; i < 50; i++){
+        /*if(i == 6){
+            problem->visualize_solution({});
+        }*/
+        bool pentagon_point = next_point_magic(&cdt);
+        bool is_refinement_done = false;
+
+        /*if(i == 6){
+            problem->visualize_solution({});
+        }*/
+
+        // If point insertion via pentagons was not possible, fll back to classic Delaunay
+        if(!pentagon_point && count_obtuse_triangles(problem) != 0){
+            is_refinement_done = next_refinement_point(problem, cdt);
+        } else {
+            //std::cout << "inserted into pentagon in iteration " << i << std::endl; 
+        }
+
+        problem->update_problem<CDT, Face_handle>(cdt, point_set);
+
+        //problem->visualize_solution({});
+
+        if(is_refinement_done || count_obtuse_triangles(problem) == 0){
+            break;
+        }
+
+        optimizeTinyAD(problem);
+        cdt = problem->generate_CDT<CDT>();
+        problem->update_problem<CDT, Face_handle>(cdt, point_set);
+
+        /*fix_rhombus(problem, cdt);
+        cdt = problem->generate_CDT<CDT>();
+        problem->update_problem<CDT, Face_handle>(cdt, point_set);*/
+
+        obtuse_after_fix = count_obtuse_triangles(problem);
+        j = 0;
+        while(j != 10){
+            fix_boundary_refinement(problem);
+            cdt = problem->generate_CDT<CDT>();
+            problem->update_problem<CDT, Face_handle>(cdt, point_set);
+
+            int current_obtuse = problem->get_num_obtuse();
+            if(current_obtuse < obtuse_after_fix){
+                obtuse_after_fix = current_obtuse;
+            } else {
+                break;
+            }
+            j++;
+        }
+
+        optimizeTinyAD(problem);
+        cdt = problem->generate_CDT<CDT>();
+        problem->update_problem<CDT, Face_handle>(cdt, point_set);
+
+        obtuse_after_fix = count_obtuse_triangles(problem);
+        j = 0;
+        while(j != 10){
+            fix_boundary_refinement(problem);
+            cdt = problem->generate_CDT<CDT>();
+            problem->update_problem<CDT, Face_handle>(cdt, point_set);
+
+            int current_obtuse = problem->get_num_obtuse();
+            if(current_obtuse < obtuse_after_fix){
+                obtuse_after_fix = current_obtuse;
+            } else {
+                break;
+            }
+            j++;
+        }
+
+        /*if(i == 6){
+            problem->visualize_solution({});
+        }*/
+
+        //std::cout << "finished " << i << std::endl;
+        //problem->visualize_solution({});
+    }
+
+    //problem->visualize_solution({});
+
+    std::cout << RED << "num obtuse: " << count_obtuse_triangles(problem) << RESET << std::endl;
+    std::cout << RED << "num steiner: " << problem->get_steiner().size() << RESET << std::endl;
+    print_current_time_refinement();
+}
+
+//*****************************************************************************************************
 
 //***************************CGAL step-for-step********************************************************
 
@@ -1299,25 +1913,11 @@ double get_triangle_area(const Point& p1, const Point& p2, const Point& p3){
     return std::abs(CGAL::to_double(area));
 }
 
-double get_shortest_edge(const Point& a, const Point& b, const Point& c){
-    auto ab = CGAL::squared_distance(a, b);
-    auto bc = CGAL::squared_distance(b, c);
-    auto ac = CGAL::squared_distance(a, c);
-
-    if(ab <= bc && ab <= ac){
-        return std::sqrt(CGAL::to_double(ab));
-    } else if (bc <= ab && bc <= ac) {
-        return std::sqrt(CGAL::to_double(bc));
-    } else {
-        return std::sqrt(CGAL::to_double(ac));
-    }
-}
-
 double get_aspect_ratio(const Point& a, const Point& b, const Point& c){
     if(get_triangle_area(a, b, c) < 1e-6){
         return INFINITY;
     }
-    double shortest_edge = get_shortest_edge(a, b, c);
+    double shortest_edge = std::sqrt(CGAL::to_double(get_shortest_edge(a, b, c).squared_length()));
     if(shortest_edge < 1e-6){
         return INFINITY;
     }

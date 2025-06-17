@@ -5,6 +5,8 @@
 Mesh_Statistics refine(Problem* problem);
 void step_by_step_mesh(Problem* problem);
 void classic_delaunay_refinement(Problem* problem);
+Mesh_Statistics offcenter_delaunay_refinement(Problem* problem);
+void pentagon_refinement(Problem* problem);
 
 void locally_optimize_obtuse_refinement(Problem *problem);
 

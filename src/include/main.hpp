@@ -5,9 +5,9 @@
 #include "miscellaneous.hpp"
 #include "mesh_statistics.hpp"
 
-#include "mesh.hpp"
+//#include "mesh.hpp"
 #include "stupid.hpp"
-#include "manual.hpp"
+//#include "manual.hpp"
 #include "lloyd.hpp"
 
 std::string file;

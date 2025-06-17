@@ -12,6 +12,8 @@ private:
     int obtuse_after_meshing = 0;
     int obtuse_after_optimization = 0;
 
+    int time;
+
     double min_angle = 0;
     double max_angle = 0;
     double deviation = 0;
@@ -25,6 +27,7 @@ public:
     int get_steiner_after_optimization() { return steiner_after_optimization; };
     int get_obtuse_after_meshing() { return obtuse_after_meshing; };
     int get_obtuse_after_optimization() { return  obtuse_after_optimization; };
+    int get_time() { return  time; };
     double get_deviation() { return deviation; };
     double get_aspect_ratio() { return aspect_ratio; };
     double get_min_angle() { return min_angle; };
@@ -36,6 +39,7 @@ public:
     void set_steiner_after_optimization(int new_steiner_after_optimization) { steiner_after_optimization = new_steiner_after_optimization; };
     void set_obtuse_after_meshing(int new_obtuse_after_meshing) { obtuse_after_meshing = new_obtuse_after_meshing; };
     void set_obtuse_after_optimization(int new_obtuse_after_optimization ) { obtuse_after_optimization = new_obtuse_after_optimization; };
+    void set_time(int new_time) { time = new_time; };
     void set_deviation(double new_deviation) { deviation = new_deviation; };
     void set_aspect_ratio(double new_aspect_ratio) { aspect_ratio = new_aspect_ratio; };
     void set_min_angle(double new_min_angle) { min_angle = new_min_angle; };

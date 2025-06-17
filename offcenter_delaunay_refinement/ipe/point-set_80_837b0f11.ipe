@@ -1,0 +1,5686 @@
+<?xml version="1.0"?>
+<!DOCTYPE ipe SYSTEM "ipe.dtd">
+<ipe version="70218" creator="Ipe 7.2.24">
+<info created="D:20221020151441" modified="D:20221020151441"/>
+<ipestyle name="basic">
+<symbol name="mark/disk(sx)" transformations="translations">
+<path fill="sym-stroke">
+0.6 0 0 0.6 0 0 e
+</path>
+</symbol>
+<anglesize name="22.5 deg" value="22.5"/>
+<anglesize name="30 deg" value="30"/>
+<anglesize name="45 deg" value="45"/>
+<anglesize name="60 deg" value="60"/>
+<anglesize name="90 deg" value="90"/>
+<arrowsize name="large" value="10"/>
+<arrowsize name="small" value="5"/>
+<arrowsize name="tiny" value="3"/>
+<color name="blue" value="0 0 1"/>
+<color name="gray" value="0.745"/>
+<color name="green" value="0 1 0"/>
+<color name="red" value="1 0 0"/>
+<color name="pink" value="1 0.753 0.796"/>
+<pen name="heavier" value="0.8"/>
+<pen name="fat" value="1.4"/>
+<pen name="ultrafat" value="2"/>
+<gridsize name="16 pts (~6 mm)" value="16"/>
+<gridsize name="32 pts (~12 mm)" value="32"/>
+<gridsize name="4 pts" value="4"/>
+<gridsize name="8 pts (~3 mm)" value="8"/>
+<opacity name="10%" value="0.1"/>
+<opacity name="25%" value="0.25"/>
+<opacity name="50%" value="0.5"/>
+<opacity name="75%" value="0.75"/>
+<symbolsize name="large" value="5"/>
+<symbolsize name="small" value="2"/>
+<symbolsize name="tiny" value="1.1"/>
+<textsize name="huge" value="\huge"/>
+<textsize name="large" value="\large"/>
+<textsize name="small" value="\small"/>
+<textsize name="tiny" value="	iny"/>
+<tiling name="falling" angle="-60" step="4" width="1"/>
+<tiling name="rising" angle="30" step="4" width="1"/>
+</ipestyle>
+<page>
+<layer name="hull"/>
+<layer name="constraints"/>
+<layer name="triangulation"/>
+<layer name="obtuse"/>
+<layer name="blub"/>
+<layer name="problems"/>
+<view layers="hull constraints triangulation obtuse blub" active="triangulation"/>
+<path layer="triangulation" stroke="black">
+106.342 749.751 m 
+90.6344 790.362 l 
+</path>
+<path layer="triangulation" stroke="black">
+90.6344 790.362 m 
+92.5108 746.22 l 
+</path>
+<path layer="triangulation" stroke="black">
+92.5108 746.22 m 
+106.342 749.751 l 
+</path>
+<path layer="triangulation" stroke="black">
+148.64 641.033 m 
+187.414 636.162 l 
+</path>
+<path layer="triangulation" stroke="black">
+187.414 636.162 m 
+173.406 674.994 l 
+</path>
+<path layer="triangulation" stroke="black">
+173.406 674.994 m 
+148.64 641.033 l 
+</path>
+<path layer="triangulation" stroke="black">
+261.67 427.835 m 
+216.399 358.075 l 
+</path>
+<path layer="triangulation" stroke="black">
+216.399 358.075 m 
+285.498 358.911 l 
+</path>
+<path layer="triangulation" stroke="black">
+285.498 358.911 m 
+261.67 427.835 l 
+</path>
+<path layer="triangulation" stroke="black">
+116.399 348.382 m 
+121.022 376.747 l 
+</path>
+<path layer="triangulation" stroke="black">
+121.022 376.747 m 
+100.603 358.075 l 
+</path>
+<path layer="triangulation" stroke="black">
+100.603 358.075 m 
+116.399 348.382 l 
+</path>
+<path layer="triangulation" stroke="black">
+109.29 687.139 m 
+105.251 695.246 l 
+</path>
+<path layer="triangulation" stroke="black">
+105.251 695.246 m 
+95.8949 685.894 l 
+</path>
+<path layer="triangulation" stroke="black">
+95.8949 685.894 m 
+109.29 687.139 l 
+</path>
+<path layer="triangulation" stroke="black">
+234.939 553.913 m 
+252.797 574.381 l 
+</path>
+<path layer="triangulation" stroke="black">
+252.797 574.381 m 
+216.098 587.795 l 
+</path>
+<path layer="triangulation" stroke="black">
+216.098 587.795 m 
+234.939 553.913 l 
+</path>
+<path layer="triangulation" stroke="black">
+100.603 358.075 m 
+121.022 376.747 l 
+</path>
+<path layer="triangulation" stroke="black">
+121.022 376.747 m 
+85.5803 378.714 l 
+</path>
+<path layer="triangulation" stroke="black">
+85.5803 378.714 m 
+100.603 358.075 l 
+</path>
+<path layer="triangulation" stroke="black">
+33.8586 394.36 m 
+48.3699 369.551 l 
+</path>
+<path layer="triangulation" stroke="black">
+48.3699 369.551 m 
+67.6435 405.451 l 
+</path>
+<path layer="triangulation" stroke="black">
+67.6435 405.451 m 
+33.8586 394.36 l 
+</path>
+<path layer="triangulation" stroke="black">
+73.4177 352.167 m 
+92.5108 354.543 l 
+</path>
+<path layer="triangulation" stroke="black">
+92.5108 354.543 m 
+85.5803 378.714 l 
+</path>
+<path layer="triangulation" stroke="black">
+85.5803 378.714 m 
+73.4177 352.167 l 
+</path>
+<path layer="triangulation" stroke="black">
+131.474 295.437 m 
+132.973 316.288 l 
+</path>
+<path layer="triangulation" stroke="black">
+132.973 316.288 m 
+106.342 308.195 l 
+</path>
+<path layer="triangulation" stroke="black">
+106.342 308.195 m 
+131.474 295.437 l 
+</path>
+<path layer="triangulation" stroke="black">
+199.291 322.627 m 
+160.548 350.442 l 
+</path>
+<path layer="triangulation" stroke="black">
+160.548 350.442 m 
+176.486 302.046 l 
+</path>
+<path layer="triangulation" stroke="black">
+176.486 302.046 m 
+199.291 322.627 l 
+</path>
+<path layer="triangulation" stroke="black">
+83.0538 286.872 m 
+16 272.294 l 
+</path>
+<path layer="triangulation" stroke="black">
+16 272.294 m 
+85.4549 272.248 l 
+</path>
+<path layer="triangulation" stroke="black">
+85.4549 272.248 m 
+83.0538 286.872 l 
+</path>
+<path layer="triangulation" stroke="black">
+73.3342 318.543 m 
+100.603 334.827 l 
+</path>
+<path layer="triangulation" stroke="black">
+100.603 334.827 m 
+90.3155 344.495 l 
+</path>
+<path layer="triangulation" stroke="black">
+90.3155 344.495 m 
+73.3342 318.543 l 
+</path>
+<path layer="triangulation" stroke="black">
+140.976 489.419 m 
+137.682 449.593 l 
+</path>
+<path layer="triangulation" stroke="black">
+137.682 449.593 m 
+170.914 463.852 l 
+</path>
+<path layer="triangulation" stroke="black">
+170.914 463.852 m 
+140.976 489.419 l 
+</path>
+<path layer="triangulation" stroke="black">
+67.6435 405.451 m 
+88.6156 444.821 l 
+</path>
+<path layer="triangulation" stroke="black">
+88.6156 444.821 m 
+32.185 449.593 l 
+</path>
+<path layer="triangulation" stroke="black">
+32.185 449.593 m 
+67.6435 405.451 l 
+</path>
+<path layer="triangulation" stroke="black">
+289.379 761.228 m 
+333.373 746.22 l 
+</path>
+<path layer="triangulation" stroke="black">
+333.373 746.22 m 
+336.219 784.799 l 
+</path>
+<path layer="triangulation" stroke="black">
+336.219 784.799 m 
+289.379 761.228 l 
+</path>
+<path layer="triangulation" stroke="black">
+82.0894 624.363 m 
+75.9472 651.816 l 
+</path>
+<path layer="triangulation" stroke="black">
+75.9472 651.816 m 
+54.4863 639.765 l 
+</path>
+<path layer="triangulation" stroke="black">
+54.4863 639.765 m 
+82.0894 624.363 l 
+</path>
+<path layer="triangulation" stroke="black">
+152.689 746.22 m 
+163.284 748.573 l 
+</path>
+<path layer="triangulation" stroke="black">
+163.284 748.573 m 
+153.867 761.228 l 
+</path>
+<path layer="triangulation" stroke="black">
+153.867 761.228 m 
+152.689 746.22 l 
+</path>
+<path layer="triangulation" stroke="black">
+77.1646 695.997 m 
+84.4183 676.624 l 
+</path>
+<path layer="triangulation" stroke="black">
+84.4183 676.624 m 
+95.8949 685.894 l 
+</path>
+<path layer="triangulation" stroke="black">
+95.8949 685.894 m 
+77.1646 695.997 l 
+</path>
+<path layer="triangulation" stroke="black">
+32.335 709.889 m 
+57.5786 678.337 l 
+</path>
+<path layer="triangulation" stroke="black">
+57.5786 678.337 m 
+77.1646 695.997 l 
+</path>
+<path layer="triangulation" stroke="black">
+77.1646 695.997 m 
+32.335 709.889 l 
+</path>
+<path layer="triangulation" stroke="black">
+345.458 695.037 m 
+320.363 699.147 l 
+</path>
+<path layer="triangulation" stroke="black">
+320.363 699.147 m 
+331.291 673.324 l 
+</path>
+<path layer="triangulation" stroke="black">
+331.291 673.324 m 
+345.458 695.037 l 
+</path>
+<path layer="triangulation" stroke="black">
+228.843 767.197 m 
+289.379 761.228 l 
+</path>
+<path layer="triangulation" stroke="black">
+289.379 761.228 m 
+277.902 832 l 
+</path>
+<path layer="triangulation" stroke="black">
+277.902 832 m 
+228.843 767.197 l 
+</path>
+<path layer="triangulation" stroke="black">
+199.037 761.228 m 
+181.229 740.235 l 
+</path>
+<path layer="triangulation" stroke="black">
+181.229 740.235 m 
+216.399 726.503 l 
+</path>
+<path layer="triangulation" stroke="black">
+216.399 726.503 m 
+199.037 761.228 l 
+</path>
+<path layer="triangulation" stroke="black">
+302.113 675.544 m 
+261.57 681.333 l 
+</path>
+<path layer="triangulation" stroke="black">
+261.57 681.333 m 
+288.357 651.052 l 
+</path>
+<path layer="triangulation" stroke="black">
+288.357 651.052 m 
+302.113 675.544 l 
+</path>
+<path layer="triangulation" stroke="black">
+101.421 709.232 m 
+106.342 699.872 l 
+</path>
+<path layer="triangulation" stroke="black">
+106.342 699.872 m 
+115.676 710.431 l 
+</path>
+<path layer="triangulation" stroke="black">
+115.676 710.431 m 
+101.421 709.232 l 
+</path>
+<path layer="triangulation" stroke="black">
+388.492 739.618 m 
+373.982 707.964 l 
+</path>
+<path layer="triangulation" stroke="black">
+373.982 707.964 m 
+419.153 707.964 l 
+</path>
+<path layer="triangulation" stroke="black">
+419.153 707.964 m 
+388.492 739.618 l 
+</path>
+<path layer="triangulation" stroke="black">
+90.6344 832 m 
+36.8933 832 l 
+</path>
+<path layer="triangulation" stroke="black">
+36.8933 832 m 
+90.6344 790.362 l 
+</path>
+<path layer="triangulation" stroke="black">
+90.6344 790.362 m 
+90.6344 832 l 
+</path>
+<path layer="triangulation" stroke="black">
+173.406 674.994 m 
+207.13 696.341 l 
+</path>
+<path layer="triangulation" stroke="black">
+207.13 696.341 m 
+178.144 707.964 l 
+</path>
+<path layer="triangulation" stroke="black">
+178.144 707.964 m 
+173.406 674.994 l 
+</path>
+<path layer="triangulation" stroke="black">
+359.125 732.284 m 
+350.245 730.184 l 
+</path>
+<path layer="triangulation" stroke="black">
+350.245 730.184 m 
+351.912 726.503 l 
+</path>
+<path layer="triangulation" stroke="black">
+351.912 726.503 m 
+359.125 732.284 l 
+</path>
+<path layer="triangulation" stroke="black">
+238.077 680.229 m 
+248.308 627.27 l 
+</path>
+<path layer="triangulation" stroke="black">
+248.308 627.27 m 
+261.57 681.333 l 
+</path>
+<path layer="triangulation" stroke="black">
+261.57 681.333 m 
+238.077 680.229 l 
+</path>
+<path layer="triangulation" stroke="black">
+364.599 695.906 m 
+360.151 676.624 l 
+</path>
+<path layer="triangulation" stroke="black">
+360.151 676.624 m 
+394.84 677.201 l 
+</path>
+<path layer="triangulation" stroke="black">
+394.84 677.201 m 
+364.599 695.906 l 
+</path>
+<path layer="triangulation" stroke="black">
+344.055 650.002 m 
+360.151 676.624 l 
+</path>
+<path layer="triangulation" stroke="black">
+360.151 676.624 m 
+331.291 673.324 l 
+</path>
+<path layer="triangulation" stroke="black">
+331.291 673.324 m 
+344.055 650.002 l 
+</path>
+<path layer="triangulation" stroke="black">
+383.252 636.162 m 
+423.861 645.431 l 
+</path>
+<path layer="triangulation" stroke="black">
+423.861 645.431 m 
+394.84 677.201 l 
+</path>
+<path layer="triangulation" stroke="black">
+394.84 677.201 m 
+383.252 636.162 l 
+</path>
+<path layer="triangulation" stroke="black">
+232.895 323.708 m 
+285.498 358.911 l 
+</path>
+<path layer="triangulation" stroke="black">
+285.498 358.911 m 
+216.399 358.075 l 
+</path>
+<path layer="triangulation" stroke="black">
+216.399 358.075 m 
+232.895 323.708 l 
+</path>
+<path layer="triangulation" stroke="black">
+106.689 291.061 m 
+106.342 308.195 l 
+</path>
+<path layer="triangulation" stroke="black">
+106.342 308.195 m 
+95.8949 294.218 l 
+</path>
+<path layer="triangulation" stroke="black">
+95.8949 294.218 m 
+106.689 291.061 l 
+</path>
+<path layer="triangulation" stroke="black">
+132.973 316.288 m 
+100.603 334.827 l 
+</path>
+<path layer="triangulation" stroke="black">
+100.603 334.827 m 
+106.342 308.195 l 
+</path>
+<path layer="triangulation" stroke="black">
+106.342 308.195 m 
+132.973 316.288 l 
+</path>
+<path layer="triangulation" stroke="black">
+116.399 348.382 m 
+160.548 350.442 l 
+</path>
+<path layer="triangulation" stroke="black">
+160.548 350.442 m 
+121.022 376.747 l 
+</path>
+<path layer="triangulation" stroke="black">
+121.022 376.747 m 
+116.399 348.382 l 
+</path>
+<path layer="triangulation" stroke="black">
+131.474 295.437 m 
+106.342 308.195 l 
+</path>
+<path layer="triangulation" stroke="black">
+106.342 308.195 m 
+106.689 291.061 l 
+</path>
+<path layer="triangulation" stroke="black">
+106.689 291.061 m 
+131.474 295.437 l 
+</path>
+<path layer="triangulation" stroke="black">
+109.873 282.741 m 
+106.689 291.061 l 
+</path>
+<path layer="triangulation" stroke="black">
+106.689 291.061 m 
+100.603 282.741 l 
+</path>
+<path layer="triangulation" stroke="black">
+100.603 282.741 m 
+109.873 282.741 l 
+</path>
+<path layer="triangulation" stroke="black">
+106.342 308.195 m 
+100.603 334.827 l 
+</path>
+<path layer="triangulation" stroke="black">
+100.603 334.827 m 
+73.3342 318.543 l 
+</path>
+<path layer="triangulation" stroke="black">
+73.3342 318.543 m 
+106.342 308.195 l 
+</path>
+<path layer="triangulation" stroke="black">
+109.866 272.232 m 
+129.361 272.218 l 
+</path>
+<path layer="triangulation" stroke="black">
+129.361 272.218 m 
+109.873 282.741 l 
+</path>
+<path layer="triangulation" stroke="black">
+109.873 282.741 m 
+109.866 272.232 l 
+</path>
+<path layer="triangulation" stroke="black">
+230.898 312.672 m 
+218.18 318.985 l 
+</path>
+<path layer="triangulation" stroke="black">
+218.18 318.985 m 
+225.669 304.664 l 
+</path>
+<path layer="triangulation" stroke="black">
+225.669 304.664 m 
+230.898 312.672 l 
+</path>
+<path layer="triangulation" stroke="black">
+131.474 295.437 m 
+109.873 282.741 l 
+</path>
+<path layer="triangulation" stroke="black">
+109.873 282.741 m 
+129.361 272.218 l 
+</path>
+<path layer="triangulation" stroke="black">
+129.361 272.218 m 
+131.474 295.437 l 
+</path>
+<path layer="triangulation" stroke="black">
+207.13 304.664 m 
+176.486 302.046 l 
+</path>
+<path layer="triangulation" stroke="black">
+176.486 302.046 m 
+207.108 272.167 l 
+</path>
+<path layer="triangulation" stroke="black">
+207.108 272.167 m 
+207.13 304.664 l 
+</path>
+<path layer="triangulation" stroke="black">
+100.596 272.238 m 
+100.603 282.741 l 
+</path>
+<path layer="triangulation" stroke="black">
+100.603 282.741 m 
+94.2057 281.517 l 
+</path>
+<path layer="triangulation" stroke="black">
+94.2057 281.517 m 
+100.596 272.238 l 
+</path>
+<path layer="triangulation" stroke="black">
+218.18 318.985 m 
+216.399 358.075 l 
+</path>
+<path layer="triangulation" stroke="black">
+216.399 358.075 m 
+199.291 322.627 l 
+</path>
+<path layer="triangulation" stroke="black">
+199.291 322.627 m 
+218.18 318.985 l 
+</path>
+<path layer="triangulation" stroke="black">
+165.487 409.825 m 
+137.682 449.593 l 
+</path>
+<path layer="triangulation" stroke="black">
+137.682 449.593 m 
+109.356 409.633 l 
+</path>
+<path layer="triangulation" stroke="black">
+109.356 409.633 m 
+165.487 409.825 l 
+</path>
+<path layer="triangulation" stroke="black">
+140.976 489.419 m 
+95.8949 490.056 l 
+</path>
+<path layer="triangulation" stroke="black">
+95.8949 490.056 m 
+100.382 475.74 l 
+</path>
+<path layer="triangulation" stroke="black">
+100.382 475.74 m 
+140.976 489.419 l 
+</path>
+<path layer="triangulation" stroke="black">
+85.5803 378.714 m 
+67.6435 405.451 l 
+</path>
+<path layer="triangulation" stroke="black">
+67.6435 405.451 m 
+48.3699 369.551 l 
+</path>
+<path layer="triangulation" stroke="black">
+48.3699 369.551 m 
+85.5803 378.714 l 
+</path>
+<path layer="triangulation" stroke="black">
+71.1371 527.224 m 
+47.34 550.382 l 
+</path>
+<path layer="triangulation" stroke="black">
+47.34 550.382 m 
+41.6776 527.184 l 
+</path>
+<path layer="triangulation" stroke="black">
+41.6776 527.184 m 
+71.1371 527.224 l 
+</path>
+<path layer="triangulation" stroke="black">
+359.444 608.391 m 
+334.55 565.389 l 
+</path>
+<path layer="triangulation" stroke="black">
+334.55 565.389 m 
+394.875 565.389 l 
+</path>
+<path layer="triangulation" stroke="black">
+394.875 565.389 m 
+359.444 608.391 l 
+</path>
+<path layer="triangulation" stroke="black">
+188.361 515.851 m 
+225.669 530.665 l 
+</path>
+<path layer="triangulation" stroke="black">
+225.669 530.665 m 
+197.86 550.382 l 
+</path>
+<path layer="triangulation" stroke="black">
+197.86 550.382 m 
+188.361 515.851 l 
+</path>
+<path layer="triangulation" stroke="black">
+292.602 481.452 m 
+247.733 488.919 l 
+</path>
+<path layer="triangulation" stroke="black">
+247.733 488.919 m 
+261.67 427.835 l 
+</path>
+<path layer="triangulation" stroke="black">
+261.67 427.835 m 
+292.602 481.452 l 
+</path>
+<path layer="triangulation" stroke="black">
+98.8132 348.872 m 
+100.603 358.075 l 
+</path>
+<path layer="triangulation" stroke="black">
+100.603 358.075 m 
+92.5108 354.543 l 
+</path>
+<path layer="triangulation" stroke="black">
+92.5108 354.543 m 
+98.8132 348.872 l 
+</path>
+<path layer="triangulation" stroke="black">
+121.022 376.747 m 
+165.487 409.825 l 
+</path>
+<path layer="triangulation" stroke="black">
+165.487 409.825 m 
+109.356 409.633 l 
+</path>
+<path layer="triangulation" stroke="black">
+109.356 409.633 m 
+121.022 376.747 l 
+</path>
+<path layer="triangulation" stroke="black">
+137.682 449.593 m 
+140.976 489.419 l 
+</path>
+<path layer="triangulation" stroke="black">
+140.976 489.419 m 
+100.382 475.74 l 
+</path>
+<path layer="triangulation" stroke="black">
+100.382 475.74 m 
+137.682 449.593 l 
+</path>
+<path layer="triangulation" stroke="black">
+20.664 397.237 m 
+33.8586 394.36 l 
+</path>
+<path layer="triangulation" stroke="black">
+33.8586 394.36 m 
+32.185 449.593 l 
+</path>
+<path layer="triangulation" stroke="black">
+32.185 449.593 m 
+20.664 397.237 l 
+</path>
+<path layer="triangulation" stroke="black">
+57.5786 678.337 m 
+59.9937 663.676 l 
+</path>
+<path layer="triangulation" stroke="black">
+59.9937 663.676 m 
+84.4183 676.624 l 
+</path>
+<path layer="triangulation" stroke="black">
+84.4183 676.624 m 
+57.5786 678.337 l 
+</path>
+<path layer="triangulation" stroke="black">
+131.693 544.672 m 
+197.86 550.382 l 
+</path>
+<path layer="triangulation" stroke="black">
+197.86 550.382 m 
+164.808 596.091 l 
+</path>
+<path layer="triangulation" stroke="black">
+164.808 596.091 m 
+131.693 544.672 l 
+</path>
+<path layer="triangulation" stroke="black">
+100.382 475.74 m 
+84.4183 480.786 l 
+</path>
+<path layer="triangulation" stroke="black">
+84.4183 480.786 m 
+88.6156 444.821 l 
+</path>
+<path layer="triangulation" stroke="black">
+88.6156 444.821 m 
+100.382 475.74 l 
+</path>
+<path layer="triangulation" stroke="black">
+43.7134 513.912 m 
+71.1371 527.224 l 
+</path>
+<path layer="triangulation" stroke="black">
+71.1371 527.224 m 
+41.6776 527.184 l 
+</path>
+<path layer="triangulation" stroke="black">
+41.6776 527.184 m 
+43.7134 513.912 l 
+</path>
+<path layer="triangulation" stroke="black">
+108.391 653.56 m 
+95.8949 685.894 l 
+</path>
+<path layer="triangulation" stroke="black">
+95.8949 685.894 m 
+84.4183 676.624 l 
+</path>
+<path layer="triangulation" stroke="black">
+84.4183 676.624 m 
+108.391 653.56 l 
+</path>
+<path layer="triangulation" stroke="black">
+101.421 709.232 m 
+106.342 726.503 l 
+</path>
+<path layer="triangulation" stroke="black">
+106.342 726.503 m 
+81.2254 720.994 l 
+</path>
+<path layer="triangulation" stroke="black">
+81.2254 720.994 m 
+101.421 709.232 l 
+</path>
+<path layer="triangulation" stroke="black">
+115.676 710.431 m 
+106.342 726.503 l 
+</path>
+<path layer="triangulation" stroke="black">
+106.342 726.503 m 
+101.421 709.232 l 
+</path>
+<path layer="triangulation" stroke="black">
+101.421 709.232 m 
+115.676 710.431 l 
+</path>
+<path layer="triangulation" stroke="black">
+109.29 687.139 m 
+95.8949 685.894 l 
+</path>
+<path layer="triangulation" stroke="black">
+95.8949 685.894 m 
+108.391 653.56 l 
+</path>
+<path layer="triangulation" stroke="black">
+108.391 653.56 m 
+109.29 687.139 l 
+</path>
+<path layer="triangulation" stroke="black">
+119.142 685.894 m 
+109.29 687.139 l 
+</path>
+<path layer="triangulation" stroke="black">
+109.29 687.139 m 
+108.391 653.56 l 
+</path>
+<path layer="triangulation" stroke="black">
+108.391 653.56 m 
+119.142 685.894 l 
+</path>
+<path layer="triangulation" stroke="black">
+95.8949 685.894 m 
+100.603 699.725 l 
+</path>
+<path layer="triangulation" stroke="black">
+100.603 699.725 m 
+93.6875 701.8 l 
+</path>
+<path layer="triangulation" stroke="black">
+93.6875 701.8 m 
+95.8949 685.894 l 
+</path>
+<path layer="triangulation" stroke="black">
+140.028 702.286 m 
+178.144 707.964 l 
+</path>
+<path layer="triangulation" stroke="black">
+178.144 707.964 m 
+159.608 730.585 l 
+</path>
+<path layer="triangulation" stroke="black">
+159.608 730.585 m 
+140.028 702.286 l 
+</path>
+<path layer="triangulation" stroke="black">
+106.342 726.503 m 
+92.5108 746.22 l 
+</path>
+<path layer="triangulation" stroke="black">
+92.5108 746.22 m 
+81.2254 720.994 l 
+</path>
+<path layer="triangulation" stroke="black">
+81.2254 720.994 m 
+106.342 726.503 l 
+</path>
+<path layer="triangulation" stroke="black">
+114.749 695.64 m 
+115.676 710.431 l 
+</path>
+<path layer="triangulation" stroke="black">
+115.676 710.431 m 
+106.342 699.872 l 
+</path>
+<path layer="triangulation" stroke="black">
+106.342 699.872 m 
+114.749 695.64 l 
+</path>
+<path layer="triangulation" stroke="black">
+130.692 731.966 m 
+129.563 761.985 l 
+</path>
+<path layer="triangulation" stroke="black">
+129.563 761.985 m 
+106.342 749.751 l 
+</path>
+<path layer="triangulation" stroke="black">
+106.342 749.751 m 
+130.692 731.966 l 
+</path>
+<path layer="triangulation" stroke="black">
+129.563 761.985 m 
+152.689 746.22 l 
+</path>
+<path layer="triangulation" stroke="black">
+152.689 746.22 m 
+153.867 761.228 l 
+</path>
+<path layer="triangulation" stroke="black">
+153.867 761.228 m 
+129.563 761.985 l 
+</path>
+<path layer="triangulation" stroke="black">
+178.144 707.964 m 
+207.13 696.341 l 
+</path>
+<path layer="triangulation" stroke="black">
+207.13 696.341 m 
+216.399 726.503 l 
+</path>
+<path layer="triangulation" stroke="black">
+216.399 726.503 m 
+178.144 707.964 l 
+</path>
+<path layer="triangulation" stroke="black">
+106.342 726.503 m 
+106.342 749.751 l 
+</path>
+<path layer="triangulation" stroke="black">
+106.342 749.751 m 
+92.5108 746.22 l 
+</path>
+<path layer="triangulation" stroke="black">
+92.5108 746.22 m 
+106.342 726.503 l 
+</path>
+<path layer="triangulation" stroke="black">
+90.6344 790.362 m 
+36.8933 832 l 
+</path>
+<path layer="triangulation" stroke="black">
+36.8933 832 m 
+33.7731 748.412 l 
+</path>
+<path layer="triangulation" stroke="black">
+33.7731 748.412 m 
+90.6344 790.362 l 
+</path>
+<path layer="triangulation" stroke="black">
+216.399 726.503 m 
+234.939 726.503 l 
+</path>
+<path layer="triangulation" stroke="black">
+234.939 726.503 m 
+228.843 767.197 l 
+</path>
+<path layer="triangulation" stroke="black">
+228.843 767.197 m 
+216.399 726.503 l 
+</path>
+<path layer="triangulation" stroke="black">
+280.359 712.268 m 
+319.517 725.647 l 
+</path>
+<path layer="triangulation" stroke="black">
+319.517 725.647 m 
+289.379 761.228 l 
+</path>
+<path layer="triangulation" stroke="black">
+289.379 761.228 m 
+280.359 712.268 l 
+</path>
+<path layer="triangulation" stroke="black">
+440.046 761.228 m 
+388.492 739.618 l 
+</path>
+<path layer="triangulation" stroke="black">
+388.492 739.618 m 
+419.153 707.964 l 
+</path>
+<path layer="triangulation" stroke="black">
+419.153 707.964 m 
+440.046 761.228 l 
+</path>
+<path layer="triangulation" stroke="black">
+181.229 740.235 m 
+178.144 707.964 l 
+</path>
+<path layer="triangulation" stroke="black">
+178.144 707.964 m 
+216.399 726.503 l 
+</path>
+<path layer="triangulation" stroke="black">
+216.399 726.503 m 
+181.229 740.235 l 
+</path>
+<path layer="triangulation" stroke="black">
+207.13 696.341 m 
+225.669 696.341 l 
+</path>
+<path layer="triangulation" stroke="black">
+225.669 696.341 m 
+216.399 726.503 l 
+</path>
+<path layer="triangulation" stroke="black">
+216.399 726.503 m 
+207.13 696.341 l 
+</path>
+<path layer="triangulation" stroke="black">
+159.608 730.585 m 
+178.144 707.964 l 
+</path>
+<path layer="triangulation" stroke="black">
+178.144 707.964 m 
+181.229 740.235 l 
+</path>
+<path layer="triangulation" stroke="black">
+181.229 740.235 m 
+159.608 730.585 l 
+</path>
+<path layer="triangulation" stroke="black">
+173.406 674.994 m 
+187.414 636.162 l 
+</path>
+<path layer="triangulation" stroke="black">
+187.414 636.162 m 
+214.658 672.256 l 
+</path>
+<path layer="triangulation" stroke="black">
+214.658 672.256 m 
+173.406 674.994 l 
+</path>
+<path layer="triangulation" stroke="black">
+216.399 726.503 m 
+225.669 696.341 l 
+</path>
+<path layer="triangulation" stroke="black">
+225.669 696.341 m 
+234.939 726.503 l 
+</path>
+<path layer="triangulation" stroke="black">
+234.939 726.503 m 
+216.399 726.503 l 
+</path>
+<path layer="triangulation" stroke="black">
+225.669 696.341 m 
+214.658 672.256 l 
+</path>
+<path layer="triangulation" stroke="black">
+214.658 672.256 m 
+238.077 680.229 l 
+</path>
+<path layer="triangulation" stroke="black">
+238.077 680.229 m 
+225.669 696.341 l 
+</path>
+<path layer="triangulation" stroke="black">
+234.939 726.503 m 
+225.669 696.341 l 
+</path>
+<path layer="triangulation" stroke="black">
+225.669 696.341 m 
+244.208 696.341 l 
+</path>
+<path layer="triangulation" stroke="black">
+244.208 696.341 m 
+234.939 726.503 l 
+</path>
+<path layer="triangulation" stroke="black">
+207.13 696.341 m 
+173.406 674.994 l 
+</path>
+<path layer="triangulation" stroke="black">
+173.406 674.994 m 
+214.658 672.256 l 
+</path>
+<path layer="triangulation" stroke="black">
+214.658 672.256 m 
+207.13 696.341 l 
+</path>
+<path layer="triangulation" stroke="black">
+108.391 653.56 m 
+148.64 641.033 l 
+</path>
+<path layer="triangulation" stroke="black">
+148.64 641.033 m 
+130.766 678.978 l 
+</path>
+<path layer="triangulation" stroke="black">
+130.766 678.978 m 
+108.391 653.56 l 
+</path>
+<path layer="triangulation" stroke="black">
+197.86 550.382 m 
+225.669 530.665 l 
+</path>
+<path layer="triangulation" stroke="black">
+225.669 530.665 m 
+234.939 553.913 l 
+</path>
+<path layer="triangulation" stroke="black">
+234.939 553.913 m 
+197.86 550.382 l 
+</path>
+<path layer="triangulation" stroke="black">
+216.098 587.795 m 
+164.808 596.091 l 
+</path>
+<path layer="triangulation" stroke="black">
+164.808 596.091 m 
+197.86 550.382 l 
+</path>
+<path layer="triangulation" stroke="black">
+197.86 550.382 m 
+216.098 587.795 l 
+</path>
+<path layer="triangulation" stroke="black">
+247.733 488.919 m 
+207.13 500.502 l 
+</path>
+<path layer="triangulation" stroke="black">
+207.13 500.502 m 
+213.308 441.099 l 
+</path>
+<path layer="triangulation" stroke="black">
+213.308 441.099 m 
+247.733 488.919 l 
+</path>
+<path layer="triangulation" stroke="black">
+313.803 512.126 m 
+328.811 487.849 l 
+</path>
+<path layer="triangulation" stroke="black">
+328.811 487.849 m 
+347.35 530.665 l 
+</path>
+<path layer="triangulation" stroke="black">
+347.35 530.665 m 
+313.803 512.126 l 
+</path>
+<path layer="triangulation" stroke="black">
+350.715 722.597 m 
+355.198 723.695 l 
+</path>
+<path layer="triangulation" stroke="black">
+355.198 723.695 m 
+351.912 726.503 l 
+</path>
+<path layer="triangulation" stroke="black">
+351.912 726.503 m 
+350.715 722.597 l 
+</path>
+<path layer="triangulation" stroke="black">
+334.55 565.389 m 
+347.35 530.665 l 
+</path>
+<path layer="triangulation" stroke="black">
+347.35 530.665 m 
+393.698 550.382 l 
+</path>
+<path layer="triangulation" stroke="black">
+393.698 550.382 m 
+334.55 565.389 l 
+</path>
+<path layer="triangulation" stroke="black">
+424.182 419.172 m 
+428.422 440.324 l 
+</path>
+<path layer="triangulation" stroke="black">
+428.422 440.324 m 
+418.585 439.919 l 
+</path>
+<path layer="triangulation" stroke="black">
+418.585 439.919 m 
+424.182 419.172 l 
+</path>
+<path layer="triangulation" stroke="black">
+318.365 645.431 m 
+295.894 625.314 l 
+</path>
+<path layer="triangulation" stroke="black">
+295.894 625.314 m 
+323.073 636.162 l 
+</path>
+<path layer="triangulation" stroke="black">
+323.073 636.162 m 
+318.365 645.431 l 
+</path>
+<path layer="triangulation" stroke="black">
+323.073 636.162 m 
+359.444 608.391 l 
+</path>
+<path layer="triangulation" stroke="black">
+359.444 608.391 m 
+344.055 650.002 l 
+</path>
+<path layer="triangulation" stroke="black">
+344.055 650.002 m 
+323.073 636.162 l 
+</path>
+<path layer="triangulation" stroke="black">
+302.113 675.544 m 
+288.357 651.052 l 
+</path>
+<path layer="triangulation" stroke="black">
+288.357 651.052 m 
+318.365 645.431 l 
+</path>
+<path layer="triangulation" stroke="black">
+318.365 645.431 m 
+302.113 675.544 l 
+</path>
+<path layer="triangulation" stroke="black">
+323.073 636.162 m 
+344.055 650.002 l 
+</path>
+<path layer="triangulation" stroke="black">
+344.055 650.002 m 
+318.365 645.431 l 
+</path>
+<path layer="triangulation" stroke="black">
+318.365 645.431 m 
+323.073 636.162 l 
+</path>
+<path layer="triangulation" stroke="black">
+394.84 677.201 m 
+373.982 707.964 l 
+</path>
+<path layer="triangulation" stroke="black">
+373.982 707.964 m 
+364.599 695.906 l 
+</path>
+<path layer="triangulation" stroke="black">
+364.599 695.906 m 
+394.84 677.201 l 
+</path>
+<path layer="triangulation" stroke="black">
+349.946 735.483 m 
+359.125 732.284 l 
+</path>
+<path layer="triangulation" stroke="black">
+359.125 732.284 m 
+358.423 752.599 l 
+</path>
+<path layer="triangulation" stroke="black">
+358.423 752.599 m 
+349.946 735.483 l 
+</path>
+<path layer="triangulation" stroke="black">
+340.907 728.314 m 
+347.35 726.503 l 
+</path>
+<path layer="triangulation" stroke="black">
+347.35 726.503 m 
+345.994 731.67 l 
+</path>
+<path layer="triangulation" stroke="black">
+345.994 731.67 m 
+340.907 728.314 l 
+</path>
+<path layer="triangulation" stroke="black">
+331.291 673.324 m 
+318.365 645.431 l 
+</path>
+<path layer="triangulation" stroke="black">
+318.365 645.431 m 
+344.055 650.002 l 
+</path>
+<path layer="triangulation" stroke="black">
+344.055 650.002 m 
+331.291 673.324 l 
+</path>
+<path layer="triangulation" stroke="black">
+204.624 795.032 m 
+228.843 767.197 l 
+</path>
+<path layer="triangulation" stroke="black">
+228.843 767.197 m 
+277.902 832 l 
+</path>
+<path layer="triangulation" stroke="black">
+277.902 832 m 
+204.624 795.032 l 
+</path>
+<path layer="triangulation" stroke="black">
+234.939 726.503 m 
+244.208 696.341 l 
+</path>
+<path layer="triangulation" stroke="black">
+244.208 696.341 m 
+280.359 712.268 l 
+</path>
+<path layer="triangulation" stroke="black">
+280.359 712.268 m 
+234.939 726.503 l 
+</path>
+<path layer="triangulation" stroke="black">
+423.861 645.431 m 
+460.715 644.988 l 
+</path>
+<path layer="triangulation" stroke="black">
+460.715 644.988 m 
+434.308 663.676 l 
+</path>
+<path layer="triangulation" stroke="black">
+434.308 663.676 m 
+423.861 645.431 l 
+</path>
+<path layer="triangulation" stroke="black">
+358.423 752.599 m 
+388.492 739.618 l 
+</path>
+<path layer="triangulation" stroke="black">
+388.492 739.618 m 
+384.689 783.661 l 
+</path>
+<path layer="triangulation" stroke="black">
+384.689 783.661 m 
+358.423 752.599 l 
+</path>
+<path layer="triangulation" stroke="black">
+434.308 663.676 m 
+460.94 663.676 l 
+</path>
+<path layer="triangulation" stroke="black">
+460.94 663.676 m 
+451.188 714.153 l 
+</path>
+<path layer="triangulation" stroke="black">
+451.188 714.153 m 
+434.308 663.676 l 
+</path>
+<path layer="triangulation" stroke="black">
+336.219 784.799 m 
+277.902 832 l 
+</path>
+<path layer="triangulation" stroke="black">
+277.902 832 m 
+289.379 761.228 l 
+</path>
+<path layer="triangulation" stroke="black">
+289.379 761.228 m 
+336.219 784.799 l 
+</path>
+<path layer="triangulation" stroke="black">
+442.021 761.609 m 
+428.422 832 l 
+</path>
+<path layer="triangulation" stroke="black">
+428.422 832 m 
+440.046 761.228 l 
+</path>
+<path layer="triangulation" stroke="black">
+440.046 761.228 m 
+442.021 761.609 l 
+</path>
+<path layer="triangulation" stroke="black">
+394.84 677.201 m 
+434.308 663.676 l 
+</path>
+<path layer="triangulation" stroke="black">
+434.308 663.676 m 
+419.153 707.964 l 
+</path>
+<path layer="triangulation" stroke="black">
+419.153 707.964 m 
+394.84 677.201 l 
+</path>
+<path layer="triangulation" stroke="black">
+332.61 416.045 m 
+394.875 369.551 l 
+</path>
+<path layer="triangulation" stroke="black">
+394.875 369.551 m 
+396.35 427.703 l 
+</path>
+<path layer="triangulation" stroke="black">
+396.35 427.703 m 
+332.61 416.045 l 
+</path>
+<path layer="triangulation" stroke="black">
+434.308 663.676 m 
+394.84 677.201 l 
+</path>
+<path layer="triangulation" stroke="black">
+394.84 677.201 m 
+423.861 645.431 l 
+</path>
+<path layer="triangulation" stroke="black">
+423.861 645.431 m 
+434.308 663.676 l 
+</path>
+<path layer="triangulation" stroke="black">
+334.55 565.389 m 
+393.698 550.382 l 
+</path>
+<path layer="triangulation" stroke="black">
+393.698 550.382 m 
+394.875 565.389 l 
+</path>
+<path layer="triangulation" stroke="black">
+394.875 565.389 m 
+334.55 565.389 l 
+</path>
+<path layer="triangulation" stroke="black">
+429.383 506.075 m 
+409.788 559.071 l 
+</path>
+<path layer="triangulation" stroke="black">
+409.788 559.071 m 
+393.698 550.382 l 
+</path>
+<path layer="triangulation" stroke="black">
+393.698 550.382 m 
+429.383 506.075 l 
+</path>
+<path layer="triangulation" stroke="black">
+409.788 559.071 m 
+394.875 565.389 l 
+</path>
+<path layer="triangulation" stroke="black">
+394.875 565.389 m 
+393.698 550.382 l 
+</path>
+<path layer="triangulation" stroke="black">
+393.698 550.382 m 
+409.788 559.071 l 
+</path>
+<path layer="triangulation" stroke="black">
+383.252 636.162 m 
+359.444 608.391 l 
+</path>
+<path layer="triangulation" stroke="black">
+359.444 608.391 m 
+413.948 599.598 l 
+</path>
+<path layer="triangulation" stroke="black">
+413.948 599.598 m 
+383.252 636.162 l 
+</path>
+<path layer="triangulation" stroke="black">
+413.948 599.598 m 
+359.444 608.391 l 
+</path>
+<path layer="triangulation" stroke="black">
+359.444 608.391 m 
+394.875 565.389 l 
+</path>
+<path layer="triangulation" stroke="black">
+394.875 565.389 m 
+413.948 599.598 l 
+</path>
+<path layer="triangulation" stroke="black">
+413.948 599.598 m 
+394.875 565.389 l 
+</path>
+<path layer="triangulation" stroke="black">
+394.875 565.389 m 
+409.788 559.071 l 
+</path>
+<path layer="triangulation" stroke="black">
+409.788 559.071 m 
+413.948 599.598 l 
+</path>
+<path layer="triangulation" stroke="black">
+385.6 497.73 m 
+347.35 530.665 l 
+</path>
+<path layer="triangulation" stroke="black">
+347.35 530.665 m 
+328.811 487.849 l 
+</path>
+<path layer="triangulation" stroke="black">
+328.811 487.849 m 
+385.6 497.73 l 
+</path>
+<path layer="triangulation" stroke="black">
+457.972 416.844 m 
+440.046 369.551 l 
+</path>
+<path layer="triangulation" stroke="black">
+440.046 369.551 m 
+457.401 369.343 l 
+</path>
+<path layer="triangulation" stroke="black">
+457.401 369.343 m 
+457.972 416.844 l 
+</path>
+<path layer="triangulation" stroke="black">
+423.861 449.593 m 
+428.422 440.324 l 
+</path>
+<path layer="triangulation" stroke="black">
+428.422 440.324 m 
+440.778 449.907 l 
+</path>
+<path layer="triangulation" stroke="black">
+440.778 449.907 m 
+423.861 449.593 l 
+</path>
+<path layer="triangulation" stroke="black">
+345.597 346.148 m 
+394.875 369.551 l 
+</path>
+<path layer="triangulation" stroke="black">
+394.875 369.551 m 
+332.61 416.045 l 
+</path>
+<path layer="triangulation" stroke="black">
+332.61 416.045 m 
+345.597 346.148 l 
+</path>
+<path layer="triangulation" stroke="black">
+416.799 467.838 m 
+423.861 449.593 l 
+</path>
+<path layer="triangulation" stroke="black">
+423.861 449.593 m 
+434.308 467.838 l 
+</path>
+<path layer="triangulation" stroke="black">
+434.308 467.838 m 
+416.799 467.838 l 
+</path>
+<path layer="triangulation" stroke="black">
+380.109 459.999 m 
+328.811 487.849 l 
+</path>
+<path layer="triangulation" stroke="black">
+328.811 487.849 m 
+332.61 416.045 l 
+</path>
+<path layer="triangulation" stroke="black">
+332.61 416.045 m 
+380.109 459.999 l 
+</path>
+<path layer="triangulation" stroke="black">
+429.383 506.075 m 
+416.799 467.838 l 
+</path>
+<path layer="triangulation" stroke="black">
+416.799 467.838 m 
+434.308 467.838 l 
+</path>
+<path layer="triangulation" stroke="black">
+434.308 467.838 m 
+429.383 506.075 l 
+</path>
+<path layer="triangulation" stroke="black">
+232.895 323.708 m 
+216.399 358.075 l 
+</path>
+<path layer="triangulation" stroke="black">
+216.399 358.075 m 
+218.18 318.985 l 
+</path>
+<path layer="triangulation" stroke="black">
+218.18 318.985 m 
+232.895 323.708 l 
+</path>
+<path layer="triangulation" stroke="black">
+385.6 497.73 m 
+328.811 487.849 l 
+</path>
+<path layer="triangulation" stroke="black">
+328.811 487.849 m 
+380.109 459.999 l 
+</path>
+<path layer="triangulation" stroke="black">
+380.109 459.999 m 
+385.6 497.73 l 
+</path>
+<path layer="triangulation" stroke="black">
+347.35 530.665 m 
+334.55 565.389 l 
+</path>
+<path layer="triangulation" stroke="black">
+334.55 565.389 m 
+313.706 542.551 l 
+</path>
+<path layer="triangulation" stroke="black">
+313.706 542.551 m 
+347.35 530.665 l 
+</path>
+<path layer="triangulation" stroke="black">
+285.8 583.013 m 
+274.296 529.622 l 
+</path>
+<path layer="triangulation" stroke="black">
+274.296 529.622 m 
+313.706 542.551 l 
+</path>
+<path layer="triangulation" stroke="black">
+313.706 542.551 m 
+285.8 583.013 l 
+</path>
+<path layer="triangulation" stroke="black">
+247.733 488.919 m 
+225.669 530.665 l 
+</path>
+<path layer="triangulation" stroke="black">
+225.669 530.665 m 
+207.13 500.502 l 
+</path>
+<path layer="triangulation" stroke="black">
+207.13 500.502 m 
+247.733 488.919 l 
+</path>
+<path layer="triangulation" stroke="black">
+411.515 448.748 m 
+423.861 449.593 l 
+</path>
+<path layer="triangulation" stroke="black">
+423.861 449.593 m 
+416.799 467.838 l 
+</path>
+<path layer="triangulation" stroke="black">
+416.799 467.838 m 
+411.515 448.748 l 
+</path>
+<path layer="triangulation" stroke="black">
+225.647 272.154 m 
+225.669 304.664 l 
+</path>
+<path layer="triangulation" stroke="black">
+225.669 304.664 m 
+207.13 304.664 l 
+</path>
+<path layer="triangulation" stroke="black">
+207.13 304.664 m 
+225.647 272.154 l 
+</path>
+<path layer="triangulation" stroke="black">
+360.151 294.218 m 
+341.612 308.195 l 
+</path>
+<path layer="triangulation" stroke="black">
+341.612 308.195 m 
+349.705 282.741 l 
+</path>
+<path layer="triangulation" stroke="black">
+349.705 282.741 m 
+360.151 294.218 l 
+</path>
+<path layer="triangulation" stroke="black">
+306.454 310.239 m 
+285.498 358.911 l 
+</path>
+<path layer="triangulation" stroke="black">
+285.498 358.911 m 
+254.831 302.357 l 
+</path>
+<path layer="triangulation" stroke="black">
+254.831 302.357 m 
+306.454 310.239 l 
+</path>
+<path layer="triangulation" stroke="black">
+364.752 281.112 m 
+349.705 282.741 l 
+</path>
+<path layer="triangulation" stroke="black">
+349.705 282.741 m 
+360.137 272.064 l 
+</path>
+<path layer="triangulation" stroke="black">
+360.137 272.064 m 
+364.752 281.112 l 
+</path>
+<path layer="triangulation" stroke="black">
+234.917 272.148 m 
+234.939 304.664 l 
+</path>
+<path layer="triangulation" stroke="black">
+234.939 304.664 m 
+225.669 304.664 l 
+</path>
+<path layer="triangulation" stroke="black">
+225.669 304.664 m 
+234.917 272.148 l 
+</path>
+<path layer="triangulation" stroke="black">
+365.295 309.371 m 
+351.912 334.827 l 
+</path>
+<path layer="triangulation" stroke="black">
+351.912 334.827 m 
+341.612 308.195 l 
+</path>
+<path layer="triangulation" stroke="black">
+341.612 308.195 m 
+365.295 309.371 l 
+</path>
+<path layer="triangulation" stroke="black">
+341.612 334.827 m 
+341.612 308.195 l 
+</path>
+<path layer="triangulation" stroke="black">
+341.612 308.195 m 
+351.912 334.827 l 
+</path>
+<path layer="triangulation" stroke="black">
+351.912 334.827 m 
+341.612 334.827 l 
+</path>
+<path layer="triangulation" stroke="black">
+364.752 281.112 m 
+360.151 294.218 l 
+</path>
+<path layer="triangulation" stroke="black">
+360.151 294.218 m 
+349.705 282.741 l 
+</path>
+<path layer="triangulation" stroke="black">
+349.705 282.741 m 
+364.752 281.112 l 
+</path>
+<path layer="triangulation" stroke="black">
+365.295 309.371 m 
+341.612 308.195 l 
+</path>
+<path layer="triangulation" stroke="black">
+341.612 308.195 m 
+360.151 294.218 l 
+</path>
+<path layer="triangulation" stroke="black">
+360.151 294.218 m 
+365.295 309.371 l 
+</path>
+<path layer="triangulation" stroke="black">
+424.182 419.172 m 
+418.585 439.919 l 
+</path>
+<path layer="triangulation" stroke="black">
+418.585 439.919 m 
+396.35 427.703 l 
+</path>
+<path layer="triangulation" stroke="black">
+396.35 427.703 m 
+424.182 419.172 l 
+</path>
+<path layer="triangulation" stroke="black">
+428.422 440.324 m 
+423.861 449.593 l 
+</path>
+<path layer="triangulation" stroke="black">
+423.861 449.593 m 
+418.585 439.919 l 
+</path>
+<path layer="triangulation" stroke="black">
+418.585 439.919 m 
+428.422 440.324 l 
+</path>
+<path layer="triangulation" stroke="black">
+394.875 369.551 m 
+438.869 354.543 l 
+</path>
+<path layer="triangulation" stroke="black">
+438.869 354.543 m 
+440.046 369.551 l 
+</path>
+<path layer="triangulation" stroke="black">
+440.046 369.551 m 
+394.875 369.551 l 
+</path>
+<path layer="triangulation" stroke="black">
+397.478 326.961 m 
+456.231 272 l 
+</path>
+<path layer="triangulation" stroke="black">
+456.231 272 m 
+438.869 354.543 l 
+</path>
+<path layer="triangulation" stroke="black">
+438.869 354.543 m 
+397.478 326.961 l 
+</path>
+<path layer="triangulation" stroke="black">
+67.6435 405.451 m 
+109.356 409.633 l 
+</path>
+<path layer="triangulation" stroke="black">
+109.356 409.633 m 
+88.6156 444.821 l 
+</path>
+<path layer="triangulation" stroke="black">
+88.6156 444.821 m 
+67.6435 405.451 l 
+</path>
+<path layer="triangulation" stroke="black">
+121.022 376.747 m 
+160.548 350.442 l 
+</path>
+<path layer="triangulation" stroke="black">
+160.548 350.442 m 
+165.487 409.825 l 
+</path>
+<path layer="triangulation" stroke="black">
+165.487 409.825 m 
+121.022 376.747 l 
+</path>
+<path layer="triangulation" stroke="black">
+137.682 449.593 m 
+88.6156 444.821 l 
+</path>
+<path layer="triangulation" stroke="black">
+88.6156 444.821 m 
+109.356 409.633 l 
+</path>
+<path layer="triangulation" stroke="black">
+109.356 409.633 m 
+137.682 449.593 l 
+</path>
+<path layer="triangulation" stroke="black">
+84.4183 480.786 m 
+32.185 449.593 l 
+</path>
+<path layer="triangulation" stroke="black">
+32.185 449.593 m 
+88.6156 444.821 l 
+</path>
+<path layer="triangulation" stroke="black">
+88.6156 444.821 m 
+84.4183 480.786 l 
+</path>
+<path layer="triangulation" stroke="black">
+32.185 449.593 m 
+84.4183 480.786 l 
+</path>
+<path layer="triangulation" stroke="black">
+84.4183 480.786 m 
+60.307 496.1 l 
+</path>
+<path layer="triangulation" stroke="black">
+60.307 496.1 m 
+32.185 449.593 l 
+</path>
+<path layer="triangulation" stroke="black">
+95.8949 490.056 m 
+86.0387 498.272 l 
+</path>
+<path layer="triangulation" stroke="black">
+86.0387 498.272 m 
+84.4183 480.786 l 
+</path>
+<path layer="triangulation" stroke="black">
+84.4183 480.786 m 
+95.8949 490.056 l 
+</path>
+<path layer="triangulation" stroke="black">
+47.34 550.382 m 
+26.4099 551.163 l 
+</path>
+<path layer="triangulation" stroke="black">
+26.4099 551.163 m 
+33.583 533.945 l 
+</path>
+<path layer="triangulation" stroke="black">
+33.583 533.945 m 
+47.34 550.382 l 
+</path>
+<path layer="triangulation" stroke="black">
+119.142 685.894 m 
+108.391 653.56 l 
+</path>
+<path layer="triangulation" stroke="black">
+108.391 653.56 m 
+130.766 678.978 l 
+</path>
+<path layer="triangulation" stroke="black">
+130.766 678.978 m 
+119.142 685.894 l 
+</path>
+<path layer="triangulation" stroke="black">
+84.4183 676.624 m 
+59.9937 663.676 l 
+</path>
+<path layer="triangulation" stroke="black">
+59.9937 663.676 m 
+75.9472 651.816 l 
+</path>
+<path layer="triangulation" stroke="black">
+75.9472 651.816 m 
+84.4183 676.624 l 
+</path>
+<path layer="triangulation" stroke="black">
+248.308 627.27 m 
+252.797 574.381 l 
+</path>
+<path layer="triangulation" stroke="black">
+252.797 574.381 m 
+285.8 583.013 l 
+</path>
+<path layer="triangulation" stroke="black">
+285.8 583.013 m 
+248.308 627.27 l 
+</path>
+<path layer="triangulation" stroke="black">
+234.939 553.913 m 
+274.296 529.622 l 
+</path>
+<path layer="triangulation" stroke="black">
+274.296 529.622 m 
+252.797 574.381 l 
+</path>
+<path layer="triangulation" stroke="black">
+252.797 574.381 m 
+234.939 553.913 l 
+</path>
+<path layer="triangulation" stroke="black">
+363.796 722.306 m 
+356.218 710.889 l 
+</path>
+<path layer="triangulation" stroke="black">
+356.218 710.889 m 
+373.982 707.964 l 
+</path>
+<path layer="triangulation" stroke="black">
+373.982 707.964 m 
+363.796 722.306 l 
+</path>
+<path layer="triangulation" stroke="black">
+339.907 714.621 m 
+340.907 728.314 l 
+</path>
+<path layer="triangulation" stroke="black">
+340.907 728.314 m 
+319.517 725.647 l 
+</path>
+<path layer="triangulation" stroke="black">
+319.517 725.647 m 
+339.907 714.621 l 
+</path>
+<path layer="triangulation" stroke="black">
+289.379 761.228 m 
+319.517 725.647 l 
+</path>
+<path layer="triangulation" stroke="black">
+319.517 725.647 m 
+333.373 746.22 l 
+</path>
+<path layer="triangulation" stroke="black">
+333.373 746.22 m 
+289.379 761.228 l 
+</path>
+<path layer="triangulation" stroke="black">
+331.291 673.324 m 
+302.113 675.544 l 
+</path>
+<path layer="triangulation" stroke="black">
+302.113 675.544 m 
+318.365 645.431 l 
+</path>
+<path layer="triangulation" stroke="black">
+318.365 645.431 m 
+331.291 673.324 l 
+</path>
+<path layer="triangulation" stroke="black">
+411.515 448.748 m 
+418.585 439.919 l 
+</path>
+<path layer="triangulation" stroke="black">
+418.585 439.919 m 
+423.861 449.593 l 
+</path>
+<path layer="triangulation" stroke="black">
+423.861 449.593 m 
+411.515 448.748 l 
+</path>
+<path layer="triangulation" stroke="black">
+446.588 420.323 m 
+440.046 369.551 l 
+</path>
+<path layer="triangulation" stroke="black">
+440.046 369.551 m 
+457.972 416.844 l 
+</path>
+<path layer="triangulation" stroke="black">
+457.972 416.844 m 
+446.588 420.323 l 
+</path>
+<path layer="triangulation" stroke="black">
+332.61 416.045 m 
+396.35 427.703 l 
+</path>
+<path layer="triangulation" stroke="black">
+396.35 427.703 m 
+380.109 459.999 l 
+</path>
+<path layer="triangulation" stroke="black">
+380.109 459.999 m 
+332.61 416.045 l 
+</path>
+<path layer="triangulation" stroke="black">
+394.875 369.551 m 
+440.046 369.551 l 
+</path>
+<path layer="triangulation" stroke="black">
+440.046 369.551 m 
+424.182 419.172 l 
+</path>
+<path layer="triangulation" stroke="black">
+424.182 419.172 m 
+394.875 369.551 l 
+</path>
+<path layer="triangulation" stroke="black">
+225.647 272.154 m 
+234.917 272.148 l 
+</path>
+<path layer="triangulation" stroke="black">
+234.917 272.148 m 
+225.669 304.664 l 
+</path>
+<path layer="triangulation" stroke="black">
+225.669 304.664 m 
+225.647 272.154 l 
+</path>
+<path layer="triangulation" stroke="black">
+90.3155 344.495 m 
+98.8132 348.872 l 
+</path>
+<path layer="triangulation" stroke="black">
+98.8132 348.872 m 
+92.5108 354.543 l 
+</path>
+<path layer="triangulation" stroke="black">
+92.5108 354.543 m 
+90.3155 344.495 l 
+</path>
+<path layer="triangulation" stroke="black">
+100.603 334.827 m 
+132.973 316.288 l 
+</path>
+<path layer="triangulation" stroke="black">
+132.973 316.288 m 
+116.399 348.382 l 
+</path>
+<path layer="triangulation" stroke="black">
+116.399 348.382 m 
+100.603 334.827 l 
+</path>
+<path layer="triangulation" stroke="black">
+100.603 282.741 m 
+106.689 291.061 l 
+</path>
+<path layer="triangulation" stroke="black">
+106.689 291.061 m 
+95.8949 294.218 l 
+</path>
+<path layer="triangulation" stroke="black">
+95.8949 294.218 m 
+100.603 282.741 l 
+</path>
+<path layer="triangulation" stroke="black">
+109.873 282.741 m 
+131.474 295.437 l 
+</path>
+<path layer="triangulation" stroke="black">
+131.474 295.437 m 
+106.689 291.061 l 
+</path>
+<path layer="triangulation" stroke="black">
+106.689 291.061 m 
+109.873 282.741 l 
+</path>
+<path layer="triangulation" stroke="black">
+176.486 302.046 m 
+160.548 350.442 l 
+</path>
+<path layer="triangulation" stroke="black">
+160.548 350.442 m 
+132.973 316.288 l 
+</path>
+<path layer="triangulation" stroke="black">
+132.973 316.288 m 
+176.486 302.046 l 
+</path>
+<path layer="triangulation" stroke="black">
+216.399 358.075 m 
+213.308 441.099 l 
+</path>
+<path layer="triangulation" stroke="black">
+213.308 441.099 m 
+165.487 409.825 l 
+</path>
+<path layer="triangulation" stroke="black">
+165.487 409.825 m 
+216.399 358.075 l 
+</path>
+<path layer="triangulation" stroke="black">
+131.474 295.437 m 
+176.486 302.046 l 
+</path>
+<path layer="triangulation" stroke="black">
+176.486 302.046 m 
+132.973 316.288 l 
+</path>
+<path layer="triangulation" stroke="black">
+132.973 316.288 m 
+131.474 295.437 l 
+</path>
+<path layer="triangulation" stroke="black">
+207.13 304.664 m 
+199.291 322.627 l 
+</path>
+<path layer="triangulation" stroke="black">
+199.291 322.627 m 
+176.486 302.046 l 
+</path>
+<path layer="triangulation" stroke="black">
+176.486 302.046 m 
+207.13 304.664 l 
+</path>
+<path layer="triangulation" stroke="black">
+165.487 409.825 m 
+170.914 463.852 l 
+</path>
+<path layer="triangulation" stroke="black">
+170.914 463.852 m 
+137.682 449.593 l 
+</path>
+<path layer="triangulation" stroke="black">
+137.682 449.593 m 
+165.487 409.825 l 
+</path>
+<path layer="triangulation" stroke="black">
+86.7722 578.117 m 
+131.693 544.672 l 
+</path>
+<path layer="triangulation" stroke="black">
+131.693 544.672 m 
+121.431 606.772 l 
+</path>
+<path layer="triangulation" stroke="black">
+121.431 606.772 m 
+86.7722 578.117 l 
+</path>
+<path layer="triangulation" stroke="black">
+85.5803 378.714 m 
+121.022 376.747 l 
+</path>
+<path layer="triangulation" stroke="black">
+121.022 376.747 m 
+109.356 409.633 l 
+</path>
+<path layer="triangulation" stroke="black">
+109.356 409.633 m 
+85.5803 378.714 l 
+</path>
+<path layer="triangulation" stroke="black">
+100.603 358.075 m 
+98.8132 348.872 l 
+</path>
+<path layer="triangulation" stroke="black">
+98.8132 348.872 m 
+116.399 348.382 l 
+</path>
+<path layer="triangulation" stroke="black">
+116.399 348.382 m 
+100.603 358.075 l 
+</path>
+<path layer="triangulation" stroke="black">
+24.7512 506.727 m 
+31.7144 511.583 l 
+</path>
+<path layer="triangulation" stroke="black">
+31.7144 511.583 m 
+25.0562 514.899 l 
+</path>
+<path layer="triangulation" stroke="black">
+25.0562 514.899 m 
+24.7512 506.727 l 
+</path>
+<path layer="triangulation" stroke="black">
+32.8225 519.511 m 
+25.0562 514.899 l 
+</path>
+<path layer="triangulation" stroke="black">
+25.0562 514.899 m 
+31.7144 511.583 l 
+</path>
+<path layer="triangulation" stroke="black">
+31.7144 511.583 m 
+32.8225 519.511 l 
+</path>
+<path layer="triangulation" stroke="black">
+32.185 449.593 m 
+35.4347 502.391 l 
+</path>
+<path layer="triangulation" stroke="black">
+35.4347 502.391 m 
+24.5418 501.118 l 
+</path>
+<path layer="triangulation" stroke="black">
+24.5418 501.118 m 
+32.185 449.593 l 
+</path>
+<path layer="triangulation" stroke="black">
+51.7851 611.056 m 
+54.4863 639.765 l 
+</path>
+<path layer="triangulation" stroke="black">
+54.4863 639.765 m 
+29.2657 627.666 l 
+</path>
+<path layer="triangulation" stroke="black">
+29.2657 627.666 m 
+51.7851 611.056 l 
+</path>
+<path layer="triangulation" stroke="black">
+82.0894 624.363 m 
+86.7722 578.117 l 
+</path>
+<path layer="triangulation" stroke="black">
+86.7722 578.117 m 
+121.431 606.772 l 
+</path>
+<path layer="triangulation" stroke="black">
+121.431 606.772 m 
+82.0894 624.363 l 
+</path>
+<path layer="triangulation" stroke="black">
+93.6875 701.8 m 
+77.1646 695.997 l 
+</path>
+<path layer="triangulation" stroke="black">
+77.1646 695.997 m 
+95.8949 685.894 l 
+</path>
+<path layer="triangulation" stroke="black">
+95.8949 685.894 m 
+93.6875 701.8 l 
+</path>
+<path layer="triangulation" stroke="black">
+57.5786 678.337 m 
+84.4183 676.624 l 
+</path>
+<path layer="triangulation" stroke="black">
+84.4183 676.624 m 
+77.1646 695.997 l 
+</path>
+<path layer="triangulation" stroke="black">
+77.1646 695.997 m 
+57.5786 678.337 l 
+</path>
+<path layer="triangulation" stroke="black">
+33.7731 748.412 m 
+32.335 709.889 l 
+</path>
+<path layer="triangulation" stroke="black">
+32.335 709.889 m 
+81.2254 720.994 l 
+</path>
+<path layer="triangulation" stroke="black">
+81.2254 720.994 m 
+33.7731 748.412 l 
+</path>
+<path layer="triangulation" stroke="black">
+32.335 709.889 m 
+30.6508 664.772 l 
+</path>
+<path layer="triangulation" stroke="black">
+30.6508 664.772 m 
+57.5786 678.337 l 
+</path>
+<path layer="triangulation" stroke="black">
+57.5786 678.337 m 
+32.335 709.889 l 
+</path>
+<path layer="triangulation" stroke="black">
+177.811 768.265 m 
+163.284 748.573 l 
+</path>
+<path layer="triangulation" stroke="black">
+163.284 748.573 m 
+181.229 740.235 l 
+</path>
+<path layer="triangulation" stroke="black">
+181.229 740.235 m 
+177.811 768.265 l 
+</path>
+<path layer="triangulation" stroke="black">
+152.689 746.22 m 
+159.608 730.585 l 
+</path>
+<path layer="triangulation" stroke="black">
+159.608 730.585 m 
+163.284 748.573 l 
+</path>
+<path layer="triangulation" stroke="black">
+163.284 748.573 m 
+152.689 746.22 l 
+</path>
+<path layer="triangulation" stroke="black">
+106.342 726.503 m 
+130.692 731.966 l 
+</path>
+<path layer="triangulation" stroke="black">
+130.692 731.966 m 
+106.342 749.751 l 
+</path>
+<path layer="triangulation" stroke="black">
+106.342 749.751 m 
+106.342 726.503 l 
+</path>
+<path layer="triangulation" stroke="black">
+177.811 768.265 m 
+199.037 761.228 l 
+</path>
+<path layer="triangulation" stroke="black">
+199.037 761.228 m 
+204.624 795.032 l 
+</path>
+<path layer="triangulation" stroke="black">
+204.624 795.032 m 
+177.811 768.265 l 
+</path>
+<path layer="triangulation" stroke="black">
+130.766 678.978 m 
+140.028 702.286 l 
+</path>
+<path layer="triangulation" stroke="black">
+140.028 702.286 m 
+119.142 685.894 l 
+</path>
+<path layer="triangulation" stroke="black">
+119.142 685.894 m 
+130.766 678.978 l 
+</path>
+<path layer="triangulation" stroke="black">
+130.692 731.966 m 
+106.342 726.503 l 
+</path>
+<path layer="triangulation" stroke="black">
+106.342 726.503 m 
+115.676 710.431 l 
+</path>
+<path layer="triangulation" stroke="black">
+115.676 710.431 m 
+130.692 731.966 l 
+</path>
+<path layer="triangulation" stroke="black">
+164.808 596.091 m 
+121.431 606.772 l 
+</path>
+<path layer="triangulation" stroke="black">
+121.431 606.772 m 
+131.693 544.672 l 
+</path>
+<path layer="triangulation" stroke="black">
+131.693 544.672 m 
+164.808 596.091 l 
+</path>
+<path layer="triangulation" stroke="black">
+75.9472 651.816 m 
+59.9937 663.676 l 
+</path>
+<path layer="triangulation" stroke="black">
+59.9937 663.676 m 
+54.4863 639.765 l 
+</path>
+<path layer="triangulation" stroke="black">
+54.4863 639.765 m 
+75.9472 651.816 l 
+</path>
+<path layer="triangulation" stroke="black">
+238.077 680.229 m 
+214.658 672.256 l 
+</path>
+<path layer="triangulation" stroke="black">
+214.658 672.256 m 
+248.308 627.27 l 
+</path>
+<path layer="triangulation" stroke="black">
+248.308 627.27 m 
+238.077 680.229 l 
+</path>
+<path layer="triangulation" stroke="black">
+187.414 636.162 m 
+216.098 587.795 l 
+</path>
+<path layer="triangulation" stroke="black">
+216.098 587.795 m 
+248.308 627.27 l 
+</path>
+<path layer="triangulation" stroke="black">
+248.308 627.27 m 
+187.414 636.162 l 
+</path>
+<path layer="triangulation" stroke="black">
+318.365 645.431 m 
+288.357 651.052 l 
+</path>
+<path layer="triangulation" stroke="black">
+288.357 651.052 m 
+295.894 625.314 l 
+</path>
+<path layer="triangulation" stroke="black">
+295.894 625.314 m 
+318.365 645.431 l 
+</path>
+<path layer="triangulation" stroke="black">
+285.8 583.013 m 
+334.55 565.389 l 
+</path>
+<path layer="triangulation" stroke="black">
+334.55 565.389 m 
+318.121 607.058 l 
+</path>
+<path layer="triangulation" stroke="black">
+318.121 607.058 m 
+285.8 583.013 l 
+</path>
+<path layer="triangulation" stroke="black">
+248.308 627.27 m 
+288.357 651.052 l 
+</path>
+<path layer="triangulation" stroke="black">
+288.357 651.052 m 
+261.57 681.333 l 
+</path>
+<path layer="triangulation" stroke="black">
+261.57 681.333 m 
+248.308 627.27 l 
+</path>
+<path layer="triangulation" stroke="black">
+248.308 627.27 m 
+285.8 583.013 l 
+</path>
+<path layer="triangulation" stroke="black">
+285.8 583.013 m 
+295.894 625.314 l 
+</path>
+<path layer="triangulation" stroke="black">
+295.894 625.314 m 
+248.308 627.27 l 
+</path>
+<path layer="triangulation" stroke="black">
+234.939 726.503 m 
+280.359 712.268 l 
+</path>
+<path layer="triangulation" stroke="black">
+280.359 712.268 m 
+289.379 761.228 l 
+</path>
+<path layer="triangulation" stroke="black">
+289.379 761.228 m 
+234.939 726.503 l 
+</path>
+<path layer="triangulation" stroke="black">
+244.208 696.341 m 
+261.57 681.333 l 
+</path>
+<path layer="triangulation" stroke="black">
+261.57 681.333 m 
+280.359 712.268 l 
+</path>
+<path layer="triangulation" stroke="black">
+280.359 712.268 m 
+244.208 696.341 l 
+</path>
+<path layer="triangulation" stroke="black">
+428.422 832 m 
+384.689 783.661 l 
+</path>
+<path layer="triangulation" stroke="black">
+384.689 783.661 m 
+440.046 761.228 l 
+</path>
+<path layer="triangulation" stroke="black">
+440.046 761.228 m 
+428.422 832 l 
+</path>
+<path layer="triangulation" stroke="black">
+363.796 722.306 m 
+355.198 723.695 l 
+</path>
+<path layer="triangulation" stroke="black">
+355.198 723.695 m 
+356.218 710.889 l 
+</path>
+<path layer="triangulation" stroke="black">
+356.218 710.889 m 
+363.796 722.306 l 
+</path>
+<path layer="triangulation" stroke="black">
+319.517 725.647 m 
+340.907 728.314 l 
+</path>
+<path layer="triangulation" stroke="black">
+340.907 728.314 m 
+333.373 746.22 l 
+</path>
+<path layer="triangulation" stroke="black">
+333.373 746.22 m 
+319.517 725.647 l 
+</path>
+<path layer="triangulation" stroke="black">
+319.517 725.647 m 
+320.363 699.147 l 
+</path>
+<path layer="triangulation" stroke="black">
+320.363 699.147 m 
+339.907 714.621 l 
+</path>
+<path layer="triangulation" stroke="black">
+339.907 714.621 m 
+319.517 725.647 l 
+</path>
+<path layer="triangulation" stroke="black">
+460.406 619.262 m 
+447.924 619.412 l 
+</path>
+<path layer="triangulation" stroke="black">
+447.924 619.412 m 
+459.749 564.61 l 
+</path>
+<path layer="triangulation" stroke="black">
+459.749 564.61 m 
+460.406 619.262 l 
+</path>
+<path layer="triangulation" stroke="black">
+423.861 645.431 m 
+383.252 636.162 l 
+</path>
+<path layer="triangulation" stroke="black">
+383.252 636.162 m 
+413.948 599.598 l 
+</path>
+<path layer="triangulation" stroke="black">
+413.948 599.598 m 
+423.861 645.431 l 
+</path>
+<path layer="triangulation" stroke="black">
+418.585 439.919 m 
+411.515 448.748 l 
+</path>
+<path layer="triangulation" stroke="black">
+411.515 448.748 m 
+396.35 427.703 l 
+</path>
+<path layer="triangulation" stroke="black">
+396.35 427.703 m 
+418.585 439.919 l 
+</path>
+<path layer="triangulation" stroke="black">
+416.799 467.838 m 
+429.383 506.075 l 
+</path>
+<path layer="triangulation" stroke="black">
+429.383 506.075 m 
+385.6 497.73 l 
+</path>
+<path layer="triangulation" stroke="black">
+385.6 497.73 m 
+416.799 467.838 l 
+</path>
+<path layer="triangulation" stroke="black">
+440.046 369.551 m 
+438.869 354.543 l 
+</path>
+<path layer="triangulation" stroke="black">
+438.869 354.543 m 
+457.221 354.323 l 
+</path>
+<path layer="triangulation" stroke="black">
+457.221 354.323 m 
+440.046 369.551 l 
+</path>
+<path layer="triangulation" stroke="black">
+345.597 346.148 m 
+332.61 416.045 l 
+</path>
+<path layer="triangulation" stroke="black">
+332.61 416.045 m 
+285.498 358.911 l 
+</path>
+<path layer="triangulation" stroke="black">
+285.498 358.911 m 
+345.597 346.148 l 
+</path>
+<path layer="triangulation" stroke="black">
+292.602 481.452 m 
+313.803 512.126 l 
+</path>
+<path layer="triangulation" stroke="black">
+313.803 512.126 m 
+274.296 529.622 l 
+</path>
+<path layer="triangulation" stroke="black">
+274.296 529.622 m 
+292.602 481.452 l 
+</path>
+<path layer="triangulation" stroke="black">
+328.811 487.849 m 
+292.602 481.452 l 
+</path>
+<path layer="triangulation" stroke="black">
+292.602 481.452 m 
+332.61 416.045 l 
+</path>
+<path layer="triangulation" stroke="black">
+332.61 416.045 m 
+328.811 487.849 l 
+</path>
+<path layer="triangulation" stroke="black">
+207.13 500.502 m 
+170.914 463.852 l 
+</path>
+<path layer="triangulation" stroke="black">
+170.914 463.852 m 
+213.308 441.099 l 
+</path>
+<path layer="triangulation" stroke="black">
+213.308 441.099 m 
+207.13 500.502 l 
+</path>
+<path layer="triangulation" stroke="black">
+234.917 272.148 m 
+254.831 302.357 l 
+</path>
+<path layer="triangulation" stroke="black">
+254.831 302.357 m 
+234.939 304.664 l 
+</path>
+<path layer="triangulation" stroke="black">
+234.939 304.664 m 
+234.917 272.148 l 
+</path>
+<path layer="triangulation" stroke="black">
+225.647 272.154 m 
+207.13 304.664 l 
+</path>
+<path layer="triangulation" stroke="black">
+207.13 304.664 m 
+207.108 272.167 l 
+</path>
+<path layer="triangulation" stroke="black">
+207.108 272.167 m 
+225.647 272.154 l 
+</path>
+<path layer="triangulation" stroke="black">
+234.939 304.664 m 
+230.898 312.672 l 
+</path>
+<path layer="triangulation" stroke="black">
+230.898 312.672 m 
+225.669 304.664 l 
+</path>
+<path layer="triangulation" stroke="black">
+225.669 304.664 m 
+234.939 304.664 l 
+</path>
+<path layer="triangulation" stroke="black">
+234.939 304.664 m 
+254.831 302.357 l 
+</path>
+<path layer="triangulation" stroke="black">
+254.831 302.357 m 
+240.622 314.793 l 
+</path>
+<path layer="triangulation" stroke="black">
+240.622 314.793 m 
+234.939 304.664 l 
+</path>
+<path layer="triangulation" stroke="black">
+341.612 308.195 m 
+306.454 310.239 l 
+</path>
+<path layer="triangulation" stroke="black">
+306.454 310.239 m 
+333.414 281.315 l 
+</path>
+<path layer="triangulation" stroke="black">
+333.414 281.315 m 
+341.612 308.195 l 
+</path>
+<path layer="triangulation" stroke="black">
+306.454 310.239 m 
+341.612 334.827 l 
+</path>
+<path layer="triangulation" stroke="black">
+341.612 334.827 m 
+285.498 358.911 l 
+</path>
+<path layer="triangulation" stroke="black">
+285.498 358.911 m 
+306.454 310.239 l 
+</path>
+<path layer="triangulation" stroke="black">
+345.597 346.148 m 
+285.498 358.911 l 
+</path>
+<path layer="triangulation" stroke="black">
+285.498 358.911 m 
+341.612 334.827 l 
+</path>
+<path layer="triangulation" stroke="black">
+341.612 334.827 m 
+345.597 346.148 l 
+</path>
+<path layer="triangulation" stroke="black">
+261.67 427.835 m 
+213.308 441.099 l 
+</path>
+<path layer="triangulation" stroke="black">
+213.308 441.099 m 
+216.399 358.075 l 
+</path>
+<path layer="triangulation" stroke="black">
+216.399 358.075 m 
+261.67 427.835 l 
+</path>
+<path layer="triangulation" stroke="black">
+83.0538 286.872 m 
+73.3342 318.543 l 
+</path>
+<path layer="triangulation" stroke="black">
+73.3342 318.543 m 
+16 272.294 l 
+</path>
+<path layer="triangulation" stroke="black">
+16 272.294 m 
+83.0538 286.872 l 
+</path>
+<path layer="triangulation" stroke="black">
+90.3155 344.495 m 
+100.603 334.827 l 
+</path>
+<path layer="triangulation" stroke="black">
+100.603 334.827 m 
+98.8132 348.872 l 
+</path>
+<path layer="triangulation" stroke="black">
+98.8132 348.872 m 
+90.3155 344.495 l 
+</path>
+<path layer="triangulation" stroke="black">
+16 272.294 m 
+73.3342 318.543 l 
+</path>
+<path layer="triangulation" stroke="black">
+73.3342 318.543 m 
+40.366 344.179 l 
+</path>
+<path layer="triangulation" stroke="black">
+40.366 344.179 m 
+16 272.294 l 
+</path>
+<path layer="triangulation" stroke="black">
+95.8949 294.218 m 
+106.342 308.195 l 
+</path>
+<path layer="triangulation" stroke="black">
+106.342 308.195 m 
+73.3342 318.543 l 
+</path>
+<path layer="triangulation" stroke="black">
+73.3342 318.543 m 
+95.8949 294.218 l 
+</path>
+<path layer="triangulation" stroke="black">
+40.366 344.179 m 
+18.7136 344.988 l 
+</path>
+<path layer="triangulation" stroke="black">
+18.7136 344.988 m 
+16 272.294 l 
+</path>
+<path layer="triangulation" stroke="black">
+16 272.294 m 
+40.366 344.179 l 
+</path>
+<path layer="triangulation" stroke="black">
+40.366 344.179 m 
+48.3699 369.551 l 
+</path>
+<path layer="triangulation" stroke="black">
+48.3699 369.551 m 
+19.6705 370.623 l 
+</path>
+<path layer="triangulation" stroke="black">
+19.6705 370.623 m 
+40.366 344.179 l 
+</path>
+<path layer="triangulation" stroke="black">
+18.7136 344.988 m 
+40.366 344.179 l 
+</path>
+<path layer="triangulation" stroke="black">
+40.366 344.179 m 
+19.6705 370.623 l 
+</path>
+<path layer="triangulation" stroke="black">
+19.6705 370.623 m 
+18.7136 344.988 l 
+</path>
+<path layer="triangulation" stroke="black">
+40.366 344.179 m 
+73.4177 352.167 l 
+</path>
+<path layer="triangulation" stroke="black">
+73.4177 352.167 m 
+48.3699 369.551 l 
+</path>
+<path layer="triangulation" stroke="black">
+48.3699 369.551 m 
+40.366 344.179 l 
+</path>
+<path layer="triangulation" stroke="black">
+40.366 344.179 m 
+73.3342 318.543 l 
+</path>
+<path layer="triangulation" stroke="black">
+73.3342 318.543 m 
+73.4177 352.167 l 
+</path>
+<path layer="triangulation" stroke="black">
+73.4177 352.167 m 
+40.366 344.179 l 
+</path>
+<path layer="triangulation" stroke="black">
+73.4177 352.167 m 
+90.3155 344.495 l 
+</path>
+<path layer="triangulation" stroke="black">
+90.3155 344.495 m 
+92.5108 354.543 l 
+</path>
+<path layer="triangulation" stroke="black">
+92.5108 354.543 m 
+73.4177 352.167 l 
+</path>
+<path layer="triangulation" stroke="black">
+73.4177 352.167 m 
+73.3342 318.543 l 
+</path>
+<path layer="triangulation" stroke="black">
+73.3342 318.543 m 
+90.3155 344.495 l 
+</path>
+<path layer="triangulation" stroke="black">
+90.3155 344.495 m 
+73.4177 352.167 l 
+</path>
+<path layer="triangulation" stroke="black">
+95.8949 294.218 m 
+83.0538 286.872 l 
+</path>
+<path layer="triangulation" stroke="black">
+83.0538 286.872 m 
+94.2057 281.517 l 
+</path>
+<path layer="triangulation" stroke="black">
+94.2057 281.517 m 
+95.8949 294.218 l 
+</path>
+<path layer="triangulation" stroke="black">
+95.8949 294.218 m 
+73.3342 318.543 l 
+</path>
+<path layer="triangulation" stroke="black">
+73.3342 318.543 m 
+83.0538 286.872 l 
+</path>
+<path layer="triangulation" stroke="black">
+83.0538 286.872 m 
+95.8949 294.218 l 
+</path>
+<path layer="triangulation" stroke="black">
+94.2057 281.517 m 
+85.4549 272.248 l 
+</path>
+<path layer="triangulation" stroke="black">
+85.4549 272.248 m 
+100.596 272.238 l 
+</path>
+<path layer="triangulation" stroke="black">
+100.596 272.238 m 
+94.2057 281.517 l 
+</path>
+<path layer="triangulation" stroke="black">
+95.8949 294.218 m 
+94.2057 281.517 l 
+</path>
+<path layer="triangulation" stroke="black">
+94.2057 281.517 m 
+100.603 282.741 l 
+</path>
+<path layer="triangulation" stroke="black">
+100.603 282.741 m 
+95.8949 294.218 l 
+</path>
+<path layer="triangulation" stroke="black">
+83.0538 286.872 m 
+85.4549 272.248 l 
+</path>
+<path layer="triangulation" stroke="black">
+85.4549 272.248 m 
+94.2057 281.517 l 
+</path>
+<path layer="triangulation" stroke="black">
+94.2057 281.517 m 
+83.0538 286.872 l 
+</path>
+<path layer="triangulation" stroke="black">
+100.603 282.741 m 
+100.596 272.238 l 
+</path>
+<path layer="triangulation" stroke="black">
+100.596 272.238 m 
+109.866 272.232 l 
+</path>
+<path layer="triangulation" stroke="black">
+109.866 272.232 m 
+100.603 282.741 l 
+</path>
+<path layer="triangulation" stroke="black">
+100.603 282.741 m 
+109.866 272.232 l 
+</path>
+<path layer="triangulation" stroke="black">
+109.866 272.232 m 
+109.873 282.741 l 
+</path>
+<path layer="triangulation" stroke="black">
+109.873 282.741 m 
+100.603 282.741 l 
+</path>
+<path layer="triangulation" stroke="black">
+207.108 272.167 m 
+176.486 302.046 l 
+</path>
+<path layer="triangulation" stroke="black">
+176.486 302.046 m 
+168.467 272.192 l 
+</path>
+<path layer="triangulation" stroke="black">
+168.467 272.192 m 
+207.108 272.167 l 
+</path>
+<path layer="triangulation" stroke="black">
+225.669 304.664 m 
+218.18 318.985 l 
+</path>
+<path layer="triangulation" stroke="black">
+218.18 318.985 m 
+207.13 304.664 l 
+</path>
+<path layer="triangulation" stroke="black">
+207.13 304.664 m 
+225.669 304.664 l 
+</path>
+<path layer="triangulation" stroke="black">
+216.399 358.075 m 
+160.548 350.442 l 
+</path>
+<path layer="triangulation" stroke="black">
+160.548 350.442 m 
+199.291 322.627 l 
+</path>
+<path layer="triangulation" stroke="black">
+199.291 322.627 m 
+216.399 358.075 l 
+</path>
+<path layer="triangulation" stroke="black">
+207.13 304.664 m 
+218.18 318.985 l 
+</path>
+<path layer="triangulation" stroke="black">
+218.18 318.985 m 
+199.291 322.627 l 
+</path>
+<path layer="triangulation" stroke="black">
+199.291 322.627 m 
+207.13 304.664 l 
+</path>
+<path layer="triangulation" stroke="black">
+230.898 312.672 m 
+240.622 314.793 l 
+</path>
+<path layer="triangulation" stroke="black">
+240.622 314.793 m 
+232.895 323.708 l 
+</path>
+<path layer="triangulation" stroke="black">
+232.895 323.708 m 
+230.898 312.672 l 
+</path>
+<path layer="triangulation" stroke="black">
+168.467 272.192 m 
+131.474 295.437 l 
+</path>
+<path layer="triangulation" stroke="black">
+131.474 295.437 m 
+129.361 272.218 l 
+</path>
+<path layer="triangulation" stroke="black">
+129.361 272.218 m 
+168.467 272.192 l 
+</path>
+<path layer="triangulation" stroke="black">
+168.467 272.192 m 
+176.486 302.046 l 
+</path>
+<path layer="triangulation" stroke="black">
+176.486 302.046 m 
+131.474 295.437 l 
+</path>
+<path layer="triangulation" stroke="black">
+131.474 295.437 m 
+168.467 272.192 l 
+</path>
+<path layer="triangulation" stroke="black">
+100.603 334.827 m 
+116.399 348.382 l 
+</path>
+<path layer="triangulation" stroke="black">
+116.399 348.382 m 
+98.8132 348.872 l 
+</path>
+<path layer="triangulation" stroke="black">
+98.8132 348.872 m 
+100.603 334.827 l 
+</path>
+<path layer="triangulation" stroke="black">
+132.973 316.288 m 
+160.548 350.442 l 
+</path>
+<path layer="triangulation" stroke="black">
+160.548 350.442 m 
+116.399 348.382 l 
+</path>
+<path layer="triangulation" stroke="black">
+116.399 348.382 m 
+132.973 316.288 l 
+</path>
+<path layer="triangulation" stroke="black">
+73.4177 352.167 m 
+85.5803 378.714 l 
+</path>
+<path layer="triangulation" stroke="black">
+85.5803 378.714 m 
+48.3699 369.551 l 
+</path>
+<path layer="triangulation" stroke="black">
+48.3699 369.551 m 
+73.4177 352.167 l 
+</path>
+<path layer="triangulation" stroke="black">
+92.5108 354.543 m 
+100.603 358.075 l 
+</path>
+<path layer="triangulation" stroke="black">
+100.603 358.075 m 
+85.5803 378.714 l 
+</path>
+<path layer="triangulation" stroke="black">
+85.5803 378.714 m 
+92.5108 354.543 l 
+</path>
+<path layer="triangulation" stroke="black">
+33.8586 394.36 m 
+67.6435 405.451 l 
+</path>
+<path layer="triangulation" stroke="black">
+67.6435 405.451 m 
+32.185 449.593 l 
+</path>
+<path layer="triangulation" stroke="black">
+32.185 449.593 m 
+33.8586 394.36 l 
+</path>
+<path layer="triangulation" stroke="black">
+85.5803 378.714 m 
+109.356 409.633 l 
+</path>
+<path layer="triangulation" stroke="black">
+109.356 409.633 m 
+67.6435 405.451 l 
+</path>
+<path layer="triangulation" stroke="black">
+67.6435 405.451 m 
+85.5803 378.714 l 
+</path>
+<path layer="triangulation" stroke="black">
+84.4183 480.786 m 
+100.382 475.74 l 
+</path>
+<path layer="triangulation" stroke="black">
+100.382 475.74 m 
+95.8949 490.056 l 
+</path>
+<path layer="triangulation" stroke="black">
+95.8949 490.056 m 
+84.4183 480.786 l 
+</path>
+<path layer="triangulation" stroke="black">
+88.6156 444.821 m 
+137.682 449.593 l 
+</path>
+<path layer="triangulation" stroke="black">
+137.682 449.593 m 
+100.382 475.74 l 
+</path>
+<path layer="triangulation" stroke="black">
+100.382 475.74 m 
+88.6156 444.821 l 
+</path>
+<path layer="triangulation" stroke="black">
+216.399 358.075 m 
+165.487 409.825 l 
+</path>
+<path layer="triangulation" stroke="black">
+165.487 409.825 m 
+160.548 350.442 l 
+</path>
+<path layer="triangulation" stroke="black">
+160.548 350.442 m 
+216.399 358.075 l 
+</path>
+<path layer="triangulation" stroke="black">
+213.308 441.099 m 
+170.914 463.852 l 
+</path>
+<path layer="triangulation" stroke="black">
+170.914 463.852 m 
+165.487 409.825 l 
+</path>
+<path layer="triangulation" stroke="black">
+165.487 409.825 m 
+213.308 441.099 l 
+</path>
+<path layer="triangulation" stroke="black">
+207.13 500.502 m 
+188.361 515.851 l 
+</path>
+<path layer="triangulation" stroke="black">
+188.361 515.851 m 
+170.914 463.852 l 
+</path>
+<path layer="triangulation" stroke="black">
+170.914 463.852 m 
+207.13 500.502 l 
+</path>
+<path layer="triangulation" stroke="black">
+207.13 500.502 m 
+225.669 530.665 l 
+</path>
+<path layer="triangulation" stroke="black">
+225.669 530.665 m 
+188.361 515.851 l 
+</path>
+<path layer="triangulation" stroke="black">
+188.361 515.851 m 
+207.13 500.502 l 
+</path>
+<path layer="triangulation" stroke="black">
+188.361 515.851 m 
+140.976 489.419 l 
+</path>
+<path layer="triangulation" stroke="black">
+140.976 489.419 m 
+170.914 463.852 l 
+</path>
+<path layer="triangulation" stroke="black">
+170.914 463.852 m 
+188.361 515.851 l 
+</path>
+<path layer="triangulation" stroke="black">
+188.361 515.851 m 
+197.86 550.382 l 
+</path>
+<path layer="triangulation" stroke="black">
+197.86 550.382 m 
+131.693 544.672 l 
+</path>
+<path layer="triangulation" stroke="black">
+131.693 544.672 m 
+188.361 515.851 l 
+</path>
+<path layer="triangulation" stroke="black">
+71.1371 527.224 m 
+60.307 496.1 l 
+</path>
+<path layer="triangulation" stroke="black">
+60.307 496.1 m 
+86.0387 498.272 l 
+</path>
+<path layer="triangulation" stroke="black">
+86.0387 498.272 m 
+71.1371 527.224 l 
+</path>
+<path layer="triangulation" stroke="black">
+95.8949 490.056 m 
+140.976 489.419 l 
+</path>
+<path layer="triangulation" stroke="black">
+140.976 489.419 m 
+131.693 544.672 l 
+</path>
+<path layer="triangulation" stroke="black">
+131.693 544.672 m 
+95.8949 490.056 l 
+</path>
+<path layer="triangulation" stroke="black">
+86.0387 498.272 m 
+60.307 496.1 l 
+</path>
+<path layer="triangulation" stroke="black">
+60.307 496.1 m 
+84.4183 480.786 l 
+</path>
+<path layer="triangulation" stroke="black">
+84.4183 480.786 m 
+86.0387 498.272 l 
+</path>
+<path layer="triangulation" stroke="black">
+60.307 496.1 m 
+71.1371 527.224 l 
+</path>
+<path layer="triangulation" stroke="black">
+71.1371 527.224 m 
+43.7134 513.912 l 
+</path>
+<path layer="triangulation" stroke="black">
+43.7134 513.912 m 
+60.307 496.1 l 
+</path>
+<path layer="triangulation" stroke="black">
+32.8225 519.511 m 
+43.7134 513.912 l 
+</path>
+<path layer="triangulation" stroke="black">
+43.7134 513.912 m 
+41.6776 527.184 l 
+</path>
+<path layer="triangulation" stroke="black">
+41.6776 527.184 m 
+32.8225 519.511 l 
+</path>
+<path layer="triangulation" stroke="black">
+31.7144 511.583 m 
+35.4347 502.391 l 
+</path>
+<path layer="triangulation" stroke="black">
+35.4347 502.391 m 
+43.7134 513.912 l 
+</path>
+<path layer="triangulation" stroke="black">
+43.7134 513.912 m 
+31.7144 511.583 l 
+</path>
+<path layer="triangulation" stroke="black">
+43.7134 513.912 m 
+32.8225 519.511 l 
+</path>
+<path layer="triangulation" stroke="black">
+32.8225 519.511 m 
+31.7144 511.583 l 
+</path>
+<path layer="triangulation" stroke="black">
+31.7144 511.583 m 
+43.7134 513.912 l 
+</path>
+<path layer="triangulation" stroke="black">
+31.4915 527.08 m 
+33.583 533.945 l 
+</path>
+<path layer="triangulation" stroke="black">
+33.583 533.945 m 
+25.693 531.957 l 
+</path>
+<path layer="triangulation" stroke="black">
+25.693 531.957 m 
+31.4915 527.08 l 
+</path>
+<path layer="triangulation" stroke="black">
+60.307 496.1 m 
+35.4347 502.391 l 
+</path>
+<path layer="triangulation" stroke="black">
+35.4347 502.391 m 
+32.185 449.593 l 
+</path>
+<path layer="triangulation" stroke="black">
+32.185 449.593 m 
+60.307 496.1 l 
+</path>
+<path layer="triangulation" stroke="black">
+60.307 496.1 m 
+43.7134 513.912 l 
+</path>
+<path layer="triangulation" stroke="black">
+43.7134 513.912 m 
+35.4347 502.391 l 
+</path>
+<path layer="triangulation" stroke="black">
+35.4347 502.391 m 
+60.307 496.1 l 
+</path>
+<path layer="triangulation" stroke="black">
+22.6317 449.95 m 
+20.664 397.237 l 
+</path>
+<path layer="triangulation" stroke="black">
+20.664 397.237 m 
+32.185 449.593 l 
+</path>
+<path layer="triangulation" stroke="black">
+32.185 449.593 m 
+22.6317 449.95 l 
+</path>
+<path layer="triangulation" stroke="black">
+19.6705 370.623 m 
+48.3699 369.551 l 
+</path>
+<path layer="triangulation" stroke="black">
+48.3699 369.551 m 
+33.8586 394.36 l 
+</path>
+<path layer="triangulation" stroke="black">
+33.8586 394.36 m 
+19.6705 370.623 l 
+</path>
+<path layer="triangulation" stroke="black">
+32.185 449.593 m 
+24.5418 501.118 l 
+</path>
+<path layer="triangulation" stroke="black">
+24.5418 501.118 m 
+22.6317 449.95 l 
+</path>
+<path layer="triangulation" stroke="black">
+22.6317 449.95 m 
+32.185 449.593 l 
+</path>
+<path layer="triangulation" stroke="black">
+35.4347 502.391 m 
+31.7144 511.583 l 
+</path>
+<path layer="triangulation" stroke="black">
+31.7144 511.583 m 
+24.7512 506.727 l 
+</path>
+<path layer="triangulation" stroke="black">
+24.7512 506.727 m 
+35.4347 502.391 l 
+</path>
+<path layer="triangulation" stroke="black">
+19.6705 370.623 m 
+33.8586 394.36 l 
+</path>
+<path layer="triangulation" stroke="black">
+33.8586 394.36 m 
+20.664 397.237 l 
+</path>
+<path layer="triangulation" stroke="black">
+20.664 397.237 m 
+19.6705 370.623 l 
+</path>
+<path layer="triangulation" stroke="black">
+24.5418 501.118 m 
+35.4347 502.391 l 
+</path>
+<path layer="triangulation" stroke="black">
+35.4347 502.391 m 
+24.7512 506.727 l 
+</path>
+<path layer="triangulation" stroke="black">
+24.7512 506.727 m 
+24.5418 501.118 l 
+</path>
+<path layer="triangulation" stroke="black">
+32.8225 519.511 m 
+25.3481 522.719 l 
+</path>
+<path layer="triangulation" stroke="black">
+25.3481 522.719 m 
+25.0562 514.899 l 
+</path>
+<path layer="triangulation" stroke="black">
+25.0562 514.899 m 
+32.8225 519.511 l 
+</path>
+<path layer="triangulation" stroke="black">
+32.8225 519.511 m 
+41.6776 527.184 l 
+</path>
+<path layer="triangulation" stroke="black">
+41.6776 527.184 m 
+31.4915 527.08 l 
+</path>
+<path layer="triangulation" stroke="black">
+31.4915 527.08 m 
+32.8225 519.511 l 
+</path>
+<path layer="triangulation" stroke="black">
+32.8225 519.511 m 
+31.4915 527.08 l 
+</path>
+<path layer="triangulation" stroke="black">
+31.4915 527.08 m 
+25.3481 522.719 l 
+</path>
+<path layer="triangulation" stroke="black">
+25.3481 522.719 m 
+32.8225 519.511 l 
+</path>
+<path layer="triangulation" stroke="black">
+41.6776 527.184 m 
+33.583 533.945 l 
+</path>
+<path layer="triangulation" stroke="black">
+33.583 533.945 m 
+31.4915 527.08 l 
+</path>
+<path layer="triangulation" stroke="black">
+31.4915 527.08 m 
+41.6776 527.184 l 
+</path>
+<path layer="triangulation" stroke="black">
+41.6776 527.184 m 
+47.34 550.382 l 
+</path>
+<path layer="triangulation" stroke="black">
+47.34 550.382 m 
+33.583 533.945 l 
+</path>
+<path layer="triangulation" stroke="black">
+33.583 533.945 m 
+41.6776 527.184 l 
+</path>
+<path layer="triangulation" stroke="black">
+31.4915 527.08 m 
+25.693 531.957 l 
+</path>
+<path layer="triangulation" stroke="black">
+25.693 531.957 m 
+25.3481 522.719 l 
+</path>
+<path layer="triangulation" stroke="black">
+25.3481 522.719 m 
+31.4915 527.08 l 
+</path>
+<path layer="triangulation" stroke="black">
+33.583 533.945 m 
+26.4099 551.163 l 
+</path>
+<path layer="triangulation" stroke="black">
+26.4099 551.163 m 
+25.693 531.957 l 
+</path>
+<path layer="triangulation" stroke="black">
+25.693 531.957 m 
+33.583 533.945 l 
+</path>
+<path layer="triangulation" stroke="black">
+95.8949 490.056 m 
+131.693 544.672 l 
+</path>
+<path layer="triangulation" stroke="black">
+131.693 544.672 m 
+86.0387 498.272 l 
+</path>
+<path layer="triangulation" stroke="black">
+86.0387 498.272 m 
+95.8949 490.056 l 
+</path>
+<path layer="triangulation" stroke="black">
+86.7722 578.117 m 
+47.34 550.382 l 
+</path>
+<path layer="triangulation" stroke="black">
+47.34 550.382 m 
+71.1371 527.224 l 
+</path>
+<path layer="triangulation" stroke="black">
+71.1371 527.224 m 
+86.7722 578.117 l 
+</path>
+<path layer="triangulation" stroke="black">
+86.0387 498.272 m 
+131.693 544.672 l 
+</path>
+<path layer="triangulation" stroke="black">
+131.693 544.672 m 
+71.1371 527.224 l 
+</path>
+<path layer="triangulation" stroke="black">
+71.1371 527.224 m 
+86.0387 498.272 l 
+</path>
+<path layer="triangulation" stroke="black">
+82.0894 624.363 m 
+54.4863 639.765 l 
+</path>
+<path layer="triangulation" stroke="black">
+54.4863 639.765 m 
+51.7851 611.056 l 
+</path>
+<path layer="triangulation" stroke="black">
+51.7851 611.056 m 
+82.0894 624.363 l 
+</path>
+<path layer="triangulation" stroke="black">
+47.34 550.382 m 
+51.7851 611.056 l 
+</path>
+<path layer="triangulation" stroke="black">
+51.7851 611.056 m 
+28.5112 607.455 l 
+</path>
+<path layer="triangulation" stroke="black">
+28.5112 607.455 m 
+47.34 550.382 l 
+</path>
+<path layer="triangulation" stroke="black">
+47.34 550.382 m 
+86.7722 578.117 l 
+</path>
+<path layer="triangulation" stroke="black">
+86.7722 578.117 m 
+51.7851 611.056 l 
+</path>
+<path layer="triangulation" stroke="black">
+51.7851 611.056 m 
+47.34 550.382 l 
+</path>
+<path layer="triangulation" stroke="black">
+86.7722 578.117 m 
+82.0894 624.363 l 
+</path>
+<path layer="triangulation" stroke="black">
+82.0894 624.363 m 
+51.7851 611.056 l 
+</path>
+<path layer="triangulation" stroke="black">
+51.7851 611.056 m 
+86.7722 578.117 l 
+</path>
+<path layer="triangulation" stroke="black">
+121.431 606.772 m 
+108.391 653.56 l 
+</path>
+<path layer="triangulation" stroke="black">
+108.391 653.56 m 
+82.0894 624.363 l 
+</path>
+<path layer="triangulation" stroke="black">
+82.0894 624.363 m 
+121.431 606.772 l 
+</path>
+<path layer="triangulation" stroke="black">
+54.4863 639.765 m 
+59.9937 663.676 l 
+</path>
+<path layer="triangulation" stroke="black">
+59.9937 663.676 m 
+30.6508 664.772 l 
+</path>
+<path layer="triangulation" stroke="black">
+30.6508 664.772 m 
+54.4863 639.765 l 
+</path>
+<path layer="triangulation" stroke="black">
+47.34 550.382 m 
+28.5112 607.455 l 
+</path>
+<path layer="triangulation" stroke="black">
+28.5112 607.455 m 
+26.4099 551.163 l 
+</path>
+<path layer="triangulation" stroke="black">
+26.4099 551.163 m 
+47.34 550.382 l 
+</path>
+<path layer="triangulation" stroke="black">
+51.7851 611.056 m 
+29.2657 627.666 l 
+</path>
+<path layer="triangulation" stroke="black">
+29.2657 627.666 m 
+28.5112 607.455 l 
+</path>
+<path layer="triangulation" stroke="black">
+28.5112 607.455 m 
+51.7851 611.056 l 
+</path>
+<path layer="triangulation" stroke="black">
+29.2657 627.666 m 
+54.4863 639.765 l 
+</path>
+<path layer="triangulation" stroke="black">
+54.4863 639.765 m 
+30.6508 664.772 l 
+</path>
+<path layer="triangulation" stroke="black">
+30.6508 664.772 m 
+29.2657 627.666 l 
+</path>
+<path layer="triangulation" stroke="black">
+81.2254 720.994 m 
+32.335 709.889 l 
+</path>
+<path layer="triangulation" stroke="black">
+32.335 709.889 m 
+77.1646 695.997 l 
+</path>
+<path layer="triangulation" stroke="black">
+77.1646 695.997 m 
+81.2254 720.994 l 
+</path>
+<path layer="triangulation" stroke="black">
+30.6508 664.772 m 
+59.9937 663.676 l 
+</path>
+<path layer="triangulation" stroke="black">
+59.9937 663.676 m 
+57.5786 678.337 l 
+</path>
+<path layer="triangulation" stroke="black">
+57.5786 678.337 m 
+30.6508 664.772 l 
+</path>
+<path layer="triangulation" stroke="black">
+92.5108 746.22 m 
+33.7731 748.412 l 
+</path>
+<path layer="triangulation" stroke="black">
+33.7731 748.412 m 
+81.2254 720.994 l 
+</path>
+<path layer="triangulation" stroke="black">
+81.2254 720.994 m 
+92.5108 746.22 l 
+</path>
+<path layer="triangulation" stroke="black">
+90.6344 790.362 m 
+33.7731 748.412 l 
+</path>
+<path layer="triangulation" stroke="black">
+33.7731 748.412 m 
+92.5108 746.22 l 
+</path>
+<path layer="triangulation" stroke="black">
+92.5108 746.22 m 
+90.6344 790.362 l 
+</path>
+<path layer="triangulation" stroke="black">
+129.563 761.985 m 
+90.6344 790.362 l 
+</path>
+<path layer="triangulation" stroke="black">
+90.6344 790.362 m 
+106.342 749.751 l 
+</path>
+<path layer="triangulation" stroke="black">
+106.342 749.751 m 
+129.563 761.985 l 
+</path>
+<path layer="triangulation" stroke="black">
+129.563 761.985 m 
+153.867 761.228 l 
+</path>
+<path layer="triangulation" stroke="black">
+153.867 761.228 m 
+153.867 832 l 
+</path>
+<path layer="triangulation" stroke="black">
+153.867 832 m 
+129.563 761.985 l 
+</path>
+<path layer="triangulation" stroke="black">
+129.563 761.985 m 
+153.867 832 l 
+</path>
+<path layer="triangulation" stroke="black">
+153.867 832 m 
+90.6344 790.362 l 
+</path>
+<path layer="triangulation" stroke="black">
+90.6344 790.362 m 
+129.563 761.985 l 
+</path>
+<path layer="triangulation" stroke="black">
+77.1646 695.997 m 
+93.6875 701.8 l 
+</path>
+<path layer="triangulation" stroke="black">
+93.6875 701.8 m 
+81.2254 720.994 l 
+</path>
+<path layer="triangulation" stroke="black">
+81.2254 720.994 m 
+77.1646 695.997 l 
+</path>
+<path layer="triangulation" stroke="black">
+100.603 699.725 m 
+106.342 699.872 l 
+</path>
+<path layer="triangulation" stroke="black">
+106.342 699.872 m 
+101.421 709.232 l 
+</path>
+<path layer="triangulation" stroke="black">
+101.421 709.232 m 
+100.603 699.725 l 
+</path>
+<path layer="triangulation" stroke="black">
+101.421 709.232 m 
+93.6875 701.8 l 
+</path>
+<path layer="triangulation" stroke="black">
+93.6875 701.8 m 
+100.603 699.725 l 
+</path>
+<path layer="triangulation" stroke="black">
+100.603 699.725 m 
+101.421 709.232 l 
+</path>
+<path layer="triangulation" stroke="black">
+101.421 709.232 m 
+81.2254 720.994 l 
+</path>
+<path layer="triangulation" stroke="black">
+81.2254 720.994 m 
+93.6875 701.8 l 
+</path>
+<path layer="triangulation" stroke="black">
+93.6875 701.8 m 
+101.421 709.232 l 
+</path>
+<path layer="triangulation" stroke="black">
+108.391 653.56 m 
+75.9472 651.816 l 
+</path>
+<path layer="triangulation" stroke="black">
+75.9472 651.816 m 
+82.0894 624.363 l 
+</path>
+<path layer="triangulation" stroke="black">
+82.0894 624.363 m 
+108.391 653.56 l 
+</path>
+<path layer="triangulation" stroke="black">
+108.391 653.56 m 
+84.4183 676.624 l 
+</path>
+<path layer="triangulation" stroke="black">
+84.4183 676.624 m 
+75.9472 651.816 l 
+</path>
+<path layer="triangulation" stroke="black">
+75.9472 651.816 m 
+108.391 653.56 l 
+</path>
+<path layer="triangulation" stroke="black">
+130.692 731.966 m 
+159.608 730.585 l 
+</path>
+<path layer="triangulation" stroke="black">
+159.608 730.585 m 
+152.689 746.22 l 
+</path>
+<path layer="triangulation" stroke="black">
+152.689 746.22 m 
+130.692 731.966 l 
+</path>
+<path layer="triangulation" stroke="black">
+140.028 702.286 m 
+130.766 678.978 l 
+</path>
+<path layer="triangulation" stroke="black">
+130.766 678.978 m 
+173.406 674.994 l 
+</path>
+<path layer="triangulation" stroke="black">
+173.406 674.994 m 
+140.028 702.286 l 
+</path>
+<path layer="triangulation" stroke="black">
+130.692 731.966 m 
+140.028 702.286 l 
+</path>
+<path layer="triangulation" stroke="black">
+140.028 702.286 m 
+159.608 730.585 l 
+</path>
+<path layer="triangulation" stroke="black">
+159.608 730.585 m 
+130.692 731.966 l 
+</path>
+<path layer="triangulation" stroke="black">
+115.676 710.431 m 
+114.749 695.64 l 
+</path>
+<path layer="triangulation" stroke="black">
+114.749 695.64 m 
+140.028 702.286 l 
+</path>
+<path layer="triangulation" stroke="black">
+140.028 702.286 m 
+115.676 710.431 l 
+</path>
+<path layer="triangulation" stroke="black">
+140.028 702.286 m 
+130.692 731.966 l 
+</path>
+<path layer="triangulation" stroke="black">
+130.692 731.966 m 
+115.676 710.431 l 
+</path>
+<path layer="triangulation" stroke="black">
+115.676 710.431 m 
+140.028 702.286 l 
+</path>
+<path layer="triangulation" stroke="black">
+152.689 746.22 m 
+129.563 761.985 l 
+</path>
+<path layer="triangulation" stroke="black">
+129.563 761.985 m 
+130.692 731.966 l 
+</path>
+<path layer="triangulation" stroke="black">
+130.692 731.966 m 
+152.689 746.22 l 
+</path>
+<path layer="triangulation" stroke="black">
+90.6344 790.362 m 
+153.867 832 l 
+</path>
+<path layer="triangulation" stroke="black">
+153.867 832 m 
+90.6344 832 l 
+</path>
+<path layer="triangulation" stroke="black">
+90.6344 832 m 
+90.6344 790.362 l 
+</path>
+<path layer="triangulation" stroke="black">
+153.867 761.228 m 
+177.811 768.265 l 
+</path>
+<path layer="triangulation" stroke="black">
+177.811 768.265 m 
+153.867 832 l 
+</path>
+<path layer="triangulation" stroke="black">
+153.867 832 m 
+153.867 761.228 l 
+</path>
+<path layer="triangulation" stroke="black">
+199.037 761.228 m 
+216.399 726.503 l 
+</path>
+<path layer="triangulation" stroke="black">
+216.399 726.503 m 
+228.843 767.197 l 
+</path>
+<path layer="triangulation" stroke="black">
+228.843 767.197 m 
+199.037 761.228 l 
+</path>
+<path layer="triangulation" stroke="black">
+204.624 795.032 m 
+204.624 832 l 
+</path>
+<path layer="triangulation" stroke="black">
+204.624 832 m 
+153.867 832 l 
+</path>
+<path layer="triangulation" stroke="black">
+153.867 832 m 
+204.624 795.032 l 
+</path>
+<path layer="triangulation" stroke="black">
+204.624 795.032 m 
+277.902 832 l 
+</path>
+<path layer="triangulation" stroke="black">
+277.902 832 m 
+204.624 832 l 
+</path>
+<path layer="triangulation" stroke="black">
+204.624 832 m 
+204.624 795.032 l 
+</path>
+<path layer="triangulation" stroke="black">
+153.867 832 m 
+177.811 768.265 l 
+</path>
+<path layer="triangulation" stroke="black">
+177.811 768.265 m 
+204.624 795.032 l 
+</path>
+<path layer="triangulation" stroke="black">
+204.624 795.032 m 
+153.867 832 l 
+</path>
+<path layer="triangulation" stroke="black">
+153.867 761.228 m 
+163.284 748.573 l 
+</path>
+<path layer="triangulation" stroke="black">
+163.284 748.573 m 
+177.811 768.265 l 
+</path>
+<path layer="triangulation" stroke="black">
+177.811 768.265 m 
+153.867 761.228 l 
+</path>
+<path layer="triangulation" stroke="black">
+177.811 768.265 m 
+181.229 740.235 l 
+</path>
+<path layer="triangulation" stroke="black">
+181.229 740.235 m 
+199.037 761.228 l 
+</path>
+<path layer="triangulation" stroke="black">
+199.037 761.228 m 
+177.811 768.265 l 
+</path>
+<path layer="triangulation" stroke="black">
+163.284 748.573 m 
+159.608 730.585 l 
+</path>
+<path layer="triangulation" stroke="black">
+159.608 730.585 m 
+181.229 740.235 l 
+</path>
+<path layer="triangulation" stroke="black">
+181.229 740.235 m 
+163.284 748.573 l 
+</path>
+<path layer="triangulation" stroke="black">
+140.028 702.286 m 
+173.406 674.994 l 
+</path>
+<path layer="triangulation" stroke="black">
+173.406 674.994 m 
+178.144 707.964 l 
+</path>
+<path layer="triangulation" stroke="black">
+178.144 707.964 m 
+140.028 702.286 l 
+</path>
+<path layer="triangulation" stroke="black">
+130.766 678.978 m 
+148.64 641.033 l 
+</path>
+<path layer="triangulation" stroke="black">
+148.64 641.033 m 
+173.406 674.994 l 
+</path>
+<path layer="triangulation" stroke="black">
+173.406 674.994 m 
+130.766 678.978 l 
+</path>
+<path layer="triangulation" stroke="black">
+105.251 695.246 m 
+109.29 687.139 l 
+</path>
+<path layer="triangulation" stroke="black">
+109.29 687.139 m 
+114.749 695.64 l 
+</path>
+<path layer="triangulation" stroke="black">
+114.749 695.64 m 
+105.251 695.246 l 
+</path>
+<path layer="triangulation" stroke="black">
+119.142 685.894 m 
+140.028 702.286 l 
+</path>
+<path layer="triangulation" stroke="black">
+140.028 702.286 m 
+114.749 695.64 l 
+</path>
+<path layer="triangulation" stroke="black">
+114.749 695.64 m 
+119.142 685.894 l 
+</path>
+<path layer="triangulation" stroke="black">
+114.749 695.64 m 
+109.29 687.139 l 
+</path>
+<path layer="triangulation" stroke="black">
+109.29 687.139 m 
+119.142 685.894 l 
+</path>
+<path layer="triangulation" stroke="black">
+119.142 685.894 m 
+114.749 695.64 l 
+</path>
+<path layer="triangulation" stroke="black">
+114.749 695.64 m 
+106.342 699.872 l 
+</path>
+<path layer="triangulation" stroke="black">
+106.342 699.872 m 
+105.251 695.246 l 
+</path>
+<path layer="triangulation" stroke="black">
+105.251 695.246 m 
+114.749 695.64 l 
+</path>
+<path layer="triangulation" stroke="black">
+100.603 699.725 m 
+105.251 695.246 l 
+</path>
+<path layer="triangulation" stroke="black">
+105.251 695.246 m 
+106.342 699.872 l 
+</path>
+<path layer="triangulation" stroke="black">
+106.342 699.872 m 
+100.603 699.725 l 
+</path>
+<path layer="triangulation" stroke="black">
+100.603 699.725 m 
+95.8949 685.894 l 
+</path>
+<path layer="triangulation" stroke="black">
+95.8949 685.894 m 
+105.251 695.246 l 
+</path>
+<path layer="triangulation" stroke="black">
+105.251 695.246 m 
+100.603 699.725 l 
+</path>
+<path layer="triangulation" stroke="black">
+71.1371 527.224 m 
+131.693 544.672 l 
+</path>
+<path layer="triangulation" stroke="black">
+131.693 544.672 m 
+86.7722 578.117 l 
+</path>
+<path layer="triangulation" stroke="black">
+86.7722 578.117 m 
+71.1371 527.224 l 
+</path>
+<path layer="triangulation" stroke="black">
+140.976 489.419 m 
+188.361 515.851 l 
+</path>
+<path layer="triangulation" stroke="black">
+188.361 515.851 m 
+131.693 544.672 l 
+</path>
+<path layer="triangulation" stroke="black">
+131.693 544.672 m 
+140.976 489.419 l 
+</path>
+<path layer="triangulation" stroke="black">
+121.431 606.772 m 
+148.64 641.033 l 
+</path>
+<path layer="triangulation" stroke="black">
+148.64 641.033 m 
+108.391 653.56 l 
+</path>
+<path layer="triangulation" stroke="black">
+108.391 653.56 m 
+121.431 606.772 l 
+</path>
+<path layer="triangulation" stroke="black">
+121.431 606.772 m 
+164.808 596.091 l 
+</path>
+<path layer="triangulation" stroke="black">
+164.808 596.091 m 
+148.64 641.033 l 
+</path>
+<path layer="triangulation" stroke="black">
+148.64 641.033 m 
+121.431 606.772 l 
+</path>
+<path layer="triangulation" stroke="black">
+234.939 553.913 m 
+216.098 587.795 l 
+</path>
+<path layer="triangulation" stroke="black">
+216.098 587.795 m 
+197.86 550.382 l 
+</path>
+<path layer="triangulation" stroke="black">
+197.86 550.382 m 
+234.939 553.913 l 
+</path>
+<path layer="triangulation" stroke="black">
+187.414 636.162 m 
+148.64 641.033 l 
+</path>
+<path layer="triangulation" stroke="black">
+148.64 641.033 m 
+164.808 596.091 l 
+</path>
+<path layer="triangulation" stroke="black">
+164.808 596.091 m 
+187.414 636.162 l 
+</path>
+<path layer="triangulation" stroke="black">
+207.13 696.341 m 
+214.658 672.256 l 
+</path>
+<path layer="triangulation" stroke="black">
+214.658 672.256 m 
+225.669 696.341 l 
+</path>
+<path layer="triangulation" stroke="black">
+225.669 696.341 m 
+207.13 696.341 l 
+</path>
+<path layer="triangulation" stroke="black">
+187.414 636.162 m 
+248.308 627.27 l 
+</path>
+<path layer="triangulation" stroke="black">
+248.308 627.27 m 
+214.658 672.256 l 
+</path>
+<path layer="triangulation" stroke="black">
+214.658 672.256 m 
+187.414 636.162 l 
+</path>
+<path layer="triangulation" stroke="black">
+248.308 627.27 m 
+216.098 587.795 l 
+</path>
+<path layer="triangulation" stroke="black">
+216.098 587.795 m 
+252.797 574.381 l 
+</path>
+<path layer="triangulation" stroke="black">
+252.797 574.381 m 
+248.308 627.27 l 
+</path>
+<path layer="triangulation" stroke="black">
+187.414 636.162 m 
+164.808 596.091 l 
+</path>
+<path layer="triangulation" stroke="black">
+164.808 596.091 m 
+216.098 587.795 l 
+</path>
+<path layer="triangulation" stroke="black">
+216.098 587.795 m 
+187.414 636.162 l 
+</path>
+<path layer="triangulation" stroke="black">
+295.894 625.314 m 
+285.8 583.013 l 
+</path>
+<path layer="triangulation" stroke="black">
+285.8 583.013 m 
+318.121 607.058 l 
+</path>
+<path layer="triangulation" stroke="black">
+318.121 607.058 m 
+295.894 625.314 l 
+</path>
+<path layer="triangulation" stroke="black">
+252.797 574.381 m 
+274.296 529.622 l 
+</path>
+<path layer="triangulation" stroke="black">
+274.296 529.622 m 
+285.8 583.013 l 
+</path>
+<path layer="triangulation" stroke="black">
+285.8 583.013 m 
+252.797 574.381 l 
+</path>
+<path layer="triangulation" stroke="black">
+313.706 542.551 m 
+274.296 529.622 l 
+</path>
+<path layer="triangulation" stroke="black">
+274.296 529.622 m 
+313.803 512.126 l 
+</path>
+<path layer="triangulation" stroke="black">
+313.803 512.126 m 
+313.706 542.551 l 
+</path>
+<path layer="triangulation" stroke="black">
+234.939 553.913 m 
+225.669 530.665 l 
+</path>
+<path layer="triangulation" stroke="black">
+225.669 530.665 m 
+274.296 529.622 l 
+</path>
+<path layer="triangulation" stroke="black">
+274.296 529.622 m 
+234.939 553.913 l 
+</path>
+<path layer="triangulation" stroke="black">
+323.073 636.162 m 
+295.894 625.314 l 
+</path>
+<path layer="triangulation" stroke="black">
+295.894 625.314 m 
+318.121 607.058 l 
+</path>
+<path layer="triangulation" stroke="black">
+318.121 607.058 m 
+323.073 636.162 l 
+</path>
+<path layer="triangulation" stroke="black">
+288.357 651.052 m 
+248.308 627.27 l 
+</path>
+<path layer="triangulation" stroke="black">
+248.308 627.27 m 
+295.894 625.314 l 
+</path>
+<path layer="triangulation" stroke="black">
+295.894 625.314 m 
+288.357 651.052 l 
+</path>
+<path layer="triangulation" stroke="black">
+347.35 530.665 m 
+313.706 542.551 l 
+</path>
+<path layer="triangulation" stroke="black">
+313.706 542.551 m 
+313.803 512.126 l 
+</path>
+<path layer="triangulation" stroke="black">
+313.803 512.126 m 
+347.35 530.665 l 
+</path>
+<path layer="triangulation" stroke="black">
+334.55 565.389 m 
+285.8 583.013 l 
+</path>
+<path layer="triangulation" stroke="black">
+285.8 583.013 m 
+313.706 542.551 l 
+</path>
+<path layer="triangulation" stroke="black">
+313.706 542.551 m 
+334.55 565.389 l 
+</path>
+<path layer="triangulation" stroke="black">
+318.121 607.058 m 
+359.444 608.391 l 
+</path>
+<path layer="triangulation" stroke="black">
+359.444 608.391 m 
+323.073 636.162 l 
+</path>
+<path layer="triangulation" stroke="black">
+323.073 636.162 m 
+318.121 607.058 l 
+</path>
+<path layer="triangulation" stroke="black">
+383.252 636.162 m 
+360.151 676.624 l 
+</path>
+<path layer="triangulation" stroke="black">
+360.151 676.624 m 
+344.055 650.002 l 
+</path>
+<path layer="triangulation" stroke="black">
+344.055 650.002 m 
+383.252 636.162 l 
+</path>
+<path layer="triangulation" stroke="black">
+364.599 695.906 m 
+345.458 695.037 l 
+</path>
+<path layer="triangulation" stroke="black">
+345.458 695.037 m 
+360.151 676.624 l 
+</path>
+<path layer="triangulation" stroke="black">
+360.151 676.624 m 
+364.599 695.906 l 
+</path>
+<path layer="triangulation" stroke="black">
+320.363 699.147 m 
+280.359 712.268 l 
+</path>
+<path layer="triangulation" stroke="black">
+280.359 712.268 m 
+302.113 675.544 l 
+</path>
+<path layer="triangulation" stroke="black">
+302.113 675.544 m 
+320.363 699.147 l 
+</path>
+<path layer="triangulation" stroke="black">
+320.363 699.147 m 
+302.113 675.544 l 
+</path>
+<path layer="triangulation" stroke="black">
+302.113 675.544 m 
+331.291 673.324 l 
+</path>
+<path layer="triangulation" stroke="black">
+331.291 673.324 m 
+320.363 699.147 l 
+</path>
+<path layer="triangulation" stroke="black">
+280.359 712.268 m 
+261.57 681.333 l 
+</path>
+<path layer="triangulation" stroke="black">
+261.57 681.333 m 
+302.113 675.544 l 
+</path>
+<path layer="triangulation" stroke="black">
+302.113 675.544 m 
+280.359 712.268 l 
+</path>
+<path layer="triangulation" stroke="black">
+244.208 696.341 m 
+238.077 680.229 l 
+</path>
+<path layer="triangulation" stroke="black">
+238.077 680.229 m 
+261.57 681.333 l 
+</path>
+<path layer="triangulation" stroke="black">
+261.57 681.333 m 
+244.208 696.341 l 
+</path>
+<path layer="triangulation" stroke="black">
+244.208 696.341 m 
+225.669 696.341 l 
+</path>
+<path layer="triangulation" stroke="black">
+225.669 696.341 m 
+238.077 680.229 l 
+</path>
+<path layer="triangulation" stroke="black">
+238.077 680.229 m 
+244.208 696.341 l 
+</path>
+<path layer="triangulation" stroke="black">
+345.458 695.037 m 
+339.907 714.621 l 
+</path>
+<path layer="triangulation" stroke="black">
+339.907 714.621 m 
+320.363 699.147 l 
+</path>
+<path layer="triangulation" stroke="black">
+320.363 699.147 m 
+345.458 695.037 l 
+</path>
+<path layer="triangulation" stroke="black">
+319.517 725.647 m 
+280.359 712.268 l 
+</path>
+<path layer="triangulation" stroke="black">
+280.359 712.268 m 
+320.363 699.147 l 
+</path>
+<path layer="triangulation" stroke="black">
+320.363 699.147 m 
+319.517 725.647 l 
+</path>
+<path layer="triangulation" stroke="black">
+356.218 710.889 m 
+350.715 722.597 l 
+</path>
+<path layer="triangulation" stroke="black">
+350.715 722.597 m 
+339.907 714.621 l 
+</path>
+<path layer="triangulation" stroke="black">
+339.907 714.621 m 
+356.218 710.889 l 
+</path>
+<path layer="triangulation" stroke="black">
+347.35 726.503 m 
+340.907 728.314 l 
+</path>
+<path layer="triangulation" stroke="black">
+340.907 728.314 m 
+339.907 714.621 l 
+</path>
+<path layer="triangulation" stroke="black">
+339.907 714.621 m 
+347.35 726.503 l 
+</path>
+<path layer="triangulation" stroke="black">
+199.037 761.228 m 
+228.843 767.197 l 
+</path>
+<path layer="triangulation" stroke="black">
+228.843 767.197 m 
+204.624 795.032 l 
+</path>
+<path layer="triangulation" stroke="black">
+204.624 795.032 m 
+199.037 761.228 l 
+</path>
+<path layer="triangulation" stroke="black">
+234.939 726.503 m 
+289.379 761.228 l 
+</path>
+<path layer="triangulation" stroke="black">
+289.379 761.228 m 
+228.843 767.197 l 
+</path>
+<path layer="triangulation" stroke="black">
+228.843 767.197 m 
+234.939 726.503 l 
+</path>
+<path layer="triangulation" stroke="black">
+349.946 735.483 m 
+358.423 752.599 l 
+</path>
+<path layer="triangulation" stroke="black">
+358.423 752.599 m 
+333.373 746.22 l 
+</path>
+<path layer="triangulation" stroke="black">
+333.373 746.22 m 
+349.946 735.483 l 
+</path>
+<path layer="triangulation" stroke="black">
+359.635 832 m 
+277.902 832 l 
+</path>
+<path layer="triangulation" stroke="black">
+277.902 832 m 
+336.219 784.799 l 
+</path>
+<path layer="triangulation" stroke="black">
+336.219 784.799 m 
+359.635 832 l 
+</path>
+<path layer="triangulation" stroke="black">
+340.907 728.314 m 
+345.994 731.67 l 
+</path>
+<path layer="triangulation" stroke="black">
+345.994 731.67 m 
+333.373 746.22 l 
+</path>
+<path layer="triangulation" stroke="black">
+333.373 746.22 m 
+340.907 728.314 l 
+</path>
+<path layer="triangulation" stroke="black">
+347.35 726.503 m 
+351.912 726.503 l 
+</path>
+<path layer="triangulation" stroke="black">
+351.912 726.503 m 
+350.245 730.184 l 
+</path>
+<path layer="triangulation" stroke="black">
+350.245 730.184 m 
+347.35 726.503 l 
+</path>
+<path layer="triangulation" stroke="black">
+345.994 731.67 m 
+349.946 735.483 l 
+</path>
+<path layer="triangulation" stroke="black">
+349.946 735.483 m 
+333.373 746.22 l 
+</path>
+<path layer="triangulation" stroke="black">
+333.373 746.22 m 
+345.994 731.67 l 
+</path>
+<path layer="triangulation" stroke="black">
+359.125 732.284 m 
+351.912 726.503 l 
+</path>
+<path layer="triangulation" stroke="black">
+351.912 726.503 m 
+355.198 723.695 l 
+</path>
+<path layer="triangulation" stroke="black">
+355.198 723.695 m 
+359.125 732.284 l 
+</path>
+<path layer="triangulation" stroke="black">
+345.994 731.67 m 
+350.245 730.184 l 
+</path>
+<path layer="triangulation" stroke="black">
+350.245 730.184 m 
+349.946 735.483 l 
+</path>
+<path layer="triangulation" stroke="black">
+349.946 735.483 m 
+345.994 731.67 l 
+</path>
+<path layer="triangulation" stroke="black">
+345.994 731.67 m 
+347.35 726.503 l 
+</path>
+<path layer="triangulation" stroke="black">
+347.35 726.503 m 
+350.245 730.184 l 
+</path>
+<path layer="triangulation" stroke="black">
+350.245 730.184 m 
+345.994 731.67 l 
+</path>
+<path layer="triangulation" stroke="black">
+360.151 676.624 m 
+345.458 695.037 l 
+</path>
+<path layer="triangulation" stroke="black">
+345.458 695.037 m 
+331.291 673.324 l 
+</path>
+<path layer="triangulation" stroke="black">
+331.291 673.324 m 
+360.151 676.624 l 
+</path>
+<path layer="triangulation" stroke="black">
+356.218 710.889 m 
+355.198 723.695 l 
+</path>
+<path layer="triangulation" stroke="black">
+355.198 723.695 m 
+350.715 722.597 l 
+</path>
+<path layer="triangulation" stroke="black">
+350.715 722.597 m 
+356.218 710.889 l 
+</path>
+<path layer="triangulation" stroke="black">
+388.492 739.618 m 
+359.125 732.284 l 
+</path>
+<path layer="triangulation" stroke="black">
+359.125 732.284 m 
+363.796 722.306 l 
+</path>
+<path layer="triangulation" stroke="black">
+363.796 722.306 m 
+388.492 739.618 l 
+</path>
+<path layer="triangulation" stroke="black">
+351.912 726.503 m 
+347.35 726.503 l 
+</path>
+<path layer="triangulation" stroke="black">
+347.35 726.503 m 
+350.715 722.597 l 
+</path>
+<path layer="triangulation" stroke="black">
+350.715 722.597 m 
+351.912 726.503 l 
+</path>
+<path layer="triangulation" stroke="black">
+339.907 714.621 m 
+350.715 722.597 l 
+</path>
+<path layer="triangulation" stroke="black">
+350.715 722.597 m 
+347.35 726.503 l 
+</path>
+<path layer="triangulation" stroke="black">
+347.35 726.503 m 
+339.907 714.621 l 
+</path>
+<path layer="triangulation" stroke="black">
+339.907 714.621 m 
+345.458 695.037 l 
+</path>
+<path layer="triangulation" stroke="black">
+345.458 695.037 m 
+356.218 710.889 l 
+</path>
+<path layer="triangulation" stroke="black">
+356.218 710.889 m 
+339.907 714.621 l 
+</path>
+<path layer="triangulation" stroke="black">
+358.423 752.599 m 
+359.125 732.284 l 
+</path>
+<path layer="triangulation" stroke="black">
+359.125 732.284 m 
+388.492 739.618 l 
+</path>
+<path layer="triangulation" stroke="black">
+388.492 739.618 m 
+358.423 752.599 l 
+</path>
+<path layer="triangulation" stroke="black">
+349.946 735.483 m 
+350.245 730.184 l 
+</path>
+<path layer="triangulation" stroke="black">
+350.245 730.184 m 
+359.125 732.284 l 
+</path>
+<path layer="triangulation" stroke="black">
+359.125 732.284 m 
+349.946 735.483 l 
+</path>
+<path layer="triangulation" stroke="black">
+384.689 783.661 m 
+359.635 832 l 
+</path>
+<path layer="triangulation" stroke="black">
+359.635 832 m 
+336.219 784.799 l 
+</path>
+<path layer="triangulation" stroke="black">
+336.219 784.799 m 
+384.689 783.661 l 
+</path>
+<path layer="triangulation" stroke="black">
+336.219 784.799 m 
+333.373 746.22 l 
+</path>
+<path layer="triangulation" stroke="black">
+333.373 746.22 m 
+358.423 752.599 l 
+</path>
+<path layer="triangulation" stroke="black">
+358.423 752.599 m 
+336.219 784.799 l 
+</path>
+<path layer="triangulation" stroke="black">
+358.423 752.599 m 
+384.689 783.661 l 
+</path>
+<path layer="triangulation" stroke="black">
+384.689 783.661 m 
+336.219 784.799 l 
+</path>
+<path layer="triangulation" stroke="black">
+336.219 784.799 m 
+358.423 752.599 l 
+</path>
+<path layer="triangulation" stroke="black">
+440.046 761.228 m 
+384.689 783.661 l 
+</path>
+<path layer="triangulation" stroke="black">
+384.689 783.661 m 
+388.492 739.618 l 
+</path>
+<path layer="triangulation" stroke="black">
+388.492 739.618 m 
+440.046 761.228 l 
+</path>
+<path layer="triangulation" stroke="black">
+428.422 832 m 
+359.635 832 l 
+</path>
+<path layer="triangulation" stroke="black">
+359.635 832 m 
+384.689 783.661 l 
+</path>
+<path layer="triangulation" stroke="black">
+384.689 783.661 m 
+428.422 832 l 
+</path>
+<path layer="triangulation" stroke="black">
+419.153 707.964 m 
+451.188 714.153 l 
+</path>
+<path layer="triangulation" stroke="black">
+451.188 714.153 m 
+440.046 761.228 l 
+</path>
+<path layer="triangulation" stroke="black">
+440.046 761.228 m 
+419.153 707.964 l 
+</path>
+<path layer="triangulation" stroke="black">
+388.492 739.618 m 
+363.796 722.306 l 
+</path>
+<path layer="triangulation" stroke="black">
+363.796 722.306 m 
+373.982 707.964 l 
+</path>
+<path layer="triangulation" stroke="black">
+373.982 707.964 m 
+388.492 739.618 l 
+</path>
+<path layer="triangulation" stroke="black">
+359.125 732.284 m 
+355.198 723.695 l 
+</path>
+<path layer="triangulation" stroke="black">
+355.198 723.695 m 
+363.796 722.306 l 
+</path>
+<path layer="triangulation" stroke="black">
+363.796 722.306 m 
+359.125 732.284 l 
+</path>
+<path layer="triangulation" stroke="black">
+440.046 761.228 m 
+451.188 714.153 l 
+</path>
+<path layer="triangulation" stroke="black">
+451.188 714.153 m 
+442.021 761.609 l 
+</path>
+<path layer="triangulation" stroke="black">
+442.021 761.609 m 
+440.046 761.228 l 
+</path>
+<path layer="triangulation" stroke="black">
+419.153 707.964 m 
+434.308 663.676 l 
+</path>
+<path layer="triangulation" stroke="black">
+434.308 663.676 m 
+451.188 714.153 l 
+</path>
+<path layer="triangulation" stroke="black">
+451.188 714.153 m 
+419.153 707.964 l 
+</path>
+<path layer="triangulation" stroke="black">
+434.308 663.676 m 
+460.715 644.988 l 
+</path>
+<path layer="triangulation" stroke="black">
+460.715 644.988 m 
+460.94 663.676 l 
+</path>
+<path layer="triangulation" stroke="black">
+460.94 663.676 m 
+434.308 663.676 l 
+</path>
+<path layer="triangulation" stroke="black">
+447.924 619.412 m 
+413.948 599.598 l 
+</path>
+<path layer="triangulation" stroke="black">
+413.948 599.598 m 
+459.749 564.61 l 
+</path>
+<path layer="triangulation" stroke="black">
+459.749 564.61 m 
+447.924 619.412 l 
+</path>
+<path layer="triangulation" stroke="black">
+373.982 707.964 m 
+394.84 677.201 l 
+</path>
+<path layer="triangulation" stroke="black">
+394.84 677.201 m 
+419.153 707.964 l 
+</path>
+<path layer="triangulation" stroke="black">
+419.153 707.964 m 
+373.982 707.964 l 
+</path>
+<path layer="triangulation" stroke="black">
+360.151 676.624 m 
+383.252 636.162 l 
+</path>
+<path layer="triangulation" stroke="black">
+383.252 636.162 m 
+394.84 677.201 l 
+</path>
+<path layer="triangulation" stroke="black">
+394.84 677.201 m 
+360.151 676.624 l 
+</path>
+<path layer="triangulation" stroke="black">
+364.599 695.906 m 
+356.218 710.889 l 
+</path>
+<path layer="triangulation" stroke="black">
+356.218 710.889 m 
+345.458 695.037 l 
+</path>
+<path layer="triangulation" stroke="black">
+345.458 695.037 m 
+364.599 695.906 l 
+</path>
+<path layer="triangulation" stroke="black">
+364.599 695.906 m 
+373.982 707.964 l 
+</path>
+<path layer="triangulation" stroke="black">
+373.982 707.964 m 
+356.218 710.889 l 
+</path>
+<path layer="triangulation" stroke="black">
+356.218 710.889 m 
+364.599 695.906 l 
+</path>
+<path layer="triangulation" stroke="black">
+344.055 650.002 m 
+359.444 608.391 l 
+</path>
+<path layer="triangulation" stroke="black">
+359.444 608.391 m 
+383.252 636.162 l 
+</path>
+<path layer="triangulation" stroke="black">
+383.252 636.162 m 
+344.055 650.002 l 
+</path>
+<path layer="triangulation" stroke="black">
+318.121 607.058 m 
+334.55 565.389 l 
+</path>
+<path layer="triangulation" stroke="black">
+334.55 565.389 m 
+359.444 608.391 l 
+</path>
+<path layer="triangulation" stroke="black">
+359.444 608.391 m 
+318.121 607.058 l 
+</path>
+<path layer="triangulation" stroke="black">
+347.35 530.665 m 
+385.6 497.73 l 
+</path>
+<path layer="triangulation" stroke="black">
+385.6 497.73 m 
+393.698 550.382 l 
+</path>
+<path layer="triangulation" stroke="black">
+393.698 550.382 m 
+347.35 530.665 l 
+</path>
+<path layer="triangulation" stroke="black">
+459.749 564.61 m 
+413.948 599.598 l 
+</path>
+<path layer="triangulation" stroke="black">
+413.948 599.598 m 
+409.788 559.071 l 
+</path>
+<path layer="triangulation" stroke="black">
+409.788 559.071 m 
+459.749 564.61 l 
+</path>
+<path layer="triangulation" stroke="black">
+458.712 478.329 m 
+429.383 506.075 l 
+</path>
+<path layer="triangulation" stroke="black">
+429.383 506.075 m 
+434.308 467.838 l 
+</path>
+<path layer="triangulation" stroke="black">
+434.308 467.838 m 
+458.712 478.329 l 
+</path>
+<path layer="triangulation" stroke="black">
+459.749 564.61 m 
+409.788 559.071 l 
+</path>
+<path layer="triangulation" stroke="black">
+409.788 559.071 m 
+429.383 506.075 l 
+</path>
+<path layer="triangulation" stroke="black">
+429.383 506.075 m 
+459.749 564.61 l 
+</path>
+<path layer="triangulation" stroke="black">
+460.715 644.988 m 
+423.861 645.431 l 
+</path>
+<path layer="triangulation" stroke="black">
+423.861 645.431 m 
+447.924 619.412 l 
+</path>
+<path layer="triangulation" stroke="black">
+447.924 619.412 m 
+460.715 644.988 l 
+</path>
+<path layer="triangulation" stroke="black">
+460.715 644.988 m 
+447.924 619.412 l 
+</path>
+<path layer="triangulation" stroke="black">
+447.924 619.412 m 
+460.406 619.262 l 
+</path>
+<path layer="triangulation" stroke="black">
+460.406 619.262 m 
+460.715 644.988 l 
+</path>
+<path layer="triangulation" stroke="black">
+423.861 645.431 m 
+413.948 599.598 l 
+</path>
+<path layer="triangulation" stroke="black">
+413.948 599.598 m 
+447.924 619.412 l 
+</path>
+<path layer="triangulation" stroke="black">
+447.924 619.412 m 
+423.861 645.431 l 
+</path>
+<path layer="triangulation" stroke="black">
+429.383 506.075 m 
+459.041 505.718 l 
+</path>
+<path layer="triangulation" stroke="black">
+459.041 505.718 m 
+459.749 564.61 l 
+</path>
+<path layer="triangulation" stroke="black">
+459.749 564.61 m 
+429.383 506.075 l 
+</path>
+<path layer="triangulation" stroke="black">
+429.383 506.075 m 
+458.712 478.329 l 
+</path>
+<path layer="triangulation" stroke="black">
+458.712 478.329 m 
+459.041 505.718 l 
+</path>
+<path layer="triangulation" stroke="black">
+459.041 505.718 m 
+429.383 506.075 l 
+</path>
+<path layer="triangulation" stroke="black">
+440.76 434.396 m 
+428.422 440.324 l 
+</path>
+<path layer="triangulation" stroke="black">
+428.422 440.324 m 
+424.182 419.172 l 
+</path>
+<path layer="triangulation" stroke="black">
+424.182 419.172 m 
+440.76 434.396 l 
+</path>
+<path layer="triangulation" stroke="black">
+458.712 478.329 m 
+434.308 467.838 l 
+</path>
+<path layer="triangulation" stroke="black">
+434.308 467.838 m 
+458.582 467.546 l 
+</path>
+<path layer="triangulation" stroke="black">
+458.582 467.546 m 
+458.712 478.329 l 
+</path>
+<path layer="triangulation" stroke="black">
+458.582 467.546 m 
+434.308 467.838 l 
+</path>
+<path layer="triangulation" stroke="black">
+434.308 467.838 m 
+440.778 449.907 l 
+</path>
+<path layer="triangulation" stroke="black">
+440.778 449.907 m 
+458.582 467.546 l 
+</path>
+<path layer="triangulation" stroke="black">
+458.175 433.699 m 
+458.25 439.965 l 
+</path>
+<path layer="triangulation" stroke="black">
+458.25 439.965 m 
+440.76 434.396 l 
+</path>
+<path layer="triangulation" stroke="black">
+440.76 434.396 m 
+458.175 433.699 l 
+</path>
+<path layer="triangulation" stroke="black">
+440.046 369.551 m 
+457.221 354.323 l 
+</path>
+<path layer="triangulation" stroke="black">
+457.221 354.323 m 
+457.401 369.343 l 
+</path>
+<path layer="triangulation" stroke="black">
+457.401 369.343 m 
+440.046 369.551 l 
+</path>
+<path layer="triangulation" stroke="black">
+438.869 354.543 m 
+456.231 272 l 
+</path>
+<path layer="triangulation" stroke="black">
+456.231 272 m 
+457.221 354.323 l 
+</path>
+<path layer="triangulation" stroke="black">
+457.221 354.323 m 
+438.869 354.543 l 
+</path>
+<path layer="triangulation" stroke="black">
+424.182 419.172 m 
+446.588 420.323 l 
+</path>
+<path layer="triangulation" stroke="black">
+446.588 420.323 m 
+440.76 434.396 l 
+</path>
+<path layer="triangulation" stroke="black">
+440.76 434.396 m 
+424.182 419.172 l 
+</path>
+<path layer="triangulation" stroke="black">
+440.76 434.396 m 
+458.25 439.965 l 
+</path>
+<path layer="triangulation" stroke="black">
+458.25 439.965 m 
+440.778 449.907 l 
+</path>
+<path layer="triangulation" stroke="black">
+440.778 449.907 m 
+440.76 434.396 l 
+</path>
+<path layer="triangulation" stroke="black">
+457.972 416.844 m 
+458.175 433.699 l 
+</path>
+<path layer="triangulation" stroke="black">
+458.175 433.699 m 
+446.588 420.323 l 
+</path>
+<path layer="triangulation" stroke="black">
+446.588 420.323 m 
+457.972 416.844 l 
+</path>
+<path layer="triangulation" stroke="black">
+416.799 467.838 m 
+385.6 497.73 l 
+</path>
+<path layer="triangulation" stroke="black">
+385.6 497.73 m 
+380.109 459.999 l 
+</path>
+<path layer="triangulation" stroke="black">
+380.109 459.999 m 
+416.799 467.838 l 
+</path>
+<path layer="triangulation" stroke="black">
+429.383 506.075 m 
+393.698 550.382 l 
+</path>
+<path layer="triangulation" stroke="black">
+393.698 550.382 m 
+385.6 497.73 l 
+</path>
+<path layer="triangulation" stroke="black">
+385.6 497.73 m 
+429.383 506.075 l 
+</path>
+<path layer="triangulation" stroke="black">
+458.582 467.546 m 
+440.778 449.907 l 
+</path>
+<path layer="triangulation" stroke="black">
+440.778 449.907 m 
+458.25 439.965 l 
+</path>
+<path layer="triangulation" stroke="black">
+458.25 439.965 m 
+458.582 467.546 l 
+</path>
+<path layer="triangulation" stroke="black">
+434.308 467.838 m 
+423.861 449.593 l 
+</path>
+<path layer="triangulation" stroke="black">
+423.861 449.593 m 
+440.778 449.907 l 
+</path>
+<path layer="triangulation" stroke="black">
+440.778 449.907 m 
+434.308 467.838 l 
+</path>
+<path layer="triangulation" stroke="black">
+313.803 512.126 m 
+292.602 481.452 l 
+</path>
+<path layer="triangulation" stroke="black">
+292.602 481.452 m 
+328.811 487.849 l 
+</path>
+<path layer="triangulation" stroke="black">
+328.811 487.849 m 
+313.803 512.126 l 
+</path>
+<path layer="triangulation" stroke="black">
+274.296 529.622 m 
+225.669 530.665 l 
+</path>
+<path layer="triangulation" stroke="black">
+225.669 530.665 m 
+247.733 488.919 l 
+</path>
+<path layer="triangulation" stroke="black">
+247.733 488.919 m 
+274.296 529.622 l 
+</path>
+<path layer="triangulation" stroke="black">
+261.67 427.835 m 
+247.733 488.919 l 
+</path>
+<path layer="triangulation" stroke="black">
+247.733 488.919 m 
+213.308 441.099 l 
+</path>
+<path layer="triangulation" stroke="black">
+213.308 441.099 m 
+261.67 427.835 l 
+</path>
+<path layer="triangulation" stroke="black">
+292.602 481.452 m 
+274.296 529.622 l 
+</path>
+<path layer="triangulation" stroke="black">
+274.296 529.622 m 
+247.733 488.919 l 
+</path>
+<path layer="triangulation" stroke="black">
+247.733 488.919 m 
+292.602 481.452 l 
+</path>
+<path layer="triangulation" stroke="black">
+351.912 334.827 m 
+345.597 346.148 l 
+</path>
+<path layer="triangulation" stroke="black">
+345.597 346.148 m 
+341.612 334.827 l 
+</path>
+<path layer="triangulation" stroke="black">
+341.612 334.827 m 
+351.912 334.827 l 
+</path>
+<path layer="triangulation" stroke="black">
+351.912 334.827 m 
+394.875 369.551 l 
+</path>
+<path layer="triangulation" stroke="black">
+394.875 369.551 m 
+345.597 346.148 l 
+</path>
+<path layer="triangulation" stroke="black">
+345.597 346.148 m 
+351.912 334.827 l 
+</path>
+<path layer="triangulation" stroke="black">
+332.61 416.045 m 
+261.67 427.835 l 
+</path>
+<path layer="triangulation" stroke="black">
+261.67 427.835 m 
+285.498 358.911 l 
+</path>
+<path layer="triangulation" stroke="black">
+285.498 358.911 m 
+332.61 416.045 l 
+</path>
+<path layer="triangulation" stroke="black">
+332.61 416.045 m 
+292.602 481.452 l 
+</path>
+<path layer="triangulation" stroke="black">
+292.602 481.452 m 
+261.67 427.835 l 
+</path>
+<path layer="triangulation" stroke="black">
+261.67 427.835 m 
+332.61 416.045 l 
+</path>
+<path layer="triangulation" stroke="black">
+380.109 459.999 m 
+411.515 448.748 l 
+</path>
+<path layer="triangulation" stroke="black">
+411.515 448.748 m 
+416.799 467.838 l 
+</path>
+<path layer="triangulation" stroke="black">
+416.799 467.838 m 
+380.109 459.999 l 
+</path>
+<path layer="triangulation" stroke="black">
+380.109 459.999 m 
+396.35 427.703 l 
+</path>
+<path layer="triangulation" stroke="black">
+396.35 427.703 m 
+411.515 448.748 l 
+</path>
+<path layer="triangulation" stroke="black">
+411.515 448.748 m 
+380.109 459.999 l 
+</path>
+<path layer="triangulation" stroke="black">
+394.875 369.551 m 
+424.182 419.172 l 
+</path>
+<path layer="triangulation" stroke="black">
+424.182 419.172 m 
+396.35 427.703 l 
+</path>
+<path layer="triangulation" stroke="black">
+396.35 427.703 m 
+394.875 369.551 l 
+</path>
+<path layer="triangulation" stroke="black">
+440.046 369.551 m 
+446.588 420.323 l 
+</path>
+<path layer="triangulation" stroke="black">
+446.588 420.323 m 
+424.182 419.172 l 
+</path>
+<path layer="triangulation" stroke="black">
+424.182 419.172 m 
+440.046 369.551 l 
+</path>
+<path layer="triangulation" stroke="black">
+458.175 433.699 m 
+440.76 434.396 l 
+</path>
+<path layer="triangulation" stroke="black">
+440.76 434.396 m 
+446.588 420.323 l 
+</path>
+<path layer="triangulation" stroke="black">
+446.588 420.323 m 
+458.175 433.699 l 
+</path>
+<path layer="triangulation" stroke="black">
+440.778 449.907 m 
+428.422 440.324 l 
+</path>
+<path layer="triangulation" stroke="black">
+428.422 440.324 m 
+440.76 434.396 l 
+</path>
+<path layer="triangulation" stroke="black">
+440.76 434.396 m 
+440.778 449.907 l 
+</path>
+<path layer="triangulation" stroke="black">
+333.408 272.082 m 
+333.414 281.315 l 
+</path>
+<path layer="triangulation" stroke="black">
+333.414 281.315 m 
+288.19 272.112 l 
+</path>
+<path layer="triangulation" stroke="black">
+288.19 272.112 m 
+333.408 272.082 l 
+</path>
+<path layer="triangulation" stroke="black">
+344.875 281.385 m 
+341.612 308.195 l 
+</path>
+<path layer="triangulation" stroke="black">
+341.612 308.195 m 
+333.414 281.315 l 
+</path>
+<path layer="triangulation" stroke="black">
+333.414 281.315 m 
+344.875 281.385 l 
+</path>
+<path layer="triangulation" stroke="black">
+288.19 272.112 m 
+306.454 310.239 l 
+</path>
+<path layer="triangulation" stroke="black">
+306.454 310.239 m 
+254.831 302.357 l 
+</path>
+<path layer="triangulation" stroke="black">
+254.831 302.357 m 
+288.19 272.112 l 
+</path>
+<path layer="triangulation" stroke="black">
+341.612 308.195 m 
+341.612 334.827 l 
+</path>
+<path layer="triangulation" stroke="black">
+341.612 334.827 m 
+306.454 310.239 l 
+</path>
+<path layer="triangulation" stroke="black">
+306.454 310.239 m 
+341.612 308.195 l 
+</path>
+<path layer="triangulation" stroke="black">
+234.939 304.664 m 
+240.622 314.793 l 
+</path>
+<path layer="triangulation" stroke="black">
+240.622 314.793 m 
+230.898 312.672 l 
+</path>
+<path layer="triangulation" stroke="black">
+230.898 312.672 m 
+234.939 304.664 l 
+</path>
+<path layer="triangulation" stroke="black">
+254.831 302.357 m 
+285.498 358.911 l 
+</path>
+<path layer="triangulation" stroke="black">
+285.498 358.911 m 
+240.622 314.793 l 
+</path>
+<path layer="triangulation" stroke="black">
+240.622 314.793 m 
+254.831 302.357 l 
+</path>
+<path layer="triangulation" stroke="black">
+230.898 312.672 m 
+232.895 323.708 l 
+</path>
+<path layer="triangulation" stroke="black">
+232.895 323.708 m 
+218.18 318.985 l 
+</path>
+<path layer="triangulation" stroke="black">
+218.18 318.985 m 
+230.898 312.672 l 
+</path>
+<path layer="triangulation" stroke="black">
+240.622 314.793 m 
+285.498 358.911 l 
+</path>
+<path layer="triangulation" stroke="black">
+285.498 358.911 m 
+232.895 323.708 l 
+</path>
+<path layer="triangulation" stroke="black">
+232.895 323.708 m 
+240.622 314.793 l 
+</path>
+<path layer="triangulation" stroke="black">
+288.19 272.112 m 
+254.831 302.357 l 
+</path>
+<path layer="triangulation" stroke="black">
+254.831 302.357 m 
+234.917 272.148 l 
+</path>
+<path layer="triangulation" stroke="black">
+234.917 272.148 m 
+288.19 272.112 l 
+</path>
+<path layer="triangulation" stroke="black">
+333.414 281.315 m 
+306.454 310.239 l 
+</path>
+<path layer="triangulation" stroke="black">
+306.454 310.239 m 
+288.19 272.112 l 
+</path>
+<path layer="triangulation" stroke="black">
+288.19 272.112 m 
+333.414 281.315 l 
+</path>
+<path layer="triangulation" stroke="black">
+342.273 272.076 m 
+333.414 281.315 l 
+</path>
+<path layer="triangulation" stroke="black">
+333.414 281.315 m 
+333.408 272.082 l 
+</path>
+<path layer="triangulation" stroke="black">
+333.408 272.082 m 
+342.273 272.076 l 
+</path>
+<path layer="triangulation" stroke="black">
+344.875 281.385 m 
+333.414 281.315 l 
+</path>
+<path layer="triangulation" stroke="black">
+333.414 281.315 m 
+342.273 272.076 l 
+</path>
+<path layer="triangulation" stroke="black">
+342.273 272.076 m 
+344.875 281.385 l 
+</path>
+<path layer="triangulation" stroke="black">
+364.752 281.112 m 
+360.137 272.064 l 
+</path>
+<path layer="triangulation" stroke="black">
+360.137 272.064 m 
+364.746 272.061 l 
+</path>
+<path layer="triangulation" stroke="black">
+364.746 272.061 m 
+364.752 281.112 l 
+</path>
+<path layer="triangulation" stroke="black">
+349.705 282.741 m 
+349.698 272.071 l 
+</path>
+<path layer="triangulation" stroke="black">
+349.698 272.071 m 
+360.137 272.064 l 
+</path>
+<path layer="triangulation" stroke="black">
+360.137 272.064 m 
+349.705 282.741 l 
+</path>
+<path layer="triangulation" stroke="black">
+349.705 282.741 m 
+344.875 281.385 l 
+</path>
+<path layer="triangulation" stroke="black">
+344.875 281.385 m 
+349.698 272.071 l 
+</path>
+<path layer="triangulation" stroke="black">
+349.698 272.071 m 
+349.705 282.741 l 
+</path>
+<path layer="triangulation" stroke="black">
+349.698 272.071 m 
+344.875 281.385 l 
+</path>
+<path layer="triangulation" stroke="black">
+344.875 281.385 m 
+342.273 272.076 l 
+</path>
+<path layer="triangulation" stroke="black">
+342.273 272.076 m 
+349.698 272.071 l 
+</path>
+<path layer="triangulation" stroke="black">
+349.705 282.741 m 
+341.612 308.195 l 
+</path>
+<path layer="triangulation" stroke="black">
+341.612 308.195 m 
+344.875 281.385 l 
+</path>
+<path layer="triangulation" stroke="black">
+344.875 281.385 m 
+349.705 282.741 l 
+</path>
+<path layer="triangulation" stroke="black">
+394.875 369.551 m 
+397.478 326.961 l 
+</path>
+<path layer="triangulation" stroke="black">
+397.478 326.961 m 
+438.869 354.543 l 
+</path>
+<path layer="triangulation" stroke="black">
+438.869 354.543 m 
+394.875 369.551 l 
+</path>
+<path layer="triangulation" stroke="black">
+394.875 369.551 m 
+351.912 334.827 l 
+</path>
+<path layer="triangulation" stroke="black">
+351.912 334.827 m 
+397.478 326.961 l 
+</path>
+<path layer="triangulation" stroke="black">
+397.478 326.961 m 
+394.875 369.551 l 
+</path>
+<path layer="triangulation" stroke="black">
+380.652 293.564 m 
+365.295 309.371 l 
+</path>
+<path layer="triangulation" stroke="black">
+365.295 309.371 m 
+360.151 294.218 l 
+</path>
+<path layer="triangulation" stroke="black">
+360.151 294.218 m 
+380.652 293.564 l 
+</path>
+<path layer="triangulation" stroke="black">
+397.478 326.961 m 
+351.912 334.827 l 
+</path>
+<path layer="triangulation" stroke="black">
+351.912 334.827 m 
+365.295 309.371 l 
+</path>
+<path layer="triangulation" stroke="black">
+365.295 309.371 m 
+397.478 326.961 l 
+</path>
+<path layer="triangulation" stroke="black">
+397.478 326.961 m 
+380.652 293.564 l 
+</path>
+<path layer="triangulation" stroke="black">
+380.652 293.564 m 
+456.231 272 l 
+</path>
+<path layer="triangulation" stroke="black">
+456.231 272 m 
+397.478 326.961 l 
+</path>
+<path layer="triangulation" stroke="black">
+397.478 326.961 m 
+365.295 309.371 l 
+</path>
+<path layer="triangulation" stroke="black">
+365.295 309.371 m 
+380.652 293.564 l 
+</path>
+<path layer="triangulation" stroke="black">
+380.652 293.564 m 
+397.478 326.961 l 
+</path>
+<path layer="triangulation" stroke="black">
+378.791 272.052 m 
+364.752 281.112 l 
+</path>
+<path layer="triangulation" stroke="black">
+364.752 281.112 m 
+364.746 272.061 l 
+</path>
+<path layer="triangulation" stroke="black">
+364.746 272.061 m 
+378.791 272.052 l 
+</path>
+<path layer="triangulation" stroke="black">
+380.652 293.564 m 
+360.151 294.218 l 
+</path>
+<path layer="triangulation" stroke="black">
+360.151 294.218 m 
+364.752 281.112 l 
+</path>
+<path layer="triangulation" stroke="black">
+364.752 281.112 m 
+380.652 293.564 l 
+</path>
+<path layer="triangulation" stroke="black">
+380.652 293.564 m 
+378.791 272.052 l 
+</path>
+<path layer="triangulation" stroke="black">
+378.791 272.052 m 
+456.231 272 l 
+</path>
+<path layer="triangulation" stroke="black">
+456.231 272 m 
+380.652 293.564 l 
+</path>
+<path layer="triangulation" stroke="black">
+380.652 293.564 m 
+364.752 281.112 l 
+</path>
+<path layer="triangulation" stroke="black">
+364.752 281.112 m 
+378.791 272.052 l 
+</path>
+<path layer="triangulation" stroke="black">
+378.791 272.052 m 
+380.652 293.564 l 
+</path>
+<path layer="hull" stroke="blue" pen="fat">
+16 272.294 m 
+456.231 272 l 
+</path>
+<path layer="hull" stroke="blue" pen="fat">
+456.231 272 m 
+460.94 663.676 l 
+</path>
+<path layer="hull" stroke="blue" pen="fat">
+460.94 663.676 m 
+428.422 832 l 
+</path>
+<path layer="hull" stroke="blue" pen="fat">
+428.422 832 m 
+36.8933 832 l 
+</path>
+<path layer="hull" stroke="blue" pen="fat">
+36.8933 832 m 
+16 272.294 l 
+</path>
+<use layer="points" name="mark/disk(sx)" pos="137.682 449.593" size="normal" stroke="black"/>
+<use layer="points" name="mark/disk(sx)" pos="47.34 550.382" size="normal" stroke="black"/>
+<use layer="points" name="mark/disk(sx)" pos="347.35 726.503" size="normal" stroke="black"/>
+<use layer="points" name="mark/disk(sx)" pos="109.873 282.741" size="normal" stroke="black"/>
+<use layer="points" name="mark/disk(sx)" pos="460.94 663.676" size="normal" stroke="black"/>
+<use layer="points" name="mark/disk(sx)" pos="207.13 304.664" size="normal" stroke="black"/>
+<use layer="points" name="mark/disk(sx)" pos="95.8949 294.218" size="normal" stroke="black"/>
+<use layer="points" name="mark/disk(sx)" pos="416.799 467.838" size="normal" stroke="black"/>
+<use layer="points" name="mark/disk(sx)" pos="383.252 636.162" size="normal" stroke="black"/>
+<use layer="points" name="mark/disk(sx)" pos="130.766 678.978" size="normal" stroke="black"/>
+<use layer="points" name="mark/disk(sx)" pos="84.4183 480.786" size="normal" stroke="black"/>
+<use layer="points" name="mark/disk(sx)" pos="360.151 676.624" size="normal" stroke="black"/>
+<use layer="points" name="mark/disk(sx)" pos="95.8949 490.056" size="normal" stroke="black"/>
+<use layer="points" name="mark/disk(sx)" pos="59.9937 663.676" size="normal" stroke="black"/>
+<use layer="points" name="mark/disk(sx)" pos="152.689 746.22" size="normal" stroke="black"/>
+<use layer="points" name="mark/disk(sx)" pos="187.414 636.162" size="normal" stroke="black"/>
+<use layer="points" name="mark/disk(sx)" pos="456.231 272" size="normal" stroke="black"/>
+<use layer="points" name="mark/disk(sx)" pos="153.867 761.228" size="normal" stroke="black"/>
+<use layer="points" name="mark/disk(sx)" pos="434.308 663.676" size="normal" stroke="black"/>
+<use layer="points" name="mark/disk(sx)" pos="393.698 550.382" size="normal" stroke="black"/>
+<use layer="points" name="mark/disk(sx)" pos="334.55 565.389" size="normal" stroke="black"/>
+<use layer="points" name="mark/disk(sx)" pos="438.869 354.543" size="normal" stroke="black"/>
+<use layer="points" name="mark/disk(sx)" pos="351.912 334.827" size="normal" stroke="black"/>
+<use layer="points" name="mark/disk(sx)" pos="349.705 282.741" size="normal" stroke="black"/>
+<use layer="points" name="mark/disk(sx)" pos="225.669 304.664" size="normal" stroke="black"/>
+<use layer="points" name="mark/disk(sx)" pos="341.612 334.827" size="normal" stroke="black"/>
+<use layer="points" name="mark/disk(sx)" pos="16 272.294" size="normal" stroke="black"/>
+<use layer="points" name="mark/disk(sx)" pos="216.399 726.503" size="normal" stroke="black"/>
+<use layer="points" name="mark/disk(sx)" pos="434.308 467.838" size="normal" stroke="black"/>
+<use layer="points" name="mark/disk(sx)" pos="234.939 304.664" size="normal" stroke="black"/>
+<use layer="points" name="mark/disk(sx)" pos="373.982 707.964" size="normal" stroke="black"/>
+<use layer="points" name="mark/disk(sx)" pos="428.422 440.324" size="normal" stroke="black"/>
+<use layer="points" name="mark/disk(sx)" pos="207.13 696.341" size="normal" stroke="black"/>
+<use layer="points" name="mark/disk(sx)" pos="289.379 761.228" size="normal" stroke="black"/>
+<use layer="points" name="mark/disk(sx)" pos="100.603 699.725" size="normal" stroke="black"/>
+<use layer="points" name="mark/disk(sx)" pos="106.342 308.195" size="normal" stroke="black"/>
+<use layer="points" name="mark/disk(sx)" pos="106.342 726.503" size="normal" stroke="black"/>
+<use layer="points" name="mark/disk(sx)" pos="207.13 500.502" size="normal" stroke="black"/>
+<use layer="points" name="mark/disk(sx)" pos="277.902 832" size="normal" stroke="black"/>
+<use layer="points" name="mark/disk(sx)" pos="333.373 746.22" size="normal" stroke="black"/>
+<use layer="points" name="mark/disk(sx)" pos="328.811 487.849" size="normal" stroke="black"/>
+<use layer="points" name="mark/disk(sx)" pos="48.3699 369.551" size="normal" stroke="black"/>
+<use layer="points" name="mark/disk(sx)" pos="423.861 449.593" size="normal" stroke="black"/>
+<use layer="points" name="mark/disk(sx)" pos="225.669 530.665" size="normal" stroke="black"/>
+<use layer="points" name="mark/disk(sx)" pos="225.669 696.341" size="normal" stroke="black"/>
+<use layer="points" name="mark/disk(sx)" pos="197.86 550.382" size="normal" stroke="black"/>
+<use layer="points" name="mark/disk(sx)" pos="360.151 294.218" size="normal" stroke="black"/>
+<use layer="points" name="mark/disk(sx)" pos="440.046 369.551" size="normal" stroke="black"/>
+<use layer="points" name="mark/disk(sx)" pos="178.144 707.964" size="normal" stroke="black"/>
+<use layer="points" name="mark/disk(sx)" pos="95.8949 685.894" size="normal" stroke="black"/>
+<use layer="points" name="mark/disk(sx)" pos="419.153 707.964" size="normal" stroke="black"/>
+<use layer="points" name="mark/disk(sx)" pos="106.342 699.872" size="normal" stroke="black"/>
+<use layer="points" name="mark/disk(sx)" pos="92.5108 354.543" size="normal" stroke="black"/>
+<use layer="points" name="mark/disk(sx)" pos="394.875 565.389" size="normal" stroke="black"/>
+<use layer="points" name="mark/disk(sx)" pos="106.342 749.751" size="normal" stroke="black"/>
+<use layer="points" name="mark/disk(sx)" pos="100.603 358.075" size="normal" stroke="black"/>
+<use layer="points" name="mark/disk(sx)" pos="341.612 308.195" size="normal" stroke="black"/>
+<use layer="points" name="mark/disk(sx)" pos="347.35 530.665" size="normal" stroke="black"/>
+<use layer="points" name="mark/disk(sx)" pos="132.973 316.288" size="normal" stroke="black"/>
+<use layer="points" name="mark/disk(sx)" pos="119.142 685.894" size="normal" stroke="black"/>
+<use layer="points" name="mark/disk(sx)" pos="428.422 832" size="normal" stroke="black"/>
+<use layer="points" name="mark/disk(sx)" pos="423.861 645.431" size="normal" stroke="black"/>
+<use layer="points" name="mark/disk(sx)" pos="216.399 358.075" size="normal" stroke="black"/>
+<use layer="points" name="mark/disk(sx)" pos="313.803 512.126" size="normal" stroke="black"/>
+<use layer="points" name="mark/disk(sx)" pos="323.073 636.162" size="normal" stroke="black"/>
+<use layer="points" name="mark/disk(sx)" pos="199.037 761.228" size="normal" stroke="black"/>
+<use layer="points" name="mark/disk(sx)" pos="261.57 681.333" size="normal" stroke="black"/>
+<use layer="points" name="mark/disk(sx)" pos="92.5108 746.22" size="normal" stroke="black"/>
+<use layer="points" name="mark/disk(sx)" pos="32.185 449.593" size="normal" stroke="black"/>
+<use layer="points" name="mark/disk(sx)" pos="100.603 282.741" size="normal" stroke="black"/>
+<use layer="points" name="mark/disk(sx)" pos="84.4183 676.624" size="normal" stroke="black"/>
+<use layer="points" name="mark/disk(sx)" pos="244.208 696.341" size="normal" stroke="black"/>
+<use layer="points" name="mark/disk(sx)" pos="100.603 334.827" size="normal" stroke="black"/>
+<use layer="points" name="mark/disk(sx)" pos="394.875 369.551" size="normal" stroke="black"/>
+<use layer="points" name="mark/disk(sx)" pos="440.046 761.228" size="normal" stroke="black"/>
+<use layer="points" name="mark/disk(sx)" pos="318.365 645.431" size="normal" stroke="black"/>
+<use layer="points" name="mark/disk(sx)" pos="234.939 726.503" size="normal" stroke="black"/>
+<use layer="points" name="mark/disk(sx)" pos="36.8933 832" size="normal" stroke="black"/>
+<use layer="points" name="mark/disk(sx)" pos="234.939 553.913" size="normal" stroke="black"/>
+<use layer="points" name="mark/disk(sx)" pos="351.912 726.503" size="normal" stroke="black"/>
+</page>
+</ipe>

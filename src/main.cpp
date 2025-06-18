@@ -474,7 +474,7 @@ int main(int argc, char **argv){
     //uniform_mesh(problem);
 
     std::vector<fs::directory_entry> entries;
-    for (const auto& entry : fs::directory_iterator("../instances/point-set-current")) {
+    for (const auto& entry : fs::directory_iterator("../instances/ortho")) {
         entries.push_back(entry);
     }
     std::sort(entries.begin(), entries.end(),
@@ -485,7 +485,7 @@ int main(int argc, char **argv){
 
     for (const auto& entry : entries) {
         if (entry.is_regular_file() && entry.path().extension() == ".json") {
-            Problem *problem = new Problem("../instances/point-set-current/" + entry.path().filename().string());
+            Problem *problem = new Problem("../instances/ortho/" + entry.path().filename().string());
 
             //Problem *problem = new Problem("../instances/point-set/point-set_10_13860916.instance.json");
             std::string name = problem->get_name();
@@ -506,12 +506,12 @@ int main(int argc, char **argv){
                 stats.set_time(total_seconds);
 
                 all_stats.push_back(stats);
-                write_to_csv_fully_non_obtuse("../results/fully_nonobtuse_simple_offcenter.csv", all_stats);
+                write_to_csv_fully_non_obtuse("../results/fully_nonobtuse_ortho_offcenter.csv", all_stats);
             //}
         }
     }
 
-    write_to_csv_fully_non_obtuse("../results/fully_nonobtuse_simple_offcenter.csv", all_stats);
+    write_to_csv_fully_non_obtuse("../results/fully_nonobtuse_ortho_offcenter.csv", all_stats);
 
     //print_current_time();
 

@@ -705,7 +705,7 @@ void find_minimum(Problem* problem, Eigen::MatrixXd& V, Eigen::MatrixXi& F, Eige
             return (T)INFINITY;
         }
 
-        return angle_cost_refined_sigmoid<T>(problem, a, b, c);
+        return angle_cost_equilateral<T>(problem, a, b, c);
     });
 
     // Add penalty term per constrained vertex

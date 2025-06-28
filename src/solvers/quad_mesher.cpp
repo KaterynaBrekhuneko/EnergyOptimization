@@ -24,6 +24,66 @@ typedef CGAL::Delaunay_mesher_2<CDT, Criteria> Mesher;
 typedef CDT::Face_handle Face_handle;
 typedef CDT::Edge Edge;
 
+typedef CGAL::Bbox_2 Bbox;
+
+void real_coord_to_ipe(Point p, Bbox box)
+{
+    auto scale = std::max(box.xmax() - box.xmin(), box.ymax() - box.ymin());
+
+    auto x = (p.x() - box.xmin())*560/scale + 16;
+    auto y = p.y()*560/scale + 272;
+
+    std::cout << GREEN << "x: " << x << " y: " << y << RESET << std::endl;
+}
+
+double shortest_edge_length(const std::vector<Polygon>& quads, Problem* problem) {
+    double min1 = std::numeric_limits<double>::infinity();
+    double min2 = std::numeric_limits<double>::infinity();
+    double min3 = std::numeric_limits<double>::infinity();
+
+    Segment edge1, edge2, edge3;
+
+    for (const auto& poly : quads) {
+        int n = poly.size();
+        for (int i = 0; i < n; ++i) {
+            const Point& p1 = poly[i];
+            const Point& p2 = poly[(i + 1) % n]; // wrap around
+            double len = std::sqrt(CGAL::to_double(CGAL::squared_distance(p1, p2)));
+
+            if (len < min1) {
+                min3 = min2; edge3 = edge2;
+                min2 = min1; edge2 = edge1;
+                min1 = len;  edge1 = Segment(p1, p2);
+            } else if (len < min2) {
+                min3 = min2; edge3 = edge2;
+                min2 = len;  edge2 = Segment(p1, p2);
+            } else if (len < min3) {
+                min3 = len;  edge3 = Segment(p1, p2);
+            }
+        }
+    }
+
+    Bbox bbox = problem->get_boundary().bbox();
+
+    // Print shortest edge
+    std::cout << GREEN << "Shortest edge:\n";
+    std::cout << "x: " << edge1[0].x() << " y: " << edge1[0].y() << "\n";
+    std::cout << "x: " << edge1[1].x() << " y: " << edge1[1].y() << RESET << std::endl;
+    real_coord_to_ipe(edge1[0], bbox);
+    real_coord_to_ipe(edge1[1], bbox);
+
+
+    // Print third shortest edge
+    std::cout << RED << "Third shortest edge:\n";
+    std::cout << "x: " << edge3[0].x() << " y: " << edge3[0].y() << "\n";
+    std::cout << "x: " << edge3[1].x() << " y: " << edge3[1].y() << RESET << std::endl;
+    real_coord_to_ipe(edge3[0], bbox);
+    real_coord_to_ipe(edge3[1], bbox);
+
+    return min3;
+}
+
+
 double get_sizing_quad(Problem* problem) {
     Polygon boundary = problem->get_boundary();
     auto bbox = boundary.bbox();
@@ -32,8 +92,169 @@ double get_sizing_quad(Problem* problem) {
     return max_size / 2;
 }
 
+int find_point_idx_medians(Point& p, std::vector<Point>& points, std::vector<Point>& steiner){
+    for(int i = 0; i<points.size(); i++){
+        if(p == points[i]){
+            return i;
+        }
+    }
+
+    for(int j = 0; j<steiner.size(); j++){
+        if(p == steiner[j]){
+            return j + points.size();
+        }
+    }
+
+    throw std::runtime_error("Point not found in points or steiner!");
+}
+
+double angle(const Point& prev, const Point& curr, const Point& next) {
+    Vector v1 = prev - curr;
+    Vector v2 = next - curr;
+    double dot = CGAL::to_double(v1 * v2);
+    double det = CGAL::to_double(v1.x() * v2.y() - v1.y() * v2.x());
+    return std::atan2(std::abs(det), dot) * 180.0 / CGAL_PI;
+}
+
+double average_angle_deviation(const std::vector<Polygon>& quads) {
+    double total_deviation = 0.0;
+    int total_angles = 0;
+
+    for (const auto& quad : quads) {
+        if (quad.size() != 4) continue; // skip non-quads
+
+        for (int i = 0; i < 4; ++i) {
+            const Point& prev = quad[(i + 3) % 4];
+            const Point& curr = quad[i];
+            const Point& next = quad[(i + 1) % 4];
+            double theta = angle(prev, curr, next);
+            total_deviation += std::abs(theta - 90.0);
+            ++total_angles;
+        }
+    }
+
+    return total_angles > 0 ? total_deviation / total_angles : 0.0;
+}
+
+double edge_length_quad(const Point& a, const Point& b) {
+    return std::sqrt(CGAL::to_double(CGAL::squared_distance(a, b)));
+}
+
+void compute_angles(const std::vector<Polygon>& quads, std::string path){
+    std::vector<double> all_angles;
+
+    for (const Polygon& quad : quads) {
+        if (quad.size() != 4) continue; // skip non-triangles
+
+        const Point& A = quad[0];
+        const Point& B = quad[1];
+        const Point& C = quad[2];
+        const Point& D = quad[3];
+
+        all_angles.push_back(angle(D, A, B));
+        all_angles.push_back(angle(A, B, C));
+        all_angles.push_back(angle(B, C, D));
+        all_angles.push_back(angle(C, D, A));
+    }
+
+    std::ofstream out(path);
+    out << "angle\n"; 
+    for (double angle : all_angles) {
+        out << angle << "\n";
+    }
+    out.close();
+}
+
+std::vector<double> compute_aspect_ratios(const std::vector<Polygon>& quads, std::string path) {
+    std::vector<double> aspect_ratios;
+
+    for (const auto& quad : quads) {
+        if (quad.size() != 4) continue; // skip invalid quads
+
+        std::vector<double> lengths;
+        for (int i = 0; i < 4; ++i) {
+            lengths.push_back(edge_length_quad(quad[i], quad[(i + 1) % 4]));
+        }
+
+        double min_len = *std::min_element(lengths.begin(), lengths.end());
+        double max_len = *std::max_element(lengths.begin(), lengths.end());
+
+        if (min_len > 0.0) {
+            aspect_ratios.push_back(max_len / min_len);
+        } else {
+            aspect_ratios.push_back(std::numeric_limits<double>::infinity()); // degenerate case
+        }
+    }
+
+    std::ofstream out(path);
+    out << "ratio\n"; 
+    for (double ratio : aspect_ratios) {
+        out << ratio << "\n";
+    }
+    out.close();
+
+    return aspect_ratios;
+}
+
+double average_ar(const std::vector<double>& ars) {
+    double sum = 0.0;
+    for (double ar : ars) sum += ar;
+    return ars.empty() ? 0.0 : sum / ars.size();
+}
+
+double max_ar(const std::vector<double>& ars) {
+    return ars.empty() ? 0.0 : *std::max_element(ars.begin(), ars.end());
+}
+
+std::tuple<Eigen::MatrixXd, Eigen::MatrixXi, Eigen::VectorXi, Eigen::MatrixXd>
+convert_quad_mesh_medians(Problem* problem, std::vector<Polygon>& quads){
+
+    auto points = problem->get_points(); 
+    auto steiner = problem->get_steiner(); 
+    auto boundary = problem->get_boundary();
+    auto constraints = problem->get_constraints();
+
+    // Convert all points to a vector
+    Eigen::MatrixXd V(points.size() + steiner.size(), 2);
+    for (size_t i = 0; i < points.size(); ++i) {
+        V(i, 0) = CGAL::to_double(points[i].x()); 
+        V(i, 1) = CGAL::to_double(points[i].y()); 
+    }
+    for (size_t i = points.size(); i < points.size() + steiner.size(); ++i) {
+        V(i, 0) = CGAL::to_double(steiner[i - points.size()].x()); 
+        V(i, 1) = CGAL::to_double(steiner[i - points.size()].y()); 
+    }
+
+    // Convert triangles into a matrix
+    Eigen::MatrixXi F(quads.size(), 4);
+    for (size_t i = 0; i < quads.size(); ++i) {
+        const Polygon& polygon = quads[i];
+
+        Point a = polygon.vertex(0);
+        Point b = polygon.vertex(1);
+        Point c = polygon.vertex(2);
+        Point d = polygon.vertex(3);
+
+        F(i, 0) = find_point_idx_medians(a, points, steiner);
+        F(i, 1) = find_point_idx_medians(b, points, steiner);
+        F(i, 2) = find_point_idx_medians(c, points, steiner);
+        F(i, 3) = find_point_idx_medians(d, points, steiner);
+    }
+
+    // Define barrier terms for the constraints
+    Eigen::VectorXi B(points.size());
+    Eigen::MatrixXd B_VAR(points.size(), 2);
+    for (size_t i = 0; i < points.size(); ++i) {
+        B_VAR(i, 0) = CGAL::to_double(points[i].x()); 
+        B_VAR(i, 1) = CGAL::to_double(points[i].y()); 
+        B(i) = i;
+    }
+    return {V, F, B, B_VAR};
+}
+
 std::vector<Polygon> generate_quads_medians(Problem* problem, CDT& cdt){
     std::vector<Polygon> quads;
+    std::set<Point> steiner_point_set;
 
     for ( Face_handle f : cdt.finite_face_handles()) {
         if (!problem->triangle_is_inside<CDT, Face_handle>(cdt, f)) continue;
@@ -79,6 +300,14 @@ std::vector<Polygon> generate_quads_medians(Problem* problem, CDT& cdt){
         quads.push_back(q1);
         quads.push_back(q2);
         quads.push_back(q3);
+
+        steiner_point_set.emplace(o);
+        steiner_point_set.emplace(p1);
+        steiner_point_set.emplace(p2);
+        steiner_point_set.emplace(p3);
+    }
+    for(auto steiner_point : steiner_point_set){
+        problem->add_steiner(steiner_point);
     }
     return quads;
 }
@@ -103,9 +332,33 @@ void build_quad_mesh_medians(Problem* problem){
     mesher.set_criteria(Criteria(0, max_size*2));
     mesher.refine_mesh();
 
+    problem->update_problem<CDT, Face_handle>(cdt, point_set);
+    std::cout << GREEN << "num steiner: " << problem->get_steiner().size() << RESET << std::endl;
     auto quads = generate_quads_medians(problem, cdt);
 
     to_IPE_quad("../solutions/ipe/QUAD-" + problem->get_name() + ".ipe", problem->get_points(), problem->get_constraints(), problem->get_boundary(), {}, quads);
+
+    //* Stats before
+    std::cout << RED << "Angle deviation before: " << average_angle_deviation(quads) << RESET << std::endl;
+    auto ars = compute_aspect_ratios(quads, "../results/aspect_ratios_quad_medians_initial_angles.csv");
+    std::cout << RED << "Average AR before = " << average_ar(ars) << RESET << std::endl;
+    std::cout << RED << "Max AR before = " << max_ar(ars) << RESET << std::endl;
+    compute_angles(quads, "../results/angles_quad_medians_initial_angles.csv");
+
+    auto [V, F, B, B_VAR] = convert_quad_mesh_medians(problem, quads);
+
+    auto optimized_quads = optimize_TinyAD_quad(problem, V, F, B, B_VAR);
+
+    std::cout << GREEN << "shortest edge length: " << shortest_edge_length(quads, problem) << std::endl;
+
+    //* Stats after
+    std::cout << RED << "Angle deviation after: " << average_angle_deviation(optimized_quads) << RESET << std::endl;
+    ars = compute_aspect_ratios(optimized_quads, "../results/aspect_ratios_quad_medians_optimized_angles.csv");
+    std::cout << RED << "Average AR after = " << average_ar(ars) << RESET << std::endl;
+    std::cout << RED << "Max AR after = " << max_ar(ars) << RESET << std::endl;
+    compute_angles(optimized_quads, "../results/angles_quad_medians_optimized_angles.csv");
+
+    to_IPE_quad("../solutions/ipe/QUAD-" + problem->get_name() + ".ipe", problem->get_points(), problem->get_constraints(), problem->get_boundary(), {}, optimized_quads);
 }
 
 // GMSH Quad mesh---------------------------------------------------------------------------------------------
@@ -171,6 +424,36 @@ std::tuple<Point, int> calculate_additional_point(Problem* problem){
     Line line(a, b);
     Point projected_point = line.projection(c);
     return {projected_point, i};
+}
+
+std::vector<int> get_ccw_sorted_values(const std::map<Point, int>& point_map) {
+    std::vector<std::pair<Point, int>> entries(point_map.begin(), point_map.end());
+
+    // Step 1: Compute centroid
+    double cx = 0.0, cy = 0.0;
+    for (const auto& [p, _] : entries) {
+        cx += CGAL::to_double(p.x());
+        cy += CGAL::to_double(p.y());
+    }
+    cx /= entries.size();
+    cy /= entries.size();
+    Point centroid(cx, cy);
+
+    // Step 2: Sort by angle relative to centroid
+    std::sort(entries.begin(), entries.end(),
+        [&centroid](const std::pair<Point, int>& a, const std::pair<Point, int>& b) {
+            double angle_a = std::atan2(CGAL::to_double(a.first.y() - centroid.y()), CGAL::to_double(a.first.x() - centroid.x()));
+            double angle_b = std::atan2(CGAL::to_double(b.first.y() - centroid.y()), CGAL::to_double(b.first.x() - centroid.x()));
+            return angle_a < angle_b;
+        });
+
+    // Step 3: Extract values in sorted order
+    std::vector<int> sorted_values;
+    for (const auto& [_, val] : entries) {
+        sorted_values.push_back(val);
+    }
+
+    return sorted_values;
 }
 
 std::tuple<std::vector<Polygon>, Eigen::MatrixXd, Eigen::MatrixXi, Eigen::VectorXi, Eigen::MatrixXd>
@@ -243,6 +526,29 @@ convert_quad_mesh(Problem* problem){
                     //std::cout << "Face:\n";
 
                     Polygon q;
+                    int nodeId0 = nodeListFlat[j + 0];
+                    int nodeId1 = nodeListFlat[j + 1];
+                    int nodeId2 = nodeListFlat[j + 2];
+                    int nodeId3 = nodeListFlat[j + 3];
+                    const auto &xyz0 = nodeIdToCoord[nodeId0];
+                    const auto &xyz1 = nodeIdToCoord[nodeId1];
+                    const auto &xyz2 = nodeIdToCoord[nodeId2];
+                    const auto &xyz3 = nodeIdToCoord[nodeId3];
+
+                    std::map<Point, int> current_quad;
+                    current_quad[Point(xyz0[0], xyz0[1])] = nodeId0;
+                    current_quad[Point(xyz1[0], xyz1[1])] = nodeId1;
+                    current_quad[Point(xyz2[0], xyz2[1])] = nodeId2;
+                    current_quad[Point(xyz3[0], xyz3[1])] = nodeId3;
+
+                    std::vector<int> ccw = get_ccw_sorted_values(current_quad);
+                    //std::cout << RED << numNodesPerElem << RESET << std::endl;
+                    F(j/4, 0) = ccw[0] - 1;
+                    F(j/4, 1) = ccw[1] - 1;
+                    F(j/4, 2) = ccw[2] - 1;
+                    F(j/4, 3) = ccw[3] - 1;
+
+
                     for (int k = 0; k < numNodesPerElem; ++k) {
                         std::size_t nodeId = nodeListFlat[j + k];
                         const auto &xyz = nodeIdToCoord[nodeId];
@@ -254,6 +560,9 @@ convert_quad_mesh(Problem* problem){
                         //std::cout << "  j: " << j << " k: " << k << std::endl;
                         //F(j/4,k) = nodeId - 1;
                     }
+
+                    Point q0 = q[0];
+                    
                     quads.push_back(q);
                 }
             }
@@ -291,12 +600,12 @@ void build_quad_mesh_gmsh(Problem* problem){
         }
 
         // Add additional point to make the num of triangles in the triangle mesh even
-        auto [c, index] = calculate_additional_point(problem);
+        //auto [c, index] = calculate_additional_point(problem);
         //std::cout << RED << "final point: " << c.x() << " " << c.y() << RESET << std::endl;
-        int p = gmsh::model::geo::addPoint(CGAL::to_double(c.x()), CGAL::to_double(c.y()), 0, lc);
+        //int p = gmsh::model::geo::addPoint(CGAL::to_double(c.x()), CGAL::to_double(c.y()), 0, lc);
         //boundary_indices.push_back(p-1);
-        boundary_indices.insert(boundary_indices.begin() + index + 1, p-1);
-        problem->add_steiner(c);
+        //boundary_indices.insert(boundary_indices.begin() + index + 1, p-1);
+        //problem->add_steiner(c);
 
         //to_IPE_quad("../solutions/ipe/OPTIMIZED_QUAD-" + problem->get_name() + ".ipe", problem->get_points(), problem->get_constraints(), problem->get_boundary(), problem->get_steiner(), {});
 
@@ -314,7 +623,7 @@ void build_quad_mesh_gmsh(Problem* problem){
 
         gmsh::model::geo::synchronize();
 
-        // Embed input points into the mesh
+        // embed input points into the mesh
         for(int i = 0; i < points.size(); ++i){
             gmsh::model::mesh::embed(0, {i+1}, 2, pl);
         }
@@ -335,7 +644,7 @@ void build_quad_mesh_gmsh(Problem* problem){
         gmsh::option::setNumber("Mesh.OptimizeNetgen", 0);
         gmsh::option::setNumber("Mesh.Smoothing", 0);
 
-        gmsh::option::setNumber("Mesh.RecombinationAlgorithm", 1);
+        gmsh::option::setNumber("Mesh.RecombinationAlgorithm", 2);
         gmsh::model::mesh::setRecombine(2, pl);
 
         gmsh::model::mesh::generate(2);
@@ -345,14 +654,28 @@ void build_quad_mesh_gmsh(Problem* problem){
         
         auto [quads, V, F, B, B_VAR] = convert_quad_mesh(problem);
 
-        //std::cout << "\nF\n" << F << std::endl;
-        //std::cout << "\nnum quads: " << quads.size() << " num rows in F: " << F.rows() << std::endl;
+        //* Stats before
+        std::cout << RED << "Angle deviation before: " << average_angle_deviation(quads) << RESET << std::endl;
+        auto ars = compute_aspect_ratios(quads, "../results/aspect_ratios_quad_blossom_initial_2.csv");
+        std::cout << RED << "Average AR before = " << average_ar(ars) << RESET << std::endl;
+        std::cout << RED << "Max AR before = " << max_ar(ars) << RESET << std::endl;
+        compute_angles(quads, "../results/angles_quad_blossom_initial_2.csv");
 
-        //to_IPE_quad("../solutions/ipe/QUAD-" + problem->get_name() + ".ipe", problem->get_points(), problem->get_constraints(), problem->get_boundary(), {}, quads);
-        to_SVG_quad("../quad_meshes/QUAD-" + problem->get_name() + ".svg", problem->get_points(), problem->get_constraints(), problem->get_boundary(), {}, quads);
+        to_IPE_quad("../solutions/ipe/QUAD-" + problem->get_name() + ".ipe", problem->get_points(), problem->get_constraints(), problem->get_boundary(), {}, quads);
+        //to_SVG_quad("../quad_meshes/QUAD-" + problem->get_name() + ".svg", problem->get_points(), problem->get_constraints(), problem->get_boundary(), {}, quads);
 
-        //auto optimized_quads = optimize_TinyAD_quad(problem, V, F, B, B_VAR);
-        //to_IPE_quad("../solutions/ipe/OPTIMIZED_QUAD-" + problem->get_name() + ".ipe", problem->get_points(), problem->get_constraints(), problem->get_boundary(), {}, optimized_quads);
+        auto optimized_quads = optimize_TinyAD_quad(problem, V, F, B, B_VAR);
+
+        std::cout << GREEN << shortest_edge_length(optimized_quads, problem) << RESET << std::endl;
+
+        //* Stats after
+        std::cout << RED << "Angle deviation after: " << average_angle_deviation(optimized_quads) << RESET << std::endl;
+        ars = compute_aspect_ratios(optimized_quads, "../results/aspect_ratios_quad_blossom_optimized_angles_2.csv");
+        std::cout << RED << "Average AR after = " << average_ar(ars) << RESET << std::endl;
+        std::cout << RED << "Max AR after = " << max_ar(ars) << RESET << std::endl;
+        compute_angles(optimized_quads, "../results/angles_quad_blossom_optimized_angles_2.csv");
+
+        to_IPE_quad("../solutions/ipe/OPTIMIZED_QUAD-" + problem->get_name() + ".ipe", problem->get_points(), problem->get_constraints(), problem->get_boundary(), {}, optimized_quads);
     } catch (const std::exception &e) {
         std::cerr << GREEN << "Could not mesh instance " << problem->get_name() << RESET << std::endl;
     }

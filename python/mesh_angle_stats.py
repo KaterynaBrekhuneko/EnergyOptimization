@@ -56,7 +56,7 @@ bin_centers4 = (bin_edges4[:-1] + bin_edges4[1:]) / 2"""
 
 # Plot as line chart
 plt.figure(figsize=(10, 6))
-plt.plot(bin_centers1, hist1, linestyle='-', linewidth=1.5, color='blue', label=r'$\mathbf{Delaunay\ Refinement}$' + f'\nangles in [{min_angle1:.2f}°, {max_angle1:.2f}°]')
+plt.plot(bin_centers1, hist1, linestyle='-', linewidth=1.5, color='blue', label=r'$\mathbf{Terminator\ Algorithm}$' + f'\nangles in [{min_angle1:.2f}°, {max_angle1:.2f}°]')
 plt.plot(bin_centers2, hist2, linestyle='-', linewidth=1.5, color='#fc03b1', label=r'$\mathbf{Batch\ Delaunay\ +\ Lloyd}$' + f'\n angles in [{min_angle2:.2f}°, {max_angle2:.2f}°]')
 plt.plot(bin_centers3, hist3, linestyle='-', linewidth=1.5, color='green', label=r'$\mathbf{Batch\ Delaunay\ +\ g_2}$' + f'\n angles in [{min_angle3:.2f}°, {max_angle3:.2f}°]')
 #plt.plot(bin_centers4, hist4, linestyle='-', linewidth=1.5, color='orange', label=r'$\mathbf{Quadratic\ with\ inverse\ penalty}$' + f'\n angles in [{min_angle4:.2f}°, {max_angle4:.2f}°]')

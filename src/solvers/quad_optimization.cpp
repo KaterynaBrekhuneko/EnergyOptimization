@@ -56,7 +56,6 @@ T angle_cost_sigmoid_quad( Problem* problem,
     return sigmoid_a + sigmoid_b + sigmoid_c + sigmoid_d;
 }
 
-// Energy function: 1 / (1 + exp(-k(x - π/2)))
 template <typename T>
 T angle_cost_symmetric_quad( Problem* problem,
         const Eigen::Vector2<T>& a,
@@ -64,34 +63,24 @@ T angle_cost_symmetric_quad( Problem* problem,
         const Eigen::Vector2<T>& c,
         const Eigen::Vector2<T>& d)
 {
-    double k = 1;
 
-    // Compute all three normalized triangle edge vectors
+    // Compute all four normalized quad edge vectors
     Eigen::Vector2<T> ab = (b - a).normalized();
     Eigen::Vector2<T> bc = (c - b).normalized();
     Eigen::Vector2<T> cd = (d - c).normalized();
     Eigen::Vector2<T> da = (a - d).normalized();
 
-    // Compute cosine of all 3 angles (unsigned)
-    T cos_angle_a = (-da).dot(ab);
-    T cos_angle_b = (-ab).dot(bc);
-    T cos_angle_c = (-bc).dot(cd);
-    T cos_angle_d = (-cd).dot(da);
+    // Compute cosine of all 4 angles (unsigned)
+    T cos_angle_a = (d - a).normalized().dot((b - a).normalized());
+    T cos_angle_b = (a - b).normalized().dot((c - b).normalized());
+    T cos_angle_c = (b - c).normalized().dot((d - c).normalized());
+    T cos_angle_d = (c - d).normalized().dot((a - d).normalized());
    
-    if(abs(cos_angle_a) >= 1){
-        std::cout << "Cos out of range for Point a: " << a[0] << " " << a[1] << std::endl;
-    }
-    if(abs(cos_angle_b) >= 1){
-        std::cout << "Cos out of range for Point b: " << b[0] << " " << b[1] << std::endl;
-    }
-    if(abs(cos_angle_c) >= 1){
-        std::cout << "Cos out of range for Point c: " << c[0] << " " << c[1] << std::endl;
-    }
-    if(abs(cos_angle_d) >= 1){
-        std::cout << "Cos out of range for Point c: " << c[0] << " " << c[1] << std::endl;
+    if(abs(cos_angle_a) >= 1 || abs(cos_angle_b) >= 1 || abs(cos_angle_c) >= 1 || abs(cos_angle_d) >= 1){
+        std::cout << "Cos out of range!" << std::endl;
+        return (T)INFINITY;
     }
         
-    // Calculate and return the sigmoid term
     T angle_a = acos(cos_angle_a);
     T angle_b = acos(cos_angle_b);
     T angle_c = acos(cos_angle_c);
@@ -106,11 +95,54 @@ T angle_cost_symmetric_quad( Problem* problem,
 
     /*T diag_ac = (c - a).norm();
     T diag_bd = (d - b).norm();
-    T length_energy = pow(diag_ac - diag_bd, 2);*/
+    T diag_energy = pow(diag_ac - diag_bd, 2);*/
 
-    T length_energy = (ab.norm() - cd.norm())*(ab.norm() - cd.norm()) + (bc.norm() - da.norm())*(bc.norm() - da.norm()) + (ab.norm() - cd.norm())*(bc.norm() - da.norm());
+    T l1 = (b - a).norm();
+    T l2 = (c - b).norm();
+    T l3 = (d - c).norm();
+    T l4 = (a - d).norm();
+    T avg_len = (l1 + l2 + l3 + l4) / 4;
 
-    return length_energy + angle_energy;
+    //T length_energy = ((b - a).norm() - (d - c).norm())*((b - a).norm() - (d - c).norm()) + ((c - b).norm() - (a - d).norm())*((c - b).norm() - (a - d).norm()) + ((b - a).norm() - (c - b).norm())*((b - a).norm() - (c - b).norm()) + ((d - c).norm() - (a - d).norm())*((d - c).norm() - (a - d).norm());
+    T length_energy = ((l1 - l3)*(l1 - l3) + (l2 - l4)*(l2 - l4) + (l1 - l2)*(l1 - l2) + (l3 - l4)*(l3 - l4)) / (avg_len * avg_len + T(1e-6));
+
+    T min_length = 20;
+    /*T edge_penalty = 0.0;
+    edge_penalty += std::max(min_length - (b - a).norm(), T(0));
+    edge_penalty += std::max(min_length - (c - b).norm(), T(0));
+    edge_penalty += std::max(min_length - (d - c).norm(), T(0));
+    edge_penalty += std::max(min_length - (a - d).norm(), T(0));
+    edge_penalty = edge_penalty * edge_penalty;*/
+
+    /*if(min_length - (b - a).norm() > 0 || min_length - (c - b).norm() > 0 || min_length - (d - c).norm() > 0 ||  min_length - (a - d).norm() > 0){
+        return (T)INFINITY; 
+    }*/
+
+    return angle_energy;
+}
+
+template<typename T>
+std::vector<Eigen::Vector2<T>> sort_clockwise(
+    const Eigen::Vector2<T>& a,
+    const Eigen::Vector2<T>& b,
+    const Eigen::Vector2<T>& c,
+    const Eigen::Vector2<T>& d)
+{
+    using Vec = Eigen::Vector2<T>;
+    std::vector<Vec> pts = {a, b, c, d};
+
+    // Compute centroid
+    Vec centroid = (a + b + c + d) / T(4);
+
+    // Define angle comparator (clockwise from positive x-axis)
+    auto angle_cmp = [&centroid](const Vec& p1, const Vec& p2) {
+        T angle1 = atan2(p1.y() - centroid.y(), p1.x() - centroid.x());
+        T angle2 = atan2(p2.y() - centroid.y(), p2.x() - centroid.x());
+        return angle1 < angle2;  // CLOCKWISE
+    };
+
+    std::sort(pts.begin(), pts.end(), angle_cmp);
+    return pts;
 }
 
 bool is_on_constraint_quad(Point& steiner, std::vector<Segment>& constraints, Segment* constraint){
@@ -155,6 +187,27 @@ std::tuple<std::vector<Point>, std::vector<int>, std::vector<Segment>> get_const
         }
     }
     return {constrained_points, constrained_indices, constraints_of_points};
+}
+
+std::vector<Polygon> optimize_TinyAD_quad_medians(Problem* problem, Eigen::MatrixXd V, Eigen::MatrixXi F, Eigen::VectorXi B, Eigen::MatrixXd B_VAR){
+    auto points = problem->get_points(); 
+    auto steiner = problem->get_steiner(); 
+    auto boundary = problem->get_boundary();
+    auto constraints = problem->get_constraints();
+
+    auto [constrained_points, constrained_indices, constraints_of_points] = get_constrained_points_quad(steiner, boundary, constraints);
+    Eigen::VectorXi BS(constrained_points.size());
+    Eigen::MatrixXd BS_VAR(constrained_points.size(), 2);
+    for (size_t i = 0; i < constrained_points.size(); ++i) {
+        BS_VAR(i, 0) = CGAL::to_double(constrained_points[i].x()); 
+        BS_VAR(i, 1) = CGAL::to_double(constrained_points[i].y());
+        BS(i) = constrained_indices[i] + points.size() + 1; 
+    }
+
+    find_minimum_quad(problem, V, F, B, B_VAR, BS, BS_VAR);
+    std::vector<Polygon> quads = update_problem_quad(problem, V, F);
+
+    return quads;
 }
 
 std::vector<Polygon> optimize_TinyAD_quad(Problem* problem, Eigen::MatrixXd V, Eigen::MatrixXi F, Eigen::VectorXi B, Eigen::MatrixXd B_VAR){
@@ -213,19 +266,50 @@ void find_minimum_quad(Problem* problem, Eigen::MatrixXd& V, Eigen::MatrixXi& F,
         Eigen::Vector2<T> c = element.variables(F(f_idx, 2));
         Eigen::Vector2<T> d = element.variables(F(f_idx, 3));
 
-        // Triangle flipped?
-        /*Eigen::Matrix2<T> M = TinyAD::col_mat(b - a, c - a);
-        if (M.determinant() <= 0.0){ 
-            //std::cout << F.row(f_idx) << std::endl;
-            //std::cout << a << " | " << b << " | " << c << "\n" << std::endl;
-            return (T)INFINITY;
-        }*/
+        /*std::cout << "a: " << a << std::endl;
+        std::cout << "b: " << b << std::endl;
+        std::cout << "c: " << c << std::endl;
+        std::cout << "d: " << d << std::endl;*/
 
-        Eigen::Matrix2<T> M1 = TinyAD::col_mat(b - a, c - a);
+        /*std::vector<Eigen::Vector2<T>> sorted_points = sort_clockwise<T>(a, b, c, d);
+        a = sorted_points[0];
+        b = sorted_points[1];
+        c = sorted_points[2];
+        d = sorted_points[3];*/
+
+        /*std::cout << "a: " << a << std::endl;
+        std::cout << "b: " << b << std::endl;
+        std::cout << "c: " << c << std::endl;
+        std::cout << "d: " << d << std::endl;*/
+
+        /*Eigen::Matrix2<T> M1 = TinyAD::col_mat(b - a, c - a);
         Eigen::Matrix2<T> M2 = TinyAD::col_mat(c - a, d - a);
         if (M1.determinant() <= 0.0 || M2.determinant() <= 0.0){
             return (T)INFINITY;
-        }
+        }*/
+        /*Eigen::Matrix2<T> M3 = TinyAD::col_mat(c - b, d - b);
+        Eigen::Matrix2<T> M4 = TinyAD::col_mat(d - b, a - b);
+        if (M3.determinant() <= 0.0 || M4.determinant() <= 0.0){
+            return (T)INFINITY;
+        }*/
+
+        auto cross = [](const Eigen::Vector2<T>& u, const Eigen::Vector2<T>& v) {
+        return u.x() * v.y() - u.y() * v.x();
+        };
+
+        auto ab = b - a;
+        auto bc = c - b;
+        auto cd = d - c;
+        auto da = a - d;
+
+        T z1 = cross(ab, bc); // at b
+        T z2 = cross(bc, cd); // at c
+        T z3 = cross(cd, da); // at d
+        T z4 = cross(da, ab); // at a
+
+        bool all_ccw = (z1 > 0 && z2 > 0 && z3 > 0 && z4 > 0);
+
+        if (!all_ccw) return (T)INFINITY;
 
         return angle_cost_symmetric_quad<T>(problem, a, b, c, d);
     });
@@ -259,7 +343,7 @@ void find_minimum_quad(Problem* problem, Eigen::MatrixXd& V, Eigen::MatrixXi& F,
 
     // Projected Newton
     TinyAD::LinearSolver solver;
-    const int max_iters = 10;
+    const int max_iters = 100;
     const double convergence_eps = 1e-6;
     for (int iter = 0; iter < max_iters; ++iter)
     {

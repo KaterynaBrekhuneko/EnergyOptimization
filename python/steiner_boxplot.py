@@ -20,7 +20,7 @@ data = [
     df_merged["Batch Refinement + Lloyd"],
     df_merged["Batch Refinement + "+r"$g_2$"]
 ]
-labels = ["Delaunay Refinement", "Batch Refinement + Lloyd", "Batch Refinement + $g_2$"]
+labels = ["Terminator Algorithm", "Batch Refinement + Lloyd", "Batch Refinement + $g_2$"]
 
 # Plot
 fig, ax = plt.subplots()

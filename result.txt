@@ -1,25 +1,255 @@
 Instances:
 
+
+ortho_10_d2723dcc
+Quadrilateral 4: 343
+
+ortho_10_d2723dcc
+Triangle 3: 1
+Quadrilateral 4: 338
+
+ortho_10_d2723dcc
+Quadrilateral 4: 461
+
+ortho_10_d2723dcc
+Quadrilateral 4: 465
+
+ortho_10_d2723dcc
+Quadrilateral 4: 461
+
+ortho_10_d2723dcc
+Quadrilateral 4: 465
+
+ortho_10_d2723dcc
+Quadrilateral 4: 465
+
+ortho_10_d2723dcc
+Quadrilateral 4: 465
+
+ortho_10_d2723dcc
+Quadrilateral 4: 465
+
+ortho_10_d2723dcc
+Quadrilateral 4: 465
+
+ortho_10_d2723dcc
+Quadrilateral 4: 465
+
+ortho_10_d2723dcc
+Quadrilateral 4: 465
+
+ortho_10_d2723dcc
+Quadrilateral 4: 465
+
+ortho_10_d2723dcc
+Quadrilateral 4: 465
+
+ortho_10_d2723dcc
+Quadrilateral 4: 465
+
+ortho_10_d2723dcc
+Quadrilateral 4: 465
+
+ortho_10_d2723dcc
+Quadrilateral 4: 465
+
+ortho_10_d2723dcc
+Quadrilateral 4: 465
+
+ortho_10_d2723dcc
+Quadrilateral 4: 465
+
+ortho_10_d2723dcc
+Quadrilateral 4: 465
+
+ortho_10_d2723dcc
+Quadrilateral 4: 465
+
+ortho_10_d2723dcc
+Quadrilateral 4: 465
+
+ortho_10_d2723dcc
+Quadrilateral 4: 465
+
+ortho_10_d2723dcc
+Quadrilateral 4: 465
+
+ortho_10_d2723dcc
+Quadrilateral 4: 465
+
+ortho_10_d2723dcc
+Quadrilateral 4: 465
+
+ortho_10_d2723dcc
+Quadrilateral 4: 465
+
+ortho_10_d2723dcc
+Quadrilateral 4: 465
+
+ortho_10_d2723dcc
+Quadrilateral 4: 465
+
+ortho_10_d2723dcc
+Quadrilateral 4: 465
+
+ortho_10_d2723dcc
+Quadrilateral 4: 465
+
+ortho_10_d2723dcc
+Quadrilateral 4: 465
+
+ortho_10_d2723dcc
+Quadrilateral 4: 465
+
+ortho_10_d2723dcc
+Quadrilateral 4: 465
+
+ortho_10_d2723dcc
+Quadrilateral 4: 465
+
+ortho_10_d2723dcc
+Quadrilateral 4: 465
+
+ortho_10_d2723dcc
+Quadrilateral 4: 465
+
+ortho_10_d2723dcc
+Quadrilateral 4: 465
+
+ortho_10_d2723dcc
+Quadrilateral 4: 465
+
+ortho_10_d2723dcc
+Quadrilateral 4: 465
+
+ortho_10_d2723dcc
+Quadrilateral 4: 465
+
+ortho_10_d2723dcc
+Quadrilateral 4: 465
+
+ortho_10_d2723dcc
+Quadrilateral 4: 465
+
+ortho_10_d2723dcc
+Quadrilateral 4: 465
+
+ortho_10_d2723dcc
+Quadrilateral 4: 465
+
+ortho_10_d2723dcc
+Quadrilateral 4: 465
+
+ortho_10_d2723dcc
+Quadrilateral 4: 465
+
+ortho_10_d2723dcc
+Quadrilateral 4: 465
+
+ortho_10_d2723dcc
+Quadrilateral 4: 465
+
+ortho_10_d2723dcc
+Quadrilateral 4: 465
+
+ortho_10_d2723dcc
+Quadrilateral 4: 465
+
+ortho_10_d2723dcc
+Quadrilateral 4: 465
+
+ortho_10_d2723dcc
+Quadrilateral 4: 465
+
+ortho_10_d2723dcc
+Quadrilateral 4: 465
+
+ortho_10_d2723dcc
+Quadrilateral 4: 465
+
+ortho_10_d2723dcc
+Quadrilateral 4: 465
+
+ortho_10_d2723dcc
+Quadrilateral 4: 465
+
+ortho_10_d2723dcc
+Quadrilateral 4: 465
+
+ortho_10_d2723dcc
+Quadrilateral 4: 465
+
+ortho_10_d2723dcc
+Quadrilateral 4: 465
+
+ortho_10_d2723dcc
+Quadrilateral 4: 465
+
+ortho_10_d2723dcc
+Quadrilateral 4: 465
+
+ortho_10_d2723dcc
+Quadrilateral 4: 465
+
+ortho_10_d2723dcc
+Quadrilateral 4: 465
+
+ortho_10_d2723dcc
+Quadrilateral 4: 465
+
+ortho_10_d2723dcc
+Quadrilateral 4: 465
+
+ortho_10_d2723dcc
+Quadrilateral 4: 465
+
+ortho_10_d2723dcc
+Quadrilateral 4: 465
+
+ortho_10_d2723dcc
+Quadrilateral 4: 465
+
 simple-polygon_20_4bd3c2e5
+Quadrilateral 4: 479
 
-simple-polygon-exterior-20_40_8ad14096
+simple-polygon_20_4bd3c2e5
+Quadrilateral 4: 479
 
-simple-polygon-exterior-20_10_6fbd9669
+simple-polygon_20_4bd3c2e5
+Quadrilateral 4: 479
 
-simple-polygon_150_b42a5724
-Triangle 3: 158
-Quadrilateral 4: 612
+simple-polygon_20_4bd3c2e5
+Quadrilateral 4: 479
 
-ortho_60_c423f527
-Triangle 3: 18
-Quadrilateral 4: 471
+simple-polygon_20_4bd3c2e5
+Quadrilateral 4: 479
 
-simple-polygon-exterior-20_20_eb63a5b6
+simple-polygon_20_4bd3c2e5
+Quadrilateral 4: 479
 
-simple-polygon_40_12969fc3
-Triangle 3: 6
-Quadrilateral 4: 325
+simple-polygon_20_4bd3c2e5
+Quadrilateral 4: 479
 
-ortho_250_3b977f7e
-Triangle 3: 159
-Quadrilateral 4: 499
+simple-polygon_20_4bd3c2e5
+Quadrilateral 4: 479
+
+simple-polygon_20_4bd3c2e5
+Quadrilateral 4: 479
+
+simple-polygon_20_4bd3c2e5
+Quadrilateral 4: 479
+
+simple-polygon_20_4bd3c2e5
+Quadrilateral 4: 479
+
+simple-polygon_20_4bd3c2e5
+Quadrilateral 4: 479
+
+simple-polygon_20_4bd3c2e5
+Quadrilateral 4: 479
+
+simple-polygon_20_4bd3c2e5
+Quadrilateral 4: 479
+
+simple-polygon_20_4bd3c2e5
+Quadrilateral 4: 479

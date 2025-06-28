@@ -1,7 +1,4 @@
 name,#obtuse,#steiner,#steiner_opt,time
-point-set_100_0245ce31,0,120,0,235
-point-set_100_05594822,0,214,0,607
-point-set_100_dd67678e,0,181,0,569
 point-set_10_13860916,0,79,0,38
 point-set_10_4bcb7c21,0,9,0,0
 point-set_10_7451a2a9,0,10,0,0
@@ -10,10 +7,6 @@ point-set_10_ae0fff93,0,14,0,22
 point-set_10_c04b0024,0,16,0,1
 point-set_10_d009159f,0,25,0,5
 point-set_10_f999dc7f,0,77,0,39
-point-set_150_1fb326cf,0,448,0,13764
-point-set_150_20bcb550,0,314,0,3477
-point-set_150_982c9ab3,0,407,0,4399
-point-set_150_b26a2c80,0,242,0,1816
 point-set_20_0c4009d9,0,62,0,30
 point-set_20_34a047f7,0,31,0,5
 point-set_20_41c48315,0,39,0,10
@@ -21,8 +14,6 @@ point-set_20_54ab0b47,0,17,0,3
 point-set_20_5868538a,0,31,0,8
 point-set_20_72cd2066,0,38,0,14
 point-set_20_fa3fd7e0,0,30,0,8
-point-set_250_3c338713,0,505,0,22087
-point-set_250_93dd622a,0,251,0,2035
 point-set_40_1b92b629,0,73,0,49
 point-set_40_8cbf31aa,0,52,0,28
 point-set_40_9451c229,0,66,0,111
@@ -39,3 +30,12 @@ point-set_80_8383fead,0,152,0,660
 point-set_80_9a8373fb,0,135,0,743
 point-set_80_d77fb670,0,112,0,151
 point-set_80_ff15444b,0,143,0,468
+point-set_100_0245ce31,0,120,0,235
+point-set_100_05594822,0,214,0,607
+point-set_100_dd67678e,0,181,0,569
+point-set_150_1fb326cf,0,448,0,13764
+point-set_150_20bcb550,0,314,0,3477
+point-set_150_982c9ab3,0,407,0,4399
+point-set_150_b26a2c80,0,242,0,1816
+point-set_250_3c338713,0,505,0,22087
+point-set_250_93dd622a,0,251,0,2035

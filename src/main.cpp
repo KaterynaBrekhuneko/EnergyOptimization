@@ -466,8 +466,14 @@ void print_current_time(){
 }
 
 int main(int argc, char **argv){
-    //* Calculate mean angle deviation for equilateral meshes
-    print_current_time();
+
+    //* Quad Mesh
+    Problem *problem = new Problem("../instances/simple/simple-polygon_20_35585ee3.instance.json");
+    mesh_equilateral_single(problem);
+    //build_quad_mesh_medians(problem);
+
+    //* Calculate fully non-obtuse meshes
+    /*print_current_time();
     std::vector<Mesh_Statistics> all_stats;
 
     //Problem *problem = new Problem("../instances/ortho/ortho_10_d2723dcc.instance.json");
@@ -483,14 +489,13 @@ int main(int argc, char **argv){
               });
           
 
-    for (const auto& entry : entries) {
+    /*for (const auto& entry : entries) {
         if (entry.is_regular_file() && entry.path().extension() == ".json") {
             Problem *problem = new Problem("../instances/ortho/" + entry.path().filename().string());
 
-            //Problem *problem = new Problem("../instances/point-set/point-set_10_13860916.instance.json");
+            Problem *problem = new Problem("../instances/simple/simple-polygon_20_0dda68ed.instance.json");
             std::string name = problem->get_name();
-            //if(!(name == "simple-polygon_100_4b4ba391" || name == "simple-polygon_10_297edd18" || name == "simple-polygon_20_4bd3c2e5")){
-            //if(!(name == "point-set_10_c04b0024" || name == "point-set_20_54ab0b47" || name == "point-set_40_1b92b629" || name == "point-set_60_ac318d72" || name == "point-set_80_1675b331")){
+            
                 std::cout << BLUE << "\ncurrent instance: " << problem->get_name() << RESET << std::endl;
                 //Mesh_Statistics stats  = uniform_mesh(problem);
                 auto start = std::chrono::high_resolution_clock::now();
@@ -505,13 +510,12 @@ int main(int argc, char **argv){
 
                 stats.set_time(total_seconds);
 
-                all_stats.push_back(stats);
-                write_to_csv_fully_non_obtuse("../results/fully_nonobtuse_ortho_offcenter.csv", all_stats);
-            //}
+                //all_stats.push_back(stats);
+                //write_to_csv_fully_non_obtuse("../results/fully_nonobtuse_ortho_offcenter.csv", all_stats);
         }
-    }
+    }*/
 
-    write_to_csv_fully_non_obtuse("../results/fully_nonobtuse_ortho_offcenter.csv", all_stats);
+    //write_to_csv_fully_non_obtuse("../results/fully_nonobtuse_ortho_offcenter.csv", all_stats);
 
     //print_current_time();
 

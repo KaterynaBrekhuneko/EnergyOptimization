@@ -64,8 +64,8 @@ box = ax.boxplot(data, patch_artist=True, labels=labels)
 for patch, color in zip(box['boxes'], colors):
     patch.set_facecolor(color)
 
-ax.set_ylabel("Number of Steiner Points")
-ax.set_title("Distribution of Steiner Points Before and After Optimization Across All Instances")
+ax.set_ylabel("Number of Obtuse Triangles")
+ax.set_title("Distribution of Obtuse Triangles Before and After Optimization Across All Instances")
 ax.grid(axis='y', linestyle='--', alpha=0.6)
 
 plt.tight_layout()

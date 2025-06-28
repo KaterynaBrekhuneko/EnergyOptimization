@@ -826,7 +826,7 @@ Mesh_Statistics offcenter_delaunay_refinement(Problem* problem){
 
     CDT cdt = problem->generate_CDT<CDT>();
     problem->update_problem<CDT, Face_handle>(cdt, point_set);
-    //problem->visualize_solution({});
+    problem->visualize_solution({});
     std::cout  << "Num of obtuse in cdt before: " << count_obtuse_triangles(problem) << std::endl;
 
     int obtuse_after_fix = count_obtuse_triangles(problem);
@@ -1891,7 +1891,7 @@ void mesh_cgal(Problem* problem){
     double max_size = std::sqrt(pow(bbox.x_span(),2) + pow(bbox.y_span(),2)) * 0.1;
 
     Mesher mesher(cdt);
-    mesher.set_criteria(Criteria(0.125, max_size/2));
+    mesher.set_criteria(Criteria(0.125, max_size/4));
     mesher.refine_mesh();
 
     problem->update_problem<CDT, Face_handle>(cdt, point_set);
@@ -1930,6 +1930,9 @@ void save_aspect_ratios_for_plot(Problem* problem, std::string path){
 
     std::vector<double> ratios;
 
+    double n1 = 0;
+    double n2 = 0;
+
     for (const Polygon& triangle : triangulation) {
         if (triangle.size() != 3) continue; // skip non-triangles
 
@@ -1944,8 +1947,15 @@ void save_aspect_ratios_for_plot(Problem* problem, std::string path){
     out << "ratio\n"; 
     for (double ratio : ratios) {
         out << ratio << "\n";
+        if(ratio <= 0.7){
+            n1 = n1+1;
+        } else {
+            n2 = n2+1;
+        }
     }
     out.close();
+
+    std::cout << "Percentage: " << n1/(n1+n2) << std::endl;
 }
 
 double mean_aspect_ratio(Problem* problem){
@@ -2064,7 +2074,7 @@ void mesh_equilateral_single(Problem* problem){
     std::cout << "mean absolute deviation initial: " << mean_absolute_deviation(problem) << std::endl;
     // Stats after initial meshing
     //save_angle_stats_for_plot(problem, "../results/angle_data_initial.csv");
-    //save_aspect_ratios_for_plot(problem, "../results/aspect_ratios_initial.csv");
+    //save_aspect_ratios_for_plot(problem, "../results/aspect_ratios_initial_simple_20.csv");
     //problem->visualize_solution({});
 
     // Stats after optimization meshing
@@ -2080,13 +2090,13 @@ void mesh_equilateral_single(Problem* problem){
     optimizeTinyAD(problem);
     cdt = problem->generate_CDT<CDT>();
     problem->update_problem<CDT, Face_handle>(cdt, point_set);
-    optimizeTinyAD(problem);
+    /*optimizeTinyAD(problem);
     cdt = problem->generate_CDT<CDT>();
-    problem->update_problem<CDT, Face_handle>(cdt, point_set);
-    std::cout << "mean absolute deviation lloyd: " << mean_absolute_deviation(problem) << std::endl;
+    problem->update_problem<CDT, Face_handle>(cdt, point_set);*/
+    std::cout << "mean absolute deviation: " << mean_absolute_deviation(problem) << std::endl;
 
     //save_angle_stats_for_plot(problem, "../results/angle_data_lloyd.csv");
-    //save_aspect_ratios_for_plot(problem, "../results/aspect_ratios_lloyd.csv");
+    save_aspect_ratios_for_plot(problem, "../results/aspect_ratios_sq_penalty_20.csv");
     problem->visualize_solution({});
 }
 
@@ -2102,19 +2112,19 @@ Mesh_Statistics mesh_equilateral(Problem* problem){
     //refine(problem, cdt);
     //problem->visualize_solution({});
 
-    /*optimizeTinyAD(problem);
+    optimizeTinyAD(problem);
     cdt = problem->generate_CDT<CDT>();
     problem->update_problem<CDT, Face_handle>(cdt, point_set);
     optimizeTinyAD(problem);
     cdt = problem->generate_CDT<CDT>();
-    problem->update_problem<CDT, Face_handle>(cdt, point_set);*/
+    problem->update_problem<CDT, Face_handle>(cdt, point_set);
     /*optimizeTinyAD(problem);
     cdt = problem->generate_CDT<CDT>();
     problem->update_problem<CDT, Face_handle>(cdt, point_set);*/
 
-    cdt = problem->generate_CDT<CDT>();
+    /*cdt = problem->generate_CDT<CDT>();
     iterate_lloyd<CDT, Vertex_handle, Vertex_circulator>(cdt, problem, constraints, 1000);
-    problem->update_problem<CDT, Face_handle>(cdt, point_set);
+    problem->update_problem<CDT, Face_handle>(cdt, point_set);*/
 
     stats.set_name(problem->get_name());
     stats.set_steiner_after_meshing(problem->get_steiner().size());

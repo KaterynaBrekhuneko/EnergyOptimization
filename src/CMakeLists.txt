@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.27)
 set (CMAKE_CXX_STANDARD 23)
-project(MNOT)
+project(ENERGY_OPTIMIZATION)
 file (GLOB_RECURSE sources *.c *.cpp *.tpp)
 
 # CGAL and its components
@@ -28,12 +28,12 @@ endif()
 find_package( Eigen3 REQUIRED )
 
 # TinyAD
-set(TINYAD_DIR "/home/kateryna/MNOT/libs/TinyAD")
+set(TINYAD_DIR "/home/kateryna/ENERGYOPTIMIZATION/libs/TinyAD")
 include_directories(${TINYAD_DIR}/src)
 
 include_directories(include tools)
 
-add_executable(mnot ${sources})
+add_executable(energy ${sources})
 
 set(GMSH_INCLUDE_DIR /home/kateryna/ENERGYOPTIMIZATION/libs/GMSH/api)
 find_library(GMSH_LIBRARY gmsh
@@ -41,18 +41,18 @@ find_library(GMSH_LIBRARY gmsh
 )
 
 # Include directories
-target_include_directories(mnot PRIVATE
+target_include_directories(energy PRIVATE
     ${GMSH_INCLUDE_DIR}
     ${EIGEN3_INCLUDE_DIRS}
     ${TINYAD_DIR}/src
 )
 
 # Link libraries
-target_link_libraries(mnot PRIVATE
+target_link_libraries(energy PRIVATE
     ${GMSH_LIBRARY}
     CGAL::CGAL
 )
 
-# target_include_directories(mnot PRIVATE ${EIGEN3_INCLUDE_DIRS})
-# target_include_directories(mnot PRIVATE ${TINYAD_DIR}/src)
-# target_link_libraries(mnot CGAL::CGAL)
+# target_include_directories(energy PRIVATE ${EIGEN3_INCLUDE_DIRS})
+# target_include_directories(energy PRIVATE ${TINYAD_DIR}/src)
+# target_link_libraries(energy CGAL::CGAL)

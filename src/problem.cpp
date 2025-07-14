@@ -231,7 +231,7 @@ double distance(Point& a, Point& b){
 
 void Problem::visualize_solution(std::vector<Polygon> problematic_triangles){
     // assuming run from build folder
-    std::string path = "../offcenter_delaunay_refinement/ipe/" + name + ".ipe";
+    std::string path = "../" + name + ".ipe";
 
     std::vector<Segment> triangle_segments;
     std::vector<Polygon> obtuse_triangles;

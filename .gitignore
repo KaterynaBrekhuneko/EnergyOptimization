@@ -11,10 +11,3 @@ python/env
 *.json
 
 Core_Diagnostics
-manual.cpp
-manual.hpp
-mesh.cpp
-mesh.hpp
-stupid.cpp
-stupid.hpp
-

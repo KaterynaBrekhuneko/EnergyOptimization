@@ -1,20 +1,4 @@
-#include <CGAL/Constrained_Delaunay_triangulation_2.h>
-#include <CGAL/Delaunay_mesher_2.h>
-#include <CGAL/Delaunay_mesh_face_base_2.h>
-#include <CGAL/Delaunay_mesh_size_criteria_2.h>
-#include <CGAL/Boolean_set_operations_2/oriented_side.h>
-
 #include "lloyd.hpp"
-
-typedef CGAL::Triangulation_vertex_base_2<K> Vb;
-typedef CGAL::Delaunay_mesh_face_base_2<K> Fb;
-typedef CGAL::Triangulation_data_structure_2<Vb, Fb> Tds;
-typedef CGAL::Constrained_Delaunay_triangulation_2<K, Tds> CDT;
-typedef CDT::Vertex_handle Vertex_handle;
-typedef CDT::Face_handle Face_handle;
-typedef CDT::Vertex_circulator Vertex_circulator;
-typedef CGAL::Delaunay_mesh_size_criteria_2<CDT> Criteria;
-typedef CGAL::Delaunay_mesher_2<CDT, Criteria> Mesher;
 
 bool is_on_constraint_lloyd(const Point& steiner, Problem* problem){
     std::vector<Segment> constraints = problem->get_constraints();
@@ -38,50 +22,67 @@ bool is_on_boundary_lloyd(Point& p, Polygon& boundary){
     return false;
 }
 
-void Lloyd::solve(Problem *problem) {
+Point compute_voronoi_centroid(const Vertex_handle& v, CDT& cdt) {
+    std::vector<Point> neighbors;
+    Vertex_circulator vc = cdt.incident_vertices(v);
+    if (vc != 0) {
+        do {
+            if (!cdt.is_infinite(vc)) {
+                neighbors.push_back(vc->point());
+            }
+        } while (++vc != cdt.incident_vertices(v));
+    }
+
+    if (neighbors.empty()) return v->point();
+
+    double sum_x = 0, sum_y = 0;
+    for (const auto& neighbor : neighbors) {
+        sum_x += CGAL::to_double(neighbor.x());
+        sum_y += CGAL::to_double(neighbor.y());
+    }
+
+    return Point(sum_x / neighbors.size(), sum_y / neighbors.size());
+}
+
+void iterate_lloyd(CDT& cdt, Problem *problem, std::vector<Segment>& constraints, int iterations) {
     std::vector<Point> points = problem->get_points();
-    std::set<Point> point_set(points.begin(), points.end());
-    std::vector<Point> boundary = problem->get_boundary().vertices();
-    std::vector<Segment> constraints = problem->get_constraints();
-    for (int i = 0; i < boundary.size(); i++) constraints.push_back(Segment(boundary[i], boundary[(i+1)%boundary.size()]));
-    CGAL::Polygon_2<K> polygon(boundary.begin(), boundary.end());
+    Polygon boundary = problem->get_boundary();
 
-    std::set<Point> steiner_points = point_set;
+    double TOL = 1e-6;
 
-    auto cdt = problem->generate_CDT<CDT>();
+    std::vector<Segment> all_constraints = constraints;
+    for (int i = 0; i < boundary.size(); i++) all_constraints.push_back(Segment(boundary[i], boundary[(i+1)%boundary.size()]));
 
-    auto bbox = polygon.bbox();
-    double max_size = std::sqrt(pow(bbox.x_span(),2) + pow(bbox.y_span(),2)) * 0.1;
+    for (int iter = 0; iter < iterations; ++iter) {
+        std::vector<Point> new_positions;
 
-    std::cout << "Max_size: " << max_size << std::endl;
+        double pos_dif = 0.0;
 
-    Mesher mesher(cdt);
-    mesher.set_criteria(Criteria(0, max_size/2));
-    mesher.refine_mesh();
+        for (auto v = cdt.finite_vertices_begin(); v != cdt.finite_vertices_end(); ++v) {
+            Point current = v->point();
 
-    for (auto p : cdt.finite_vertex_handles()) {
-        //if (!point_set.contains(p->point())) problem->add_steiner(p->point());
+            if(std::find(points.begin(), points.end(), current) == points.end() && !is_on_boundary_lloyd(current, boundary) && !is_on_constraint_lloyd(current, problem)){
+                Point new_point = compute_voronoi_centroid(v, cdt);
+                pos_dif = std::max(pos_dif, CGAL::to_double(CGAL::squared_distance(current, new_point)));
+                
+                if(boundary.bounded_side(new_point) != CGAL::ON_UNBOUNDED_SIDE){
+                    new_positions.push_back(new_point);
+                } else {
+                    new_positions.push_back(v->point());
+                }
+            } else {
+                new_positions.push_back(v->point());
+            }
+
+        }
+
+        // Clear and reinsert points while preserving constraints
+        cdt.clear();
+        cdt.insert_constraints(all_constraints.begin(), all_constraints.end());
+        cdt.insert(new_positions.begin(), new_positions.end());
+
+        if(std::sqrt(pos_dif) < TOL){
+            break;
+        }
     }
-
-    for (auto triangle : problem->grab_triangulation<CDT, Face_handle>(cdt)) {
-        problem->add_triangle(Polygon(triangle.begin(), triangle.end()));
-    }
-
-    problem->visualize_solution({});
-
-    iterate_lloyd<CDT, Vertex_handle, Vertex_circulator>(cdt, problem, constraints, 10);
-
-    problem->clear_solution();
-
-    for (auto p : cdt.finite_vertex_handles()) {
-        //if (!point_set.contains(p->point())) problem->add_steiner(p->point());
-    }
-
-    for (auto triangle : problem->grab_triangulation<CDT, Face_handle>(cdt)) {
-        problem->add_triangle(Polygon(triangle.begin(), triangle.end()));
-    }
-
-    problem->visualize_solution({});
-    
-    //return SolveStatus::Feasible;
 }

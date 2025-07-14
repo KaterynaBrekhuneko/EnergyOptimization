@@ -35,11 +35,17 @@ paths = {
         "../results/modified3_initial_sigmoid_point_set.csv",
         "../results/modified3_initial_refined_sigmoid_point_set.csv",
     ),
-    "simple_exterior": (
+    "simple_exterior1": (
         "../results/modified3_initial_ln_simple_exterior_pt1.csv",
         "../results/modified3_initial_ln_simple_exterior_pt1.csv",
         "../results/modified3_initial_sigmoid_simple_exterior_pt1.csv",
         "../results/modified3_initial_refined_sigmoid_simple_exterior_pt1.csv",
+    ),
+    "simple_exterio2": (
+        "../results/modified3_initial_ln_simple_exterior_pt2.csv",
+        "../results/modified3_initial_ln_simple_exterior_pt2.csv",
+        "../results/modified3_initial_sigmoid_simple_exterior_pt2.csv",
+        "../results/modified3_initial_refined_sigmoid_simple_exterior_pt2.csv",
     )
 }
 

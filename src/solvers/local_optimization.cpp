@@ -1,12 +1,5 @@
 #include "local_optimization.hpp"
 
-#include <CGAL/Constrained_Delaunay_triangulation_2.h>
-#include <CGAL/Delaunay_mesh_face_base_2.h>
-
-typedef CGAL::Triangulation_vertex_base_2<K> Vb;
-typedef CGAL::Delaunay_mesh_face_base_2<K> Fb;
-typedef CGAL::Triangulation_data_structure_2<Vb, Fb> Tds;
-typedef CGAL::Constrained_Delaunay_triangulation_2<K, Tds> CDT;
 typedef CDT::Edge_iterator Edge_iterator;
 
 bool armijo_condition(const std::vector<Point>& gradient, double f, double f_new, double step_size, double armijo_const){

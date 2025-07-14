@@ -1,8 +1,6 @@
 #include "global_optimization.hpp"
-#include "local_optimization.hpp"
 
 double get_signed_area(const Point& p1, const Point& p2, const Point& p3){
-    // Compute the area using the determinant method: the formula for volume in the paper (becomes area for 2D)
     auto area = (p1.x() * (p2.y() - p3.y()) + p2.x() * (p3.y() - p1.y()) + p3.x() * (p1.y() - p2.y()))/2.0;
     return CGAL::to_double(area);
 }
@@ -24,6 +22,7 @@ bool norm_is_smaller(std::vector<Point>& gradients, const double TOL){
     return result;
 }
 
+// Laplace function from "Harmonic triangulation"
 Point calculate_gradient_point_laplace(const Point& s, std::vector<Polygon>& neighborhood, Problem* problem){
     double dx = 0.0;
     double dy = 0.0;
@@ -93,7 +92,6 @@ std::vector<Point> calculate_gradient(std::vector<Point>& steiner_points, std::v
 }
 
 std::vector<Point> globally_optimize_position(std::vector<Point>& steiner_points, std::vector<Polygon>& triangles, Problem *problem, bool debug){
-    //double stepSize = 1e6;
     double TOL = 1e-7;
     const int MAX_ITER = 100;
 
@@ -106,12 +104,6 @@ std::vector<Point> globally_optimize_position(std::vector<Point>& steiner_points
 
     try{
         std::vector<Point> gradients = calculate_gradient(s, triangles, problem, debug);
-
-        /*for(int i = 0; i<steiner_points.size(); i++){
-            std::cout << "gradient norm of " << i << " before: " << norm(gradients[i]) << std::endl;
-            std::cout << "position of " << i << " before: " << s[i] << std::endl;
-        }
-        std::cout << "\n";*/
 
         while(!norm_is_smaller(gradients, TOL) && iteration < MAX_ITER){
 
@@ -142,19 +134,9 @@ std::vector<Point> globally_optimize_position(std::vector<Point>& steiner_points
             gradients = calculate_gradient(s, triangles, problem, false);
             iteration++;
         }
-
-        /*for(int i = 0; i<steiner_points.size(); i++){
-            std::cout << "gradient norm of " << i << " after: " << norm(gradients[i]) << std::endl;
-            std::cout << "position of " << i << " after: " << s[i] << std::endl;
-        }*/
     }catch(const CGAL::Assertion_exception& e){
         std::cout << "CGAL Exception 3 \n" << std::endl;
     }
-
-    /*for(int i = 0; i<steiner_points.size(); i++){
-        std::cout << "gradient of " << i << " after: " << gradients[i] << std::endl;
-        std::cout << "position of " << i << " after: " << s[i] << std::endl;
-    }*/
 
     return s;
 }

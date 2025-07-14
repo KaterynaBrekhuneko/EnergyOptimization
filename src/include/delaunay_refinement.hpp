@@ -1,6 +1,7 @@
 #include "problem.hpp"
 #include "tinyAD_optimization.hpp"
 #include "mesh_statistics.hpp"
+#include "gradient_descent_optimization.hpp"
 
 Mesh_Statistics refine(Problem* problem);
 void step_by_step_mesh(Problem* problem);

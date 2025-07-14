@@ -1,11 +1,6 @@
 #include "delaunay_refinement.hpp"
 #include "lloyd.hpp"
 
-#include <CGAL/Constrained_Delaunay_triangulation_2.h>
-#include <CGAL/Delaunay_mesher_2.h>
-#include <CGAL/Delaunay_mesh_face_base_2.h>
-#include <CGAL/Delaunay_mesh_vertex_base_2.h>
-#include <CGAL/Boolean_set_operations_2/oriented_side.h>
 #include <CGAL/lloyd_optimize_mesh_2.h>
 #include <CGAL/Meshes/Double_map_container.h>
 #include <CGAL/intersections.h>
@@ -18,19 +13,6 @@
 #include <chrono>
 #include <ctime>
 
-#include "global_optimization.hpp"
-#include "local_optimization.hpp"
-
-typedef CGAL::Delaunay_mesh_vertex_base_2<K> Vb;
-typedef CGAL::Delaunay_mesh_face_base_2<K> Fb;
-typedef CGAL::Triangulation_data_structure_2<Vb, Fb> Tds;
-typedef CGAL::Constrained_Delaunay_triangulation_2<K, Tds> CDT;
-
-typedef CGAL::Delaunay_mesh_size_criteria_2<CDT>            Criteria;
-typedef CGAL::Delaunay_mesher_2<CDT, Criteria>              Mesher;
-
-typedef CDT::Face_handle Face_handle;
-typedef CDT::Vertex_handle Vertex_handle;
 typedef CDT::Vertex_circulator Vertex_circulator;
 typedef CDT::Edge Edge;
 
@@ -113,7 +95,7 @@ double compute_max_sizing_ratio(Problem* problem, CDT& cdt, double sizing){
         max_sizing_ratio = std::max(max_sizing_ratio, sizing_ratio_constraint);
     }   
     for(const auto& t : cdt.finite_face_handles()){
-        if(problem->triangle_is_inside<CDT, Face_handle>(cdt, t)){
+        if(problem->triangle_is_inside(cdt, t)){
             double sizing_ratio_triangle = get_sizing_ratio_triangle(t, sizing);
             max_sizing_ratio = std::max(max_sizing_ratio, get_sizing_ratio_triangle(t, sizing));
         }
@@ -128,7 +110,7 @@ void get_constraints_and_faces(Problem* problem, CDT& cdt, std::vector<Edge>& co
     }
     faces.clear();
     for (const auto& face : cdt.finite_face_handles()) {
-        if(problem->triangle_is_inside<CDT, Face_handle>(cdt, face)){
+        if(problem->triangle_is_inside(cdt, face)){
             faces.push_back(face);
         }
     }
@@ -162,7 +144,7 @@ std::unordered_map<Edge, double, EdgeHash, EdgeEqual> create_edge_map(CDT& cdt, 
 std::unordered_map<Face_handle, double> create_face_map(Problem* problem, CDT& cdt, double sizing){
     std::unordered_map<Face_handle, double> face_to_ratio_map;
     for(const auto& face : cdt.finite_face_handles()){
-        if(problem->triangle_is_inside<CDT, Face_handle>(cdt, face)){
+        if(problem->triangle_is_inside(cdt, face)){
             face_to_ratio_map[face] = get_sizing_ratio_triangle(face, sizing);
         }
     }
@@ -200,7 +182,7 @@ void mesh(Problem* problem, CDT& cdt, double sizing, double target_sizing){
         }
     }   
     for(Face_handle t : cdt.finite_face_handles()){
-        if(!problem->triangle_is_inside<CDT, Face_handle>(cdt, t)){
+        if(!problem->triangle_is_inside(cdt, t)){
             continue;
         }
 
@@ -353,7 +335,7 @@ bool next_refinement_point(Problem* problem, CDT& cdt){
     auto boundary = problem->get_boundary();
 
     for(Face_handle t : cdt.finite_face_handles()){
-        if(!problem->triangle_is_inside<CDT, Face_handle>(cdt, t)){
+        if(!problem->triangle_is_inside(cdt, t)){
             continue;
         }
 
@@ -382,7 +364,7 @@ bool next_refinement_point(Problem* problem, CDT& cdt){
 
 
     for(Face_handle t : cdt.finite_face_handles()){
-        if(!problem->triangle_is_inside<CDT, Face_handle>(cdt, t)){
+        if(!problem->triangle_is_inside(cdt, t)){
             continue;
         }
 
@@ -436,12 +418,12 @@ Mesh_Statistics refine(Problem* problem){
     std::set<Point> point_set(points.begin(), points.end());
     auto constraints = problem->get_constraints();
 
-    CDT cdt = problem->generate_CDT<CDT>();
-    problem->update_problem<CDT, Face_handle>(cdt, point_set);
+    CDT cdt = problem->generate_CDT();
+    problem->update_problem(cdt, point_set);
 
     /*mesh_cgal(problem);
-    cdt = problem->generate_CDT<CDT>();
-    problem->update_problem<CDT, Face_handle>(cdt, point_set);*/
+    cdt = problem->generate_CDT();
+    problem->update_problem(cdt, point_set);*/
 
     //problem->visualize_solution({});
 
@@ -459,35 +441,35 @@ Mesh_Statistics refine(Problem* problem){
 
         mesh(problem, cdt, sizing, target_sizing);
         //std::cout << BLUE  << "Num of points in cdt after " << i << ": " << cdt.number_of_vertices()  << RESET << std::endl;
-        problem->update_problem<CDT, Face_handle>(cdt, point_set);
+        problem->update_problem(cdt, point_set);
         //problem->visualize_solution({});
 
         // LLoyd optimization
-        /*iterate_lloyd<CDT, Vertex_handle, Vertex_circulator>(cdt, problem, constraints, 1000);
-        problem->update_problem<CDT, Face_handle>(cdt, point_set);*/
+        iterate_lloyd<CDT, Vertex_handle, Vertex_circulator>(cdt, problem, constraints, 1000);
+        problem->update_problem(cdt, point_set);
 
         // Energy
         /*optimizeTinyAD(problem);
-        cdt = problem->generate_CDT<CDT>();
-        problem->update_problem<CDT, Face_handle>(cdt, point_set);
+        cdt = problem->generate_CDT();
+        problem->update_problem(cdt, point_set);
         optimizeTinyAD(problem);
-        cdt = problem->generate_CDT<CDT>();
-        problem->update_problem<CDT, Face_handle>(cdt, point_set);
+        cdt = problem->generate_CDT();
+        problem->update_problem(cdt, point_set);
         optimizeTinyAD(problem);
-        cdt = problem->generate_CDT<CDT>();
-        problem->update_problem<CDT, Face_handle>(cdt, point_set);*/
+        cdt = problem->generate_CDT();
+        problem->update_problem(cdt, point_set);*/
 
         //problem->visualize_solution({});
 
         //!For this first need to convert to an inexact kernel
         /*CGAL::lloyd_optimize_mesh_2(cdt, CGAL::parameters::number_of_iterations(1000));
-        problem->update_problem<CDT, Face_handle>(cdt, point_set);*/
+        problem->update_problem(cdt, point_set);*/
         //problem->visualize_solution({});
         i++;
     }
 
     /*iterate_lloyd<CDT, Vertex_handle, Vertex_circulator>(cdt, problem, constraints, 1000);
-    problem->update_problem<CDT, Face_handle>(cdt, point_set);*/
+    problem->update_problem(cdt, point_set);*/
 
     stats.set_name(problem->get_name());
     stats.set_steiner_after_meshing(problem->get_steiner().size());
@@ -497,7 +479,7 @@ Mesh_Statistics refine(Problem* problem){
 
     stats.set_max_length(get_max_edge_ength(problem));
 
-    //problem->visualize_solution({});
+    problem->visualize_solution({});
 
     std::cout << "num steiner: "  << problem->get_steiner().size() << std::endl;
     std::cout << "deviation: "  << mean_absolute_deviation(problem) << std::endl;
@@ -509,47 +491,19 @@ Mesh_Statistics refine(Problem* problem){
     return stats;
 }
 
-void fix_constraint_refinement(Problem* problem){
-    std::vector<Polygon> triangulation = problem->get_triangulation();
-    std::vector<Point> points = problem->get_points();
-    Polygon boundary = problem->get_boundary();
-
-    for(Polygon t : triangulation){
-        int angle = find_obtuse_angle(t);
-        if(angle != -1){
-            Point s = t.vertex(angle);
-            Point a = t.vertex((angle + 1)%3);
-            Point b = t.vertex((angle + 2)%3);
-
-            if (is_on_constraint_refinement(a, problem) && is_on_constraint_refinement(b, problem) && is_constrained_segment(problem, a, b)){
-                Segment segment(a, b);
-                Point proj = project_onto_segment_refinement(s, segment);
-                problem->add_steiner(proj);
-            }
-        }
-    }
-
-}
-
 void classic_delaunay_refinement(Problem* problem){
     // Preprocess the input instance, compute cdt
     std::vector<Point> points = problem->get_points();
     std::set<Point> point_set(points.begin(), points.end());
-    std::set<Point> steiner_point_set;
-    std::vector<Point> boundary_points = problem->get_boundary().vertices();
-    std::vector<Segment> constraints = problem->get_constraints();
     Polygon boundary = problem->get_boundary();
-    for (size_t i = 0; i < boundary_points.size(); i++) {
-        constraints.push_back(Segment(boundary_points[i], boundary_points[(i + 1) % boundary_points.size()]));
-    }
 
     auto box = problem->get_boundary().bbox();
     auto scale = std::max(box.xmax() - box.xmin(), box.ymax() - box.ymin());
 
     //std::cout << "scale: " << scale << " min: " << box.xmin() << "\n" << std::endl;
 
-    CDT cdt = problem->generate_CDT<CDT>();
-    problem->update_problem<CDT, Face_handle>(cdt, point_set);
+    CDT cdt = problem->generate_CDT();
+    problem->update_problem(cdt, point_set);
     //problem->visualize_solution({});
     std::cout  << "Num of obtuse in cdt before: " << count_obtuse_triangles(problem) << std::endl;
 
@@ -557,8 +511,8 @@ void classic_delaunay_refinement(Problem* problem){
     int j = 0;
     while(j != 10){
         fix_boundary_refinement(problem);
-        cdt = problem->generate_CDT<CDT>();
-        problem->update_problem<CDT, Face_handle>(cdt, point_set);
+        cdt = problem->generate_CDT();
+        problem->update_problem(cdt, point_set);
 
         int current_obtuse = problem->get_num_obtuse();
         if(current_obtuse < obtuse_after_fix){
@@ -569,13 +523,21 @@ void classic_delaunay_refinement(Problem* problem){
         j++;
     }
 
+    j = 0;
+    while(j != 10){
+        fix_constraint_refinement(problem);
+        cdt = problem->generate_CDT();
+        problem->update_problem(cdt, point_set);
+        j++;
+    }
+
     //problem->visualize_solution({});
 
-    for(int i = 0; i < 400; i++){
+    for(int i = 0; i < 110; i++){
         bool is_refinement_done = next_refinement_point(problem, cdt);
-        problem->update_problem<CDT, Face_handle>(cdt, point_set);
+        problem->update_problem(cdt, point_set);
 
-        if(count_obtuse_triangles(problem) == 0 || is_refinement_done){
+        if(count_obtuse_triangles(problem) == 0){
             break;
         }
 
@@ -583,19 +545,27 @@ void classic_delaunay_refinement(Problem* problem){
         //problem->visualize_solution({});
 
         optimizeTinyAD(problem);
-        cdt = problem->generate_CDT<CDT>();
-        problem->update_problem<CDT, Face_handle>(cdt, point_set);
+        cdt = problem->generate_CDT();
+        problem->update_problem(cdt, point_set);
 
         /*fix_rhombus(problem, cdt);
-        cdt = problem->generate_CDT<CDT>();
-        problem->update_problem<CDT, Face_handle>(cdt, point_set);*/
+        cdt = problem->generate_CDT();
+        problem->update_problem(cdt, point_set);*/
+
+        j = 0;
+        while(j != 10){
+            fix_constraint_refinement(problem);
+            cdt = problem->generate_CDT();
+            problem->update_problem(cdt, point_set);
+            j++;
+        }
 
         obtuse_after_fix = count_obtuse_triangles(problem);
         j = 0;
         while(j != 10){
             fix_boundary_refinement(problem);
-            cdt = problem->generate_CDT<CDT>();
-            problem->update_problem<CDT, Face_handle>(cdt, point_set);
+            cdt = problem->generate_CDT();
+            problem->update_problem(cdt, point_set);
 
             int current_obtuse = problem->get_num_obtuse();
             if(current_obtuse < obtuse_after_fix){
@@ -607,15 +577,23 @@ void classic_delaunay_refinement(Problem* problem){
         }
 
         optimizeTinyAD(problem);
-        cdt = problem->generate_CDT<CDT>();
-        problem->update_problem<CDT, Face_handle>(cdt, point_set);
+        cdt = problem->generate_CDT();
+        problem->update_problem(cdt, point_set);
+
+        j = 0;
+        while(j != 10){
+            fix_constraint_refinement(problem);
+            cdt = problem->generate_CDT();
+            problem->update_problem(cdt, point_set);
+            j++;
+        }
 
         obtuse_after_fix = count_obtuse_triangles(problem);
         j = 0;
         while(j != 10){
             fix_boundary_refinement(problem);
-            cdt = problem->generate_CDT<CDT>();
-            problem->update_problem<CDT, Face_handle>(cdt, point_set);
+            cdt = problem->generate_CDT();
+            problem->update_problem(cdt, point_set);
 
             int current_obtuse = problem->get_num_obtuse();
             if(current_obtuse < obtuse_after_fix){
@@ -722,7 +700,7 @@ bool next_refinement_point_offcenter(Problem* problem, CDT& cdt){
     std::vector<Point> encroached_points;
 
     for(Face_handle t : cdt.finite_face_handles()){
-        if(!problem->triangle_is_inside<CDT, Face_handle>(cdt, t)){
+        if(!problem->triangle_is_inside(cdt, t)){
             continue;
         }
 
@@ -808,24 +786,15 @@ bool next_refinement_point_offcenter(Problem* problem, CDT& cdt){
 }
 
 Mesh_Statistics offcenter_delaunay_refinement(Problem* problem){
-    // Preprocess the input instance, compute cdt
     std::vector<Point> points = problem->get_points();
     std::set<Point> point_set(points.begin(), points.end());
-    std::set<Point> steiner_point_set;
-    std::vector<Point> boundary_points = problem->get_boundary().vertices();
-    std::vector<Segment> constraints = problem->get_constraints();
     Polygon boundary = problem->get_boundary();
-    for (size_t i = 0; i < boundary_points.size(); i++) {
-        constraints.push_back(Segment(boundary_points[i], boundary_points[(i + 1) % boundary_points.size()]));
-    }
 
     auto box = problem->get_boundary().bbox();
     auto scale = std::max(box.xmax() - box.xmin(), box.ymax() - box.ymin());
 
-    //std::cout << "scale: " << scale << " min: " << box.xmin() << "\n" << std::endl;
-
-    CDT cdt = problem->generate_CDT<CDT>();
-    problem->update_problem<CDT, Face_handle>(cdt, point_set);
+    CDT cdt = problem->generate_CDT();
+    problem->update_problem(cdt, point_set);
     problem->visualize_solution({});
     std::cout  << "Num of obtuse in cdt before: " << count_obtuse_triangles(problem) << std::endl;
 
@@ -833,8 +802,8 @@ Mesh_Statistics offcenter_delaunay_refinement(Problem* problem){
     int j = 0;
     while(j != 10){
         fix_boundary_refinement(problem);
-        cdt = problem->generate_CDT<CDT>();
-        problem->update_problem<CDT, Face_handle>(cdt, point_set);
+        cdt = problem->generate_CDT();
+        problem->update_problem(cdt, point_set);
 
         int current_obtuse = problem->get_num_obtuse();
         if(current_obtuse < obtuse_after_fix){
@@ -845,11 +814,19 @@ Mesh_Statistics offcenter_delaunay_refinement(Problem* problem){
         j++;
     }
 
+    j = 0;
+    while(j != 10){
+        fix_constraint_refinement(problem);
+        cdt = problem->generate_CDT();
+        problem->update_problem(cdt, point_set);
+        j++;
+    }
+
     //problem->visualize_solution({});
 
     for(int i = 0; i < 400; i++){
         bool is_refinement_done = next_refinement_point_offcenter(problem, cdt);
-        problem->update_problem<CDT, Face_handle>(cdt, point_set);
+        problem->update_problem(cdt, point_set);
 
         if(count_obtuse_triangles(problem) == 0 /*|| is_refinement_done*/){
             break;
@@ -859,15 +836,23 @@ Mesh_Statistics offcenter_delaunay_refinement(Problem* problem){
         //problem->visualize_solution({});
 
         optimizeTinyAD(problem);
-        cdt = problem->generate_CDT<CDT>();
-        problem->update_problem<CDT, Face_handle>(cdt, point_set);
+        cdt = problem->generate_CDT();
+        problem->update_problem(cdt, point_set);
+
+        j = 0;
+        while(j != 10){
+            fix_constraint_refinement(problem);
+            cdt = problem->generate_CDT();
+            problem->update_problem(cdt, point_set);
+            j++;
+        }
 
         obtuse_after_fix = count_obtuse_triangles(problem);
         j = 0;
         while(j != 10){
             fix_boundary_refinement(problem);
-            cdt = problem->generate_CDT<CDT>();
-            problem->update_problem<CDT, Face_handle>(cdt, point_set);
+            cdt = problem->generate_CDT();
+            problem->update_problem(cdt, point_set);
 
             int current_obtuse = problem->get_num_obtuse();
             if(current_obtuse < obtuse_after_fix){
@@ -879,15 +864,23 @@ Mesh_Statistics offcenter_delaunay_refinement(Problem* problem){
         }
 
         optimizeTinyAD(problem);
-        cdt = problem->generate_CDT<CDT>();
-        problem->update_problem<CDT, Face_handle>(cdt, point_set);
+        cdt = problem->generate_CDT();
+        problem->update_problem(cdt, point_set);
+
+        j = 0;
+        while(j != 10){
+            fix_constraint_refinement(problem);
+            cdt = problem->generate_CDT();
+            problem->update_problem(cdt, point_set);
+            j++;
+        }
 
         obtuse_after_fix = count_obtuse_triangles(problem);
         j = 0;
         while(j != 10){
             fix_boundary_refinement(problem);
-            cdt = problem->generate_CDT<CDT>();
-            problem->update_problem<CDT, Face_handle>(cdt, point_set);
+            cdt = problem->generate_CDT();
+            problem->update_problem(cdt, point_set);
 
             int current_obtuse = problem->get_num_obtuse();
             if(current_obtuse < obtuse_after_fix){
@@ -1143,8 +1136,8 @@ void pentagon_refinement(Problem* problem){
 
     //std::cout << "scale: " << scale << " min: " << box.xmin() << "\n" << std::endl;
 
-    CDT cdt = problem->generate_CDT<CDT>();
-    problem->update_problem<CDT, Face_handle>(cdt, point_set);
+    CDT cdt = problem->generate_CDT();
+    problem->update_problem(cdt, point_set);
     //problem->visualize_solution({});
     std::cout  << "Num of obtuse in cdt before: " << count_obtuse_triangles(problem) << std::endl;
 
@@ -1152,8 +1145,8 @@ void pentagon_refinement(Problem* problem){
     int j = 0;
     /*while(j != 10){
         fix_boundary_refinement(problem);
-        cdt = problem->generate_CDT<CDT>();
-        problem->update_problem<CDT, Face_handle>(cdt, point_set);
+        cdt = problem->generate_CDT();
+        problem->update_problem(cdt, point_set);
 
         int current_obtuse = problem->get_num_obtuse();
         if(current_obtuse < obtuse_after_fix){
@@ -1184,7 +1177,7 @@ void pentagon_refinement(Problem* problem){
             //std::cout << "inserted into pentagon in iteration " << i << std::endl; 
         }
 
-        problem->update_problem<CDT, Face_handle>(cdt, point_set);
+        problem->update_problem(cdt, point_set);
 
         //problem->visualize_solution({});
 
@@ -1193,19 +1186,19 @@ void pentagon_refinement(Problem* problem){
         }
 
         optimizeTinyAD(problem);
-        cdt = problem->generate_CDT<CDT>();
-        problem->update_problem<CDT, Face_handle>(cdt, point_set);
+        cdt = problem->generate_CDT();
+        problem->update_problem(cdt, point_set);
 
         /*fix_rhombus(problem, cdt);
-        cdt = problem->generate_CDT<CDT>();
-        problem->update_problem<CDT, Face_handle>(cdt, point_set);*/
+        cdt = problem->generate_CDT();
+        problem->update_problem(cdt, point_set);*/
 
         obtuse_after_fix = count_obtuse_triangles(problem);
         j = 0;
         while(j != 10){
             fix_boundary_refinement(problem);
-            cdt = problem->generate_CDT<CDT>();
-            problem->update_problem<CDT, Face_handle>(cdt, point_set);
+            cdt = problem->generate_CDT();
+            problem->update_problem(cdt, point_set);
 
             int current_obtuse = problem->get_num_obtuse();
             if(current_obtuse < obtuse_after_fix){
@@ -1217,15 +1210,15 @@ void pentagon_refinement(Problem* problem){
         }
 
         optimizeTinyAD(problem);
-        cdt = problem->generate_CDT<CDT>();
-        problem->update_problem<CDT, Face_handle>(cdt, point_set);
+        cdt = problem->generate_CDT();
+        problem->update_problem(cdt, point_set);
 
         obtuse_after_fix = count_obtuse_triangles(problem);
         j = 0;
         while(j != 10){
             fix_boundary_refinement(problem);
-            cdt = problem->generate_CDT<CDT>();
-            problem->update_problem<CDT, Face_handle>(cdt, point_set);
+            cdt = problem->generate_CDT();
+            problem->update_problem(cdt, point_set);
 
             int current_obtuse = problem->get_num_obtuse();
             if(current_obtuse < obtuse_after_fix){
@@ -1281,22 +1274,6 @@ bool is_on_constraint_refinement(const Point& steiner, Problem* problem){
     return false;
 }
 
-bool is_constrained_segment(Problem* problem, Point& a, Point& b){
-    std::vector<Segment> constraints = problem->get_constraints();
-    double tolerance = 1e-12;
-    for(Segment c : constraints){
-        // Check like this because a and b might not be input points and thus are not end points of the boundary polygon
-        // which only containsinput points and is not updated i. e. split into subsegments after steiner point insertion
-        double distance_a = CGAL::to_double(CGAL::squared_distance(c, a));
-        double distance_b = CGAL::to_double(CGAL::squared_distance(c, b));
-        if ((distance_a < tolerance || c.has_on(a)) && (distance_b < tolerance || c.has_on(b))) {
-        //if((a == edge->source() && b == edge->target()) || (a == edge->target() || b == edge->source())){
-            return true;
-        }
-    }
-    return false;
-}
-
 bool is_on_boundary_refinement(Point& p, Polygon& boundary){
     double tolerance = 1e-12;
     for (auto edge = boundary.edges_begin(); edge != boundary.edges_end(); ++edge) {
@@ -1317,6 +1294,21 @@ bool is_boundary_segment(Polygon& boundary, Point& a, Point& b){
         double distance_b = CGAL::to_double(CGAL::squared_distance(*edge, b));
         if ((distance_a < tolerance || edge->has_on(a)) && (distance_b < tolerance || edge->has_on(b))) {
         //if((a == edge->source() && b == edge->target()) || (a == edge->target() || b == edge->source())){
+            return true;
+        }
+    }
+    return false;
+}
+
+bool is_constrained_segment(Problem* problem, Point& a, Point& b){
+    std::vector<Segment> constraints = problem->get_constraints();
+    double tolerance = 1e-12;
+    for(Segment c : constraints){
+        // Check like this because a and b might not be input points and thus are not end points of a constraint
+        // which only contain input points and are not updated i. e. split into subsegments after steiner point insertion
+        double distance_a = CGAL::to_double(CGAL::squared_distance(c, a));
+        double distance_b = CGAL::to_double(CGAL::squared_distance(c, b));
+        if ((distance_a < tolerance || c.has_on(a)) && (distance_b < tolerance || c.has_on(b))) {
             return true;
         }
     }
@@ -1355,6 +1347,34 @@ std::pair<Point, bool> find_boundary_point(Problem* problem, Point& a, Point& b,
        }
     }
     //std::cout << RED << "Boundary point for boundary fix was not found!" << RESET << std::endl;
+    return {Point(0, 0), false};
+}
+
+// First two points are on a constraint
+std::pair<Point, bool> find_constraint_point(Problem* problem, Point& a, Point& b, Point& c){
+    auto triangles = problem->get_triangulation();
+    auto constraints = problem->get_constraints();
+    for(Polygon t : triangles){
+        Point p0 = t[0];
+        Point p1 = t[1];
+        Point p2 = t[2];
+       if(p0 != a && p1 != a && p2!= a){
+            if(p0 == b && is_constrained_segment(problem, p0, p1)){
+                return {p1, true};
+            } else if (p0 == b && is_constrained_segment(problem, p0, p2)){
+                return {p2, true};
+            } else if(p1 == b && is_constrained_segment(problem, p1, p0)){
+                return {p0, true};
+            } else if (p1 == b && is_constrained_segment(problem, p1, p2)){
+                return {p2, true};
+            } else if(p2 == b && is_constrained_segment(problem, p2, p0)){
+                return {p0, true};
+            } else if (p2 == b && is_constrained_segment(problem, p2, p1)){
+                return {p1, true};
+            }
+       }
+    }
+    //std::cout << RED << "Point on a constraint for constraint fix was not found!" << RESET << std::endl;
     return {Point(0, 0), false};
 }
 
@@ -1555,7 +1575,7 @@ void flip_corner_triangle(Problem* problem){
             Point a = t.vertex((angle + 1)%3);
             Point b = t.vertex((angle + 2)%3);
 
-            if (std::find(points.begin(), points.end(), s) != points.end() && is_on_boundary_refinement(a, boundary) && is_on_boundary_refinement(b, boundary) && !is_boundary_segment(boundary, a, b) && is_boundary_segment(boundary, a, s) && is_boundary_segment(boundary, b, s)){
+            if (std::find(points.begin(), points.end(), s) != points.end() && (is_on_boundary_refinement(a, boundary) || is_on_constraint_refinement(a, problem)) && (is_on_boundary_refinement(b, boundary) || is_on_constraint_refinement(b, problem)) && !is_boundary_segment(boundary, a, b) && (is_boundary_segment(boundary, a, s) || is_constrained_segment(problem, a, s)) && (is_boundary_segment(boundary, b, s) || is_constrained_segment(problem, b, s))){
 
                 auto [c, t_neighbor, is_valid] = find_opposite_point(problem, a, b, s);
 
@@ -1577,6 +1597,149 @@ void flip_corner_triangle(Problem* problem){
                 }
             }
         }
+    }
+}
+
+void fix_constraint_refinement(Problem *problem){
+    std::vector<Polygon> triangulation = problem->get_triangulation();
+    std::vector<Point> points = problem->get_points();
+    Polygon boundary = problem->get_boundary();
+
+    Segment constraint;
+
+    for(Polygon t : triangulation){
+        int angle = find_obtuse_angle(t);
+        if(angle != -1){
+            Point s = t.vertex(angle);
+            Point a = t.vertex((angle + 1)%3);
+            Point b = t.vertex((angle + 2)%3);
+
+            // Case 1 (for boundary)
+            if(is_on_constraint_refinement(a, problem) && is_on_constraint_refinement(b, problem) && is_constrained_segment(problem, a, b)){
+                Segment segment(a, b);
+                try{
+                    Point p = project_onto_segment_refinement(s, segment);
+                    problem->add_steiner(p);
+                } catch(const std::runtime_error& e){
+                    // Do not insert any new points, case could not be fixed
+                    std::cout << RED << "Projected point is not on segment!"<< RESET << std::endl;
+                }
+            } 
+            // Case 2
+            else if (is_on_constraint_refinement(s, problem)){
+                bool a_constraint = is_constrained_segment(problem, a, s);
+                bool b_constraint = is_constrained_segment(problem, b, s);
+
+                Point c;
+                bool is_valid;
+
+                if(a_constraint){
+                    auto [result, res_valid] = find_constraint_point(problem, a, s, b);
+                    if(res_valid){
+                        is_valid = res_valid;
+                        c = result;
+                    }
+                } else if(b_constraint){
+                    auto [result, res_valid] = find_constraint_point(problem, b, s, a);
+                    if(res_valid){
+                        is_valid = res_valid;
+                        c = result;
+                    }
+                } else {
+                    continue;
+                }
+
+                bool first_option = false;
+
+                // if s is not constrained and can be moved
+                if(std::find(points.begin(), points.end(), s) == points.end()){
+                    if(a_constraint && is_valid){
+                        Line line(s, a); 
+                        Point proj = line.projection(b);
+                        // check whether the new point position is within the corresponding segment
+                        if(point_within_segment(a, c, proj)){
+                            //std::cout << "aaa" << std::endl;
+                            problem->update_steiner(s, proj);
+                            first_option = true;
+                        }
+                    } else if(b_constraint && is_valid){
+                        Line line(s, b); 
+                        Point proj = line.projection(a); 
+                        // check whether the new point position is within the corresponding segment
+                        if(point_within_segment(b, c, proj)){
+                            //std::cout << "bbb" << std::endl;
+                            problem->update_steiner(s, proj);
+                            first_option = true;
+                        }
+                    }
+                } 
+
+                if (!first_option){
+                    if(a_constraint){ // try to move b
+                        if(std::find(points.begin(), points.end(), b) == points.end() && !is_on_boundary_refinement(b, boundary) && !is_on_constraint_refinement(b, problem)){
+                            Line line_parallel(b, a - s);
+                            Point proj = line_parallel.projection(s);
+                            //problem->add_steiner(proj);
+                            problem->update_steiner(b, proj);
+                        }
+                    } else if (b_constraint){ // try to move a
+                        if(std::find(points.begin(), points.end(), a) == points.end() && !is_on_boundary_refinement(a, boundary) && !is_on_constraint_refinement(a, problem)){
+                            Line line_parallel(a, b - s);
+                            Point proj = line_parallel.projection(s);
+                            //problem->add_steiner(proj);
+                            problem->update_steiner(a, proj);
+                        }
+                    }
+                }
+            } 
+            if (std::find(points.begin(), points.end(), s) != points.end() && is_on_constraint_refinement(a, problem) && is_on_constraint_refinement(b, problem) && !is_constrained_segment(problem, a, b)){
+
+                Point c1, c2;
+                bool is_valid1, is_valid2 = false;
+                
+                auto [result1, res_valid1] = find_constraint_point(problem, s, a, b);
+                if(res_valid1){
+                    is_valid1 = res_valid1;
+                    c1 = result1;
+                }
+                auto [result2, res_valid2] = find_constraint_point(problem, s, b, a);
+                if(res_valid2){
+                    is_valid2 = res_valid2;
+                    c2 = result2;
+                }
+
+                auto [c3, t_neighbor, is_valid3] = find_opposite_point(problem, a, b, s);
+
+                // move a if possible
+                if(std::find(points.begin(), points.end(), a) == points.end() && is_valid1 && is_valid3){
+                    Line line(s, a); 
+                    Point proj = line.projection(c3);
+                    // check whether the new point position is within the corresponding segment
+                    if(point_within_segment(s, c1, proj) && a != proj){
+                        //std::cout << "aaa" << std::endl;
+                        problem->update_steiner(a, proj);
+
+                        int new_obtuse = problem->get_num_obtuse() - 1;
+                        problem->set_num_obtuse(new_obtuse);
+                    }
+                }
+
+                // move b if possible
+                if(std::find(points.begin(), points.end(), b) == points.end() && is_valid2 && is_valid3){
+                    Line line(s, b); 
+                    Point proj = line.projection(c3);
+                    // check whether the new point position is within the corresponding segment
+                    if(point_within_segment(s, c2, proj) && b != proj){
+                        //std::cout << "aaa" << std::endl;
+                        problem->update_steiner(b, proj);
+
+                        int new_obtuse = problem->get_num_obtuse() - 1;
+                        problem->set_num_obtuse(new_obtuse);
+                    }
+                }
+            }
+        }
+        
     }
 }
 
@@ -1653,8 +1816,8 @@ void step_by_step_mesh(Problem* problem){
         constraints.push_back(Segment(boundary_points[i], boundary_points[(i + 1) % boundary_points.size()]));
     }
 
-    CDT cdt = problem->generate_CDT<CDT>();
-    problem->update_problem<CDT, Face_handle>(cdt, point_set);
+    CDT cdt = problem->generate_CDT();
+    problem->update_problem(cdt, point_set);
     std::cout  << "Num of points in cdt before: " << cdt.number_of_vertices() << std::endl;
 
     // Set up meshing
@@ -1673,10 +1836,10 @@ void step_by_step_mesh(Problem* problem){
     while (iter != 40 && !mesher->is_refinement_done() && (count_obtuse_triangles(problem) != 0)) {
         mesher->step_by_step_refine_mesh();
 
-        problem->update_problem<CDT, Face_handle>(cdt, point_set);
+        problem->update_problem(cdt, point_set);
 
         /*if(iter >= 20){
-            problem->update_problem<CDT, Face_handle>(cdt, point_set);
+            problem->update_problem(cdt, point_set);
             problem->visualize_solution({});
         }*/
 
@@ -1692,15 +1855,15 @@ void step_by_step_mesh(Problem* problem){
             problem->visualize_solution({});
 
             // Update CDT
-            cdt = problem->generate_CDT<CDT>();
+            cdt = problem->generate_CDT();
             std::cout << "Num obtuse after regenerating CDT after optimization " << opt_count << ": " << count_obtuse_triangles(problem) << std::endl;
-            problem->update_problem<CDT, Face_handle>(cdt, point_set);
+            problem->update_problem(cdt, point_set);
             //problem->visualize_solution({});
 
             // Fix boundary
             fix_boundary_refinement(problem);
-            cdt = problem->generate_CDT<CDT>();
-            problem->update_problem<CDT, Face_handle>(cdt, point_set);
+            cdt = problem->generate_CDT();
+            problem->update_problem(cdt, point_set);
             std::cout << "Num obtuse after fixing boundary " << opt_count << ": " << count_obtuse_triangles(problem) << "\n" << std::endl;
             problem->visualize_solution({});
 
@@ -1719,36 +1882,20 @@ void step_by_step_mesh(Problem* problem){
 Mesh_Statistics uniform_mesh(Problem* problem){
     std::vector<Point> points = problem->get_points();
     std::set<Point> point_set(points.begin(), points.end());
-    std::set<Point> steiner_point_set;
-    std::vector<Point> boundary_points = problem->get_boundary().vertices();
-    std::vector<Segment> constraints = problem->get_constraints();
     Polygon boundary = problem->get_boundary();
-    for (size_t i = 0; i < boundary_points.size(); i++) {
-        constraints.push_back(Segment(boundary_points[i], boundary_points[(i + 1) % boundary_points.size()]));
-    }
 
-    CDT cdt = problem->generate_CDT<CDT>();
-    problem->update_problem<CDT, Face_handle>(cdt, point_set);
+    CDT cdt = problem->generate_CDT();
+    problem->update_problem(cdt, point_set);
 
     auto bbox = boundary.bbox();
     double max_size = std::sqrt(pow(bbox.x_span(),2) + pow(bbox.y_span(),2)) * 0.1;
 
     //std::cout << RED << "mesh size: " << max_size/2 << RESET << std::endl;
 
-    Mesher mesher(cdt);
-    mesher.set_criteria(Criteria(0.125, max_size/2));
-    mesher.refine_mesh();
-
-    problem->update_problem<CDT, Face_handle>(cdt, point_set);
-
+    problem->generate_uniform_mesh(cdt, max_size);
     problem->visualize_solution({});
 
     //std::cout << RED << "num obtuse before: " << count_obtuse_triangles(problem) << std::endl;
-
-    /*locally_optimize_triangles(problem);
-    cdt = problem->generate_CDT<CDT>();
-    problem->update_problem<CDT, Face_handle>(cdt, point_set);
-    std::cout << RED << "num obtuse after: " << count_obtuse_triangles(problem) << RESET << std::endl;*/
 
     int obtuse_meshing = count_obtuse_triangles(problem);
     problem->set_num_obtuse(obtuse_meshing);
@@ -1763,35 +1910,34 @@ Mesh_Statistics uniform_mesh(Problem* problem){
     //problem->save_intermidiate_result(path1);
 
     optimizeTinyAD(problem);
-    cdt = problem->generate_CDT<CDT>();
-    problem->update_problem<CDT, Face_handle>(cdt, point_set);
+    cdt = problem->generate_CDT();
+    problem->update_problem(cdt, point_set);
     final_num_obtuse = std::min(final_num_obtuse, count_obtuse_triangles(problem));
-    problem->visualize_solution({});
-
+    //problem->visualize_solution({});
 
     fix_rhombus(problem, cdt);
-    cdt = problem->generate_CDT<CDT>();
-    problem->update_problem<CDT, Face_handle>(cdt, point_set);
+    cdt = problem->generate_CDT();
+    problem->update_problem(cdt, point_set);
     final_num_obtuse = std::min(final_num_obtuse, count_obtuse_triangles(problem));
-    problem->visualize_solution({});
+    //problem->visualize_solution({});
 
     optimizeTinyAD(problem);
-    cdt = problem->generate_CDT<CDT>();
-    problem->update_problem<CDT, Face_handle>(cdt, point_set);
+    cdt = problem->generate_CDT();
+    problem->update_problem(cdt, point_set);
     final_num_obtuse = std::min(final_num_obtuse, count_obtuse_triangles(problem));
-    problem->visualize_solution({});
+    //problem->visualize_solution({});
 
-    int obtuse_opt = count_obtuse_triangles(problem);
+    int obtuse_opt = final_num_obtuse;
     problem->set_num_obtuse(obtuse_opt);
 
-    std::cout << RED << "num obtuse nach 1 opt: " << count_obtuse_triangles(problem) << RESET << std::endl;
+    //std::cout << RED << "num obtuse nach 1 opt: " << count_obtuse_triangles(problem) << RESET << std::endl;
 
     int obtuse_after_fix = obtuse_opt;
     int i = 0;
     while(i != 100){
         fix_boundary_refinement(problem);
-        cdt = problem->generate_CDT<CDT>();
-        problem->update_problem<CDT, Face_handle>(cdt, point_set);
+        cdt = problem->generate_CDT();
+        problem->update_problem(cdt, point_set);
 
         int current_obtuse = problem->get_num_obtuse();
         if(current_obtuse < obtuse_after_fix){
@@ -1803,39 +1949,46 @@ Mesh_Statistics uniform_mesh(Problem* problem){
     }
 
     final_num_obtuse = std::min(final_num_obtuse, count_obtuse_triangles(problem));
-    std::cout << RED << "num obtuse: " << count_obtuse_triangles(problem) << RESET << std::endl;
+    //std::cout << RED << "num obtuse: " << final_num_obtuse << RESET << std::endl;
 
-    problem->visualize_solution({});
+    //problem->visualize_solution({});
 
-    /*locally_optimize_obtuse_refinement(problem);
-    cdt = problem->generate_CDT<CDT>();
-    problem->update_problem<CDT, Face_handle>(cdt, point_set);*/
+    i = 0;
+    while(i != 10){
+        fix_constraint_refinement(problem);
+        cdt = problem->generate_CDT();
+        problem->update_problem(cdt, point_set);
+        i++;
+    }
+
+    final_num_obtuse = std::min(final_num_obtuse, count_obtuse_triangles(problem));
+    //std::cout << RED << "num obtuse: " << final_num_obtuse << RESET << std::endl;
     //problem->visualize_solution({});
 
     optimizeTinyAD(problem);
-    cdt = problem->generate_CDT<CDT>();
-    problem->update_problem<CDT, Face_handle>(cdt, point_set);
+    cdt = problem->generate_CDT();
+    problem->update_problem(cdt, point_set);
     final_num_obtuse = std::min(final_num_obtuse, count_obtuse_triangles(problem));
-    problem->visualize_solution({});
+    //problem->visualize_solution({});
 
     fix_rhombus(problem, cdt);
-    cdt = problem->generate_CDT<CDT>();
-    problem->update_problem<CDT, Face_handle>(cdt, point_set);
+    cdt = problem->generate_CDT();
+    problem->update_problem(cdt, point_set);
     final_num_obtuse = std::min(final_num_obtuse, count_obtuse_triangles(problem));
-    problem->visualize_solution({});
+    //problem->visualize_solution({});
 
     optimizeTinyAD(problem);
-    cdt = problem->generate_CDT<CDT>();
-    problem->update_problem<CDT, Face_handle>(cdt, point_set);
+    cdt = problem->generate_CDT();
+    problem->update_problem(cdt, point_set);
     final_num_obtuse = std::min(final_num_obtuse, count_obtuse_triangles(problem));
-    problem->visualize_solution({});
+    //problem->visualize_solution({});
 
     obtuse_after_fix = obtuse_opt;
     i = 0;
     while(i != 100){
         fix_boundary_refinement(problem);
-        cdt = problem->generate_CDT<CDT>();
-        problem->update_problem<CDT, Face_handle>(cdt, point_set);
+        cdt = problem->generate_CDT();
+        problem->update_problem(cdt, point_set);
 
         int current_obtuse = problem->get_num_obtuse();
         if(current_obtuse < obtuse_after_fix){
@@ -1846,12 +1999,49 @@ Mesh_Statistics uniform_mesh(Problem* problem){
         i++;
     }
     final_num_obtuse = std::min(final_num_obtuse, count_obtuse_triangles(problem));
-    problem->visualize_solution({});
 
-    flip_corner_triangle(problem);
-    problem->visualize_solution({});
+    i = 0;
+    while(i != 10){
+        fix_constraint_refinement(problem);
+        cdt = problem->generate_CDT();
+        problem->update_problem(cdt, point_set);
+        i++;
+    }
 
     final_num_obtuse = std::min(final_num_obtuse, count_obtuse_triangles(problem));
+    //problem->visualize_solution({});
+
+    flip_corner_triangle(problem);
+    final_num_obtuse = std::min(final_num_obtuse, count_obtuse_triangles(problem));
+    //problem->visualize_solution({});
+
+    obtuse_after_fix = obtuse_opt;
+    i = 0;
+    while(i != 100){
+        fix_boundary_refinement(problem);
+        cdt = problem->generate_CDT();
+        problem->update_problem(cdt, point_set);
+
+        int current_obtuse = problem->get_num_obtuse();
+        if(current_obtuse < obtuse_after_fix){
+            obtuse_after_fix = current_obtuse;
+        } else {
+            break;
+        }
+        i++;
+    }
+    final_num_obtuse = std::min(final_num_obtuse, count_obtuse_triangles(problem));
+
+    i = 0;
+    while(i != 10){
+        fix_constraint_refinement(problem);
+        cdt = problem->generate_CDT();
+        problem->update_problem(cdt, point_set);
+        i++;
+    }
+
+    final_num_obtuse = std::min(final_num_obtuse, count_obtuse_triangles(problem));
+    problem->visualize_solution({});
 
     problem->set_num_obtuse(final_num_obtuse);
 
@@ -1862,14 +2052,13 @@ Mesh_Statistics uniform_mesh(Problem* problem){
     problem->save_intermidiate_result(path2);
 
     std::cout << RED << "num obtuse: " << count_obtuse_triangles(problem) << RESET << std::endl;
-    //std::cout << "num steiner: " << problem->get_steiner().size() << RESET << std::endl;*/
-
-    //Mesh_Statistics statistics;
-
-    //problem->visualize_solution({});
 
     return statistics;
 }
+
+//******************************************************************************************************************
+
+
 
 //***********************************************Equilateral********************************************************
 
@@ -1884,8 +2073,8 @@ void mesh_cgal(Problem* problem){
         constraints.push_back(Segment(boundary_points[i], boundary_points[(i + 1) % boundary_points.size()]));
     }
 
-    CDT cdt = problem->generate_CDT<CDT>();
-    problem->update_problem<CDT, Face_handle>(cdt, point_set);
+    CDT cdt = problem->generate_CDT();
+    problem->update_problem(cdt, point_set);
 
     auto bbox = boundary.bbox();
     double max_size = std::sqrt(pow(bbox.x_span(),2) + pow(bbox.y_span(),2)) * 0.1;
@@ -1894,7 +2083,7 @@ void mesh_cgal(Problem* problem){
     mesher.set_criteria(Criteria(0.125, max_size/4));
     mesher.refine_mesh();
 
-    problem->update_problem<CDT, Face_handle>(cdt, point_set);
+    problem->update_problem(cdt, point_set);
     //problem->visualize_solution({});
 }
 
@@ -2078,21 +2267,21 @@ void mesh_equilateral_single(Problem* problem){
     //problem->visualize_solution({});
 
     // Stats after optimization meshing
-    /*CDT cdt = problem->generate_CDT<CDT>();
+    /*CDT cdt = problem->generate_CDT();
     iterate_lloyd<CDT, Vertex_handle, Vertex_circulator>(cdt, problem, constraints, 1000);
-    problem->update_problem<CDT, Face_handle>(cdt, point_set);
+    problem->update_problem(cdt, point_set);
     /*CGAL::lloyd_optimize_mesh_2(cdt, CGAL::parameters::number_of_iterations(1000));
-    problem->update_problem<CDT, Face_handle>(cdt, point_set);*/
+    problem->update_problem(cdt, point_set);*/
     
     optimizeTinyAD(problem);
-    CDT cdt = problem->generate_CDT<CDT>();
-    problem->update_problem<CDT, Face_handle>(cdt, point_set);
+    CDT cdt = problem->generate_CDT();
+    problem->update_problem(cdt, point_set);
     optimizeTinyAD(problem);
-    cdt = problem->generate_CDT<CDT>();
-    problem->update_problem<CDT, Face_handle>(cdt, point_set);
+    cdt = problem->generate_CDT();
+    problem->update_problem(cdt, point_set);
     /*optimizeTinyAD(problem);
-    cdt = problem->generate_CDT<CDT>();
-    problem->update_problem<CDT, Face_handle>(cdt, point_set);*/
+    cdt = problem->generate_CDT();
+    problem->update_problem(cdt, point_set);*/
     std::cout << "mean absolute deviation: " << mean_absolute_deviation(problem) << std::endl;
 
     //save_angle_stats_for_plot(problem, "../results/angle_data_lloyd.csv");
@@ -2108,23 +2297,23 @@ Mesh_Statistics mesh_equilateral(Problem* problem){
     std::set<Point> point_set(points.begin(), points.end());
 
     mesh_cgal(problem);
-    CDT cdt = problem->generate_CDT<CDT>();
+    CDT cdt = problem->generate_CDT();
     //refine(problem, cdt);
     //problem->visualize_solution({});
 
     optimizeTinyAD(problem);
-    cdt = problem->generate_CDT<CDT>();
-    problem->update_problem<CDT, Face_handle>(cdt, point_set);
+    cdt = problem->generate_CDT();
+    problem->update_problem(cdt, point_set);
     optimizeTinyAD(problem);
-    cdt = problem->generate_CDT<CDT>();
-    problem->update_problem<CDT, Face_handle>(cdt, point_set);
+    cdt = problem->generate_CDT();
+    problem->update_problem(cdt, point_set);
     /*optimizeTinyAD(problem);
-    cdt = problem->generate_CDT<CDT>();
-    problem->update_problem<CDT, Face_handle>(cdt, point_set);*/
+    cdt = problem->generate_CDT();
+    problem->update_problem(cdt, point_set);*/
 
-    /*cdt = problem->generate_CDT<CDT>();
+    /*cdt = problem->generate_CDT();
     iterate_lloyd<CDT, Vertex_handle, Vertex_circulator>(cdt, problem, constraints, 1000);
-    problem->update_problem<CDT, Face_handle>(cdt, point_set);*/
+    problem->update_problem(cdt, point_set);*/
 
     stats.set_name(problem->get_name());
     stats.set_steiner_after_meshing(problem->get_steiner().size());

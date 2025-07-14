@@ -13,7 +13,7 @@ df1 = pd.read_csv("../results/modified3_initial_ln_simple_exterior_pt2.csv", ind
 #names1 = df1['instance'].str.removeprefix("point-set_")
 #names1 = df1['instance'].str.removeprefix("simple-polygon-exterior_")
 names1 = df1['instance'].str.removeprefix("simple-polygon-exterior-")
-steiner1 = df1['steiner_meshing']
+obtuse1 = df1['obtuse_meshing']
 
 # f1
 #df2 = pd.read_csv("../results/modified3_initial_ln_ortho.csv", index_col=False)
@@ -26,7 +26,7 @@ df2 = pd.read_csv("../results/modified3_initial_ln_simple_exterior_pt2.csv", ind
 #names2 = df2['instance'].str.removeprefix("point-set_")
 #names2 = df2['instance'].str.removeprefix("simple-polygon-exterior_")
 names2 = df2['instance'].str.removeprefix("simple-polygon-exterior-")
-steiner2 = df2['obtuse_optimized']
+obtuse2 = df2['obtuse_optimized']
 
 # f2
 #df3 = pd.read_csv("../results/modified3_initial_sigmoid_ortho.csv", index_col=False)
@@ -39,7 +39,7 @@ df3 = pd.read_csv("../results/modified3_initial_sigmoid_simple_exterior_pt2.csv"
 #names3 = df3['instance'].str.removeprefix("point-set_")
 #names3 = df3['instance'].str.removeprefix("simple-polygon-exterior_")
 names3 = df3['instance'].str.removeprefix("simple-polygon-exterior-")
-steiner3 = df3['obtuse_optimized']
+obtuse3 = df3['obtuse_optimized']
 
 # f3
 #df4 = pd.read_csv("../results/modified3_initial_refined_sigmoid_ortho.csv", index_col=False)
@@ -52,19 +52,19 @@ df4 = pd.read_csv("../results/modified3_initial_refined_sigmoid_simple_exterior_
 #names4 = df4['instance'].str.removeprefix("point-set_")
 #names4 = df4['instance'].str.removeprefix("simple-polygon-exterior_")
 names4 = df4['instance'].str.removeprefix("simple-polygon-exterior-")
-steiner4 = df4['obtuse_optimized']
+obtuse4 = df4['obtuse_optimized']
 
 # Plot
 plt.figure(figsize=(12, 6))
-#plt.plot(names1, steiner1, marker='o', linestyle='-', color='orange', label=r'$\mathbf{Before\ Optimization}$')
-plt.plot(names2, steiner2, marker='o', linestyle='-', color='green', label=r'$\mathbf{f_1}$')
-plt.plot(names3, steiner3, marker='o', linestyle='-', color='blue', label=r'$\mathbf{f_2}$')
-plt.plot(names4, steiner4, marker='o', linestyle='-', color='red', label=r'$\mathbf{f_3}$')
+#plt.plot(names1, obtuse1, marker='o', linestyle='-', color='orange', label=r'$\mathbf{Before\ Optimization}$')
+plt.plot(names2, obtuse2, marker='o', linestyle='-', color='green', label=r'$\mathbf{f_1}$')
+plt.plot(names3, obtuse3, marker='o', linestyle='-', color='blue', label=r'$\mathbf{f_2}$')
+plt.plot(names4, obtuse4, marker='o', linestyle='-', color='red', label=r'$\mathbf{f_3}$')
 
 # Formatting
-plt.title("Number of obtuse traingles before and after different optimizations (Simlple Polygons with Constraints (Part 2))")
+plt.title("Number of obtuse triangles before and after different optimizations (Simple Polygons with Constraints (Part 2))")
 plt.xlabel("Instance")
-plt.ylabel("# Steiner")
+plt.ylabel("# Obtuse")
 plt.xticks(rotation=45, ha='right')
 plt.tight_layout()
 plt.legend()
@@ -79,10 +79,10 @@ width = 0.2  # Width of each bar
 # --- Create Bar Plot ---
 fig, ax = plt.subplots(figsize=(14, 6))
 
-ax.bar(x - 1.5 * width, steiner1, width, label=r'$\mathbf{Before}$', color='orange')
-ax.bar(x - 0.5 * width, steiner2, width, label=r'$\mathbf{f_1}$', color='green')
-ax.bar(x + 0.5 * width, steiner3, width, label=r'$\mathbf{f_2}$', color='blue')
-ax.bar(x + 1.5 * width, steiner4, width, label=r'$\mathbf{f_3}$', color='red')
+ax.bar(x - 1.5 * width, obtuse1, width, label=r'$\mathbf{Before}$', color='orange')
+ax.bar(x - 0.5 * width, obtuse2, width, label=r'$\mathbf{f_1}$', color='green')
+ax.bar(x + 0.5 * width, obtuse3, width, label=r'$\mathbf{f_2}$', color='blue')
+ax.bar(x + 1.5 * width, obtuse4, width, label=r'$\mathbf{f_3}$', color='red')
 
 # --- Formatting ---
 ax.set_xlabel("Instance")

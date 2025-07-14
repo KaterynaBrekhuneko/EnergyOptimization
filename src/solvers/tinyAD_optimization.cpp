@@ -445,7 +445,7 @@ int find_obtuse_angle(Eigen::Vector2d& a, Eigen::Vector2d& b, Eigen::Vector2d& c
     return -1;
 }
 
-bool is_on_constraint(Point& steiner, std::vector<Segment>& constraints, Segment* constraint){
+bool is_on_constraint_optimization(Point& steiner, std::vector<Segment>& constraints, Segment* constraint){
     for(Segment c : constraints){
         double distance = std::sqrt(CGAL::to_double(CGAL::squared_distance(c, steiner)));
         if(c.has_on(steiner) || distance < 1e-6){
@@ -456,7 +456,7 @@ bool is_on_constraint(Point& steiner, std::vector<Segment>& constraints, Segment
     return false;
 }
 
-bool is_on_boundary(Point& steiner, Polygon& boundary, Segment* constraint){
+bool is_on_boundary_optimization(Point& steiner, Polygon& boundary, Segment* constraint){
     int n = boundary.size();
     for (int i = 0; i < n; ++i) {
         Segment edge(boundary.vertex(i), boundary.vertex((i + 1) % n)); 
@@ -486,7 +486,7 @@ int find_point_idx(Point& p, std::vector<Point>& points, std::vector<Point>& ste
 }
 
 const bool is_constrained_point(Point& p, Polygon& boundary, std::vector<Segment>& constraints, Segment* constraint) {
-    return is_on_constraint(p, constraints, constraint) || is_on_boundary(p, boundary, constraint);
+    return is_on_constraint_optimization(p, constraints, constraint) || is_on_boundary_optimization(p, boundary, constraint);
 }
 
 std::tuple<std::vector<Point>, std::vector<int>, std::vector<Segment>> get_constrained_points(std::vector<Point>& steiner, Polygon& boundary, std::vector<Segment>& constraints){
@@ -705,7 +705,7 @@ void find_minimum(Problem* problem, Eigen::MatrixXd& V, Eigen::MatrixXi& F, Eige
             return (T)INFINITY;
         }
 
-        return angle_cost_equilateral<T>(problem, a, b, c);
+        return angle_cost_refined_sigmoid<T>(problem, a, b, c);
     });
 
     // Add penalty term per constrained vertex

@@ -4,9 +4,16 @@
 #include <format>
 #include <json.hpp>
 #include <vector>
+
 #include <CGAL/Exact_predicates_exact_constructions_kernel.h>
 #include <CGAL/Exact_predicates_inexact_constructions_kernel.h>
 #include <CGAL/Boolean_set_operations_2/oriented_side.h>
+#include <CGAL/Delaunay_mesher_2.h>
+#include <CGAL/Delaunay_mesh_size_criteria_2.h>
+#include <CGAL/Constrained_Delaunay_triangulation_2.h>
+#include <CGAL/Delaunay_mesher_2.h>
+#include <CGAL/Delaunay_mesh_face_base_2.h>
+#include <CGAL/Delaunay_mesh_vertex_base_2.h>
 #include <CGAL/Polygon_2.h>
 #include <CGAL/convex_hull_2.h>
 
@@ -26,6 +33,17 @@ typedef K::Vector_2 Vector;
 typedef K::Line_2 Line;
 typedef K::Segment_2 Segment;
 typedef K::FT FT;
+
+typedef CGAL::Delaunay_mesh_vertex_base_2<K> Vb;
+typedef CGAL::Delaunay_mesh_face_base_2<K> Fb;
+typedef CGAL::Triangulation_data_structure_2<Vb, Fb> Tds;
+typedef CGAL::Constrained_Delaunay_triangulation_2<K, Tds> CDT;
+typedef CDT::Face_handle Face_handle;
+typedef CDT::Vertex_handle Vertex_handle;
+typedef CDT::Vertex_circulator Vertex_circulator;
+
+typedef CGAL::Delaunay_mesh_size_criteria_2<CDT> Criteria;
+typedef CGAL::Delaunay_mesher_2<CDT, Criteria> Mesher;
 
 class Problem
 {
@@ -87,11 +105,11 @@ public:
 
     void load_solution();
     void visualize_solution(std::vector<Polygon> problematic_triangles);
+    void visualize_solution_voronoi(std::vector<std::pair<Point, Point>> voronoi_edges);
 
     void save_intermidiate_result(std::string path);
     void write_problem_to_json(const std::string& output_file);
 
-    template <typename CDT>
     CDT generate_CDT() {
         std::vector<Segment> all_constraints = constraints;
         for (int i = 0; i < boundary.size(); i++) all_constraints.push_back(Segment(boundary[i], boundary[(i+1)%boundary.size()]));
@@ -103,7 +121,6 @@ public:
         return cdt;
     }
 
-    template <typename CDT, typename Face_handle>
     bool triangle_is_inside(CDT& cdt, const Face_handle& triangle){
         Vector a = Vector(0, 0);
         for (int i = 0; i < 3; i++) {
@@ -114,11 +131,11 @@ public:
         return CGAL::oriented_side(c, boundary) == CGAL::POSITIVE;
     }
 
-    template <typename CDT, typename Face_handle>
     std::vector<std::vector<Point>> grab_triangulation(CDT& cdt) {
         std::vector<std::vector<Point>> triangulation;
         for (const auto& face : cdt.finite_face_handles()) {
-            if(triangle_is_inside<CDT, Face_handle>(cdt, face)){
+            Face_handle fh = face;
+            if(triangle_is_inside(cdt, face)){
                 std::vector<Point> triangle;
                 for (int i = 0; i < 3; i++) {
                     Point p = face->vertex(i)->point();
@@ -130,7 +147,6 @@ public:
         return triangulation;
     }
 
-    template <typename CDT, typename Face_handle>
     void update_problem(CDT& cdt, std::set<Point>& point_set){
         clear_solution();
     
@@ -139,9 +155,19 @@ public:
                 add_steiner(p->point());
             }
         }
-        for (auto triangle : grab_triangulation<CDT, Face_handle>(cdt)) {
+        for (auto triangle : grab_triangulation(cdt)) {
             add_triangle(Polygon(triangle.begin(), triangle.end()));
         }
+    }
+
+    void generate_uniform_mesh(CDT& cdt, double max_size){
+        std::set<Point> point_set(points.begin(), points.end());
+
+        Mesher mesher(cdt);
+        mesher.set_criteria(Criteria(0.125, max_size/2));
+        mesher.refine_mesh();
+
+        update_problem(cdt, point_set);
     }
 };
 
@@ -154,3 +180,5 @@ double distance(Point& a, Point& b);
 
 void to_IPE(std::string path, std::vector<Point> points, std::vector<Segment> constraints, std::vector<Segment> newConstraints, std::vector<Point> boundary, std::vector<Point> steiner, std::vector<Segment> triangulation, std::vector<Polygon> obtuseTriangles, std::vector<Polygon> problematic_triangles);
 void to_SVG(std::string path, std::vector<Point> points, std::vector<Segment> constraints, Polygon boundary, std::vector<Point> steiner, std::vector<Polygon> triangles, std::vector<Polygon> obtuse_triangles);
+
+void to_IPE_voronoi(std::string path, std::vector<Point> points, std::vector<Segment> constraints, std::vector<Segment> newConstraints, std::vector<Point> boundary, std::vector<Point> steiner, std::vector<Segment> triangulation, std::vector<Polygon> obtuseTriangles, std::vector<Polygon> problematic_triangles, std::vector<std::pair<Point, Point>> voronoi_edges);

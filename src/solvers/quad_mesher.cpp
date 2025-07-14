@@ -1,11 +1,6 @@
 #include "quad_mesher.hpp"
 #include "quad_optimization.hpp"
 
-#include <CGAL/Constrained_Delaunay_triangulation_2.h>
-#include <CGAL/Delaunay_mesher_2.h>
-#include <CGAL/Delaunay_mesh_face_base_2.h>
-#include <CGAL/Delaunay_mesh_vertex_base_2.h>
-#include <CGAL/Boolean_set_operations_2/oriented_side.h>
 #include <CGAL/intersections.h>
 #include <vector>
 #include <gmsh.h>
@@ -13,16 +8,6 @@
 #include <fstream>
 #include <algorithm>
 
-typedef CGAL::Delaunay_mesh_vertex_base_2<K> Vb;
-typedef CGAL::Delaunay_mesh_face_base_2<K> Fb;
-typedef CGAL::Triangulation_data_structure_2<Vb, Fb> Tds;
-typedef CGAL::Constrained_Delaunay_triangulation_2<K, Tds> CDT;
-
-typedef CGAL::Delaunay_mesh_size_criteria_2<CDT> Criteria;
-typedef CGAL::Delaunay_mesher_2<CDT, Criteria> Mesher;
-
-typedef CDT::Face_handle Face_handle;
-typedef CDT::Edge Edge;
 
 typedef CGAL::Bbox_2 Bbox;
 
@@ -257,7 +242,7 @@ std::vector<Polygon> generate_quads_medians(Problem* problem, CDT& cdt){
     std::set<Point> steiner_point_set;
 
     for ( Face_handle f : cdt.finite_face_handles()) {
-        if (!problem->triangle_is_inside<CDT, Face_handle>(cdt, f)) continue;
+        if (!problem->triangle_is_inside(cdt, f)) continue;
 
         Point a = f->vertex(0)->point();
         Point b = f->vertex(1)->point();
@@ -324,15 +309,15 @@ void build_quad_mesh_medians(Problem* problem){
         constraints.push_back(Segment(boundary_points[i], boundary_points[(i + 1) % boundary_points.size()]));
     }
 
-    CDT cdt = problem->generate_CDT<CDT>();
-    problem->update_problem<CDT, Face_handle>(cdt, point_set);
+    CDT cdt = problem->generate_CDT();
+    problem->update_problem(cdt, point_set);
 
     Mesher mesher(cdt);
     double max_size = get_sizing_quad(problem);
     mesher.set_criteria(Criteria(0, max_size*2));
     mesher.refine_mesh();
 
-    problem->update_problem<CDT, Face_handle>(cdt, point_set);
+    problem->update_problem(cdt, point_set);
     std::cout << GREEN << "num steiner: " << problem->get_steiner().size() << RESET << std::endl;
     auto quads = generate_quads_medians(problem, cdt);
 

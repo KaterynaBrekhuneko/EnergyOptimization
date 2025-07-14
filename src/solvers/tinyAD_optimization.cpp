@@ -1,16 +1,4 @@
-#include "../../libs/TinyAD/include/TinyAD/ScalarFunction.hh"
-#include "../../libs/TinyAD/include/TinyAD/Utils/LineSearch.hh"
-#include "../../libs/TinyAD/include/TinyAD/Utils/NewtonDirection.hh"
-#include "../../libs/TinyAD/include/TinyAD/Utils/NewtonDecrement.hh"
-
-#include <iostream>
-#include <vector>
-#include <unordered_map>
-
-#include <Eigen/Dense>
-
 #include "tinyAD_optimization.hpp"
-
 
 // Energy function: f(x) = (x-60)^2
 template <typename T>
@@ -549,12 +537,12 @@ void flip_obtuse_triangles(Problem* problem, Eigen::MatrixXd& V, Eigen::MatrixXi
         Eigen::Vector2d a = V.row(F(i, 0));
         Eigen::Vector2d b = V.row(F(i, 1));
         Eigen::Vector2d c = V.row(F(i, 2));
-        int obtuseIdx = find_obtuse_angle(a, b, c);
+        int obtuse_idx = find_obtuse_angle(a, b, c);
 
-        if (obtuseIdx != -1) {
+        if (obtuse_idx != -1) {
             // Find the neighboring triangle that shares this edge
-            int v1 = F(i, (obtuseIdx + 1) % 3);
-            int v2 = F(i, (obtuseIdx + 2) % 3);
+            int v1 = F(i, (obtuse_idx + 1) % 3);
+            int v2 = F(i, (obtuse_idx + 2) % 3);
             
             // Look for a neighboring triangle
             for (int j = 0; j < F.rows(); ++j) {
@@ -563,7 +551,7 @@ void flip_obtuse_triangles(Problem* problem, Eigen::MatrixXd& V, Eigen::MatrixXi
                     if ((F(j, k) == v1 && F(j, (k + 1) % 3) == v2) ||
                         (F(j, k) == v2 && F(j, (k + 1) % 3) == v1)) {
                         // Perform the edge flip
-                        flip_edge(problem, V, F, i, j, obtuseIdx, k, consider_energy);
+                        flip_edge(problem, V, F, i, j, obtuse_idx, k, consider_energy);
                         break;
                     }
                 }
@@ -585,14 +573,14 @@ void alter_direction(Eigen::VectorXd& d, Eigen::VectorXi& BS, Eigen::MatrixXd& B
         Eigen::Vector2d end = constraint.segment<2>(2);
         Eigen::Vector2d seg = end - start;
 
-        double projectionFactor = dir.dot(seg) / seg.squaredNorm();
-        Eigen::Vector2d new_dir = projectionFactor * seg;
+        double projection_factor = dir.dot(seg) / seg.squaredNorm();
+        Eigen::Vector2d new_dir = projection_factor * seg;
         d[2*BS[i]] = new_dir[0];
         d[2*BS[i]+1] = new_dir[1];
     }
 }
 
-void optimizeTinyAD(Problem* problem){
+void optimize_TinyAD(Problem* problem){
     auto points = problem->get_points(); 
     auto steiner = problem->get_steiner(); 
     auto triangles = problem->get_triangulation();

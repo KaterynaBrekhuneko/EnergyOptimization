@@ -572,9 +572,9 @@ Point calculate_gradient_refined_sigmoid(Point& s, std::vector<Polygon>& triangl
     double m = 0.3;
     double k_s = 2.5;
 
-    Point gradSigmoid = calculate_gradient_sigmoid(s, triangles);
-    double dx = scale*CGAL::to_double(gradSigmoid.x());
-    double dy = scale*CGAL::to_double(gradSigmoid.y());
+    Point grad_sigmoid = calculate_gradient_sigmoid(s, triangles);
+    double dx = scale*CGAL::to_double(grad_sigmoid.x());
+    double dy = scale*CGAL::to_double(grad_sigmoid.y());
 
     for(const Polygon& triangle : triangles){
         int index = find_point_index(s, triangle, false);
@@ -676,9 +676,9 @@ Point calculate_gradient_refined_sigmoid_equilateral(Point& s, std::vector<Polyg
     double m = 0.1;
     double k_s = 1;
 
-    Point gradSigmoid = calculate_gradient_sigmoid(s, triangles);
-    double dx = scale*CGAL::to_double(gradSigmoid.x());
-    double dy = scale*CGAL::to_double(gradSigmoid.y());
+    Point grad_sigmoid = calculate_gradient_sigmoid(s, triangles);
+    double dx = scale*CGAL::to_double(grad_sigmoid.x());
+    double dy = scale*CGAL::to_double(grad_sigmoid.y());
 
     for(const Polygon& triangle : triangles){
         int index = find_point_index(s, triangle, false);
@@ -771,8 +771,8 @@ Point locally_optimize_position(Point steiner, std::vector<Polygon>& triangles, 
     try{
         // for now only optimize positions of interior points
         /*if(!is_interior_vertex(s, problem->get_boundary())){
-            Segment boundaryConstraint = find_boundary_segment(s, problem->get_boundary());
-            Point tmp = move_point_on_segment(s, boundaryConstraint, 10000, neighborhood);
+            Segment boundary_constraint = find_boundary_segment(s, problem->get_boundary());
+            Point tmp = move_point_on_segment(s, boundary_constraint, 10000, neighborhood);
             update_neighborhood(triangles, steiner, tmp);
 
             std::cout << "Steiner: " << s << " Moved steiner: " << tmp << std::endl;

@@ -1,13 +1,4 @@
 #include "quad_mesher.hpp"
-#include "quad_optimization.hpp"
-
-#include <CGAL/intersections.h>
-#include <vector>
-#include <gmsh.h>
-
-#include <fstream>
-#include <algorithm>
-
 
 typedef CGAL::Bbox_2 Bbox;
 
@@ -454,14 +445,14 @@ convert_quad_mesh(Problem* problem){
     try {
         std::vector<std::size_t> nodeTags;
         std::vector<double> coords;
-        std::vector<double> paramCoords;
-        gmsh::model::mesh::getNodes(nodeTags, coords, paramCoords);
+        std::vector<double> param_coords;
+        gmsh::model::mesh::getNodes(nodeTags, coords, param_coords);
 
         V.resize(nodeTags.size(), 2);
 
-        std::unordered_map<std::size_t, std::array<double, 3>> nodeIdToCoord;
+        std::unordered_map<std::size_t, std::array<double, 3>> node_id_to_coord;
         for (std::size_t i = 0; i < nodeTags.size(); ++i) {
-            nodeIdToCoord[nodeTags[i]] = {
+            node_id_to_coord[nodeTags[i]] = {
                 coords[3 * i + 0],
                 coords[3 * i + 1],
                 coords[3 * i + 2]
@@ -480,70 +471,70 @@ convert_quad_mesh(Problem* problem){
         gmsh::model::getEntities(entities, 2); // dimension 2 = surface elements
 
         for (const auto &[dim, tag] : entities) {
-            std::vector<int> elementTypes;
-            std::vector<std::vector<std::size_t>> elementTags;
-            std::vector<std::vector<std::size_t>> nodeTagsPerElement;
+            std::vector<int> element_types;
+            std::vector<std::vector<std::size_t>> element_tags;
+            std::vector<std::vector<std::size_t>> node_tags_per_element;
 
-            gmsh::model::mesh::getElements(elementTypes, elementTags, nodeTagsPerElement, dim, tag);
+            gmsh::model::mesh::getElements(element_types, element_tags, node_tags_per_element, dim, tag);
 
-            for (std::size_t i = 0; i < elementTypes.size(); ++i) {
-                int elementType = elementTypes[i];
+            for (std::size_t i = 0; i < element_types.size(); ++i) {
+                int element_type = element_types[i];
                 std::string name;
-                int dimDummy;
+                int dim_dummy;
                 int order;
-                int numNodesPerElem;
-                std::vector<double> dummyCoords;
-                int numPrimaryNodes;
+                int num_nodes_per_elem;
+                std::vector<double> dummy_coords;
+                int num_primary_nodes;
 
                 gmsh::model::mesh::getElementProperties(
-                    elementType, name, dimDummy, order, numNodesPerElem, dummyCoords, numPrimaryNodes
+                    element_type, name, dim_dummy, order, num_nodes_per_elem, dummy_coords, num_primary_nodes
                 );
 
-                //std::cout << "Element type: " << name << " (nodes per face: " << numNodesPerElem << ")\n";
+                //std::cout << "Element type: " << name << " (nodes per face: " << num_nodes_per_elem << ")\n";
 
-                const auto &nodeListFlat = nodeTagsPerElement[i];
+                const auto &node_list_flat = node_tags_per_element[i];
 
                 // Init faces for optimization
-                int totalFaceCount = nodeListFlat.size();
-                F.resize(totalFaceCount/4, 4);
+                int total_face_count = node_list_flat.size();
+                F.resize(total_face_count/4, 4);
 
-                for (std::size_t j = 0; j < nodeListFlat.size(); j += numNodesPerElem) {
+                for (std::size_t j = 0; j < node_list_flat.size(); j += num_nodes_per_elem) {
                     //std::cout << "Face:\n";
 
                     Polygon q;
-                    int nodeId0 = nodeListFlat[j + 0];
-                    int nodeId1 = nodeListFlat[j + 1];
-                    int nodeId2 = nodeListFlat[j + 2];
-                    int nodeId3 = nodeListFlat[j + 3];
-                    const auto &xyz0 = nodeIdToCoord[nodeId0];
-                    const auto &xyz1 = nodeIdToCoord[nodeId1];
-                    const auto &xyz2 = nodeIdToCoord[nodeId2];
-                    const auto &xyz3 = nodeIdToCoord[nodeId3];
+                    int node_id0 = node_list_flat[j + 0];
+                    int node_id1 = node_list_flat[j + 1];
+                    int node_id2 = node_list_flat[j + 2];
+                    int node_id3 = node_list_flat[j + 3];
+                    const auto &xyz0 = node_id_to_coord[node_id0];
+                    const auto &xyz1 = node_id_to_coord[node_id1];
+                    const auto &xyz2 = node_id_to_coord[node_id2];
+                    const auto &xyz3 = node_id_to_coord[node_id3];
 
                     std::map<Point, int> current_quad;
-                    current_quad[Point(xyz0[0], xyz0[1])] = nodeId0;
-                    current_quad[Point(xyz1[0], xyz1[1])] = nodeId1;
-                    current_quad[Point(xyz2[0], xyz2[1])] = nodeId2;
-                    current_quad[Point(xyz3[0], xyz3[1])] = nodeId3;
+                    current_quad[Point(xyz0[0], xyz0[1])] = node_id0;
+                    current_quad[Point(xyz1[0], xyz1[1])] = node_id1;
+                    current_quad[Point(xyz2[0], xyz2[1])] = node_id2;
+                    current_quad[Point(xyz3[0], xyz3[1])] = node_id3;
 
                     std::vector<int> ccw = get_ccw_sorted_values(current_quad);
-                    //std::cout << RED << numNodesPerElem << RESET << std::endl;
+                    //std::cout << RED << num_nodes_per_elem << RESET << std::endl;
                     F(j/4, 0) = ccw[0] - 1;
                     F(j/4, 1) = ccw[1] - 1;
                     F(j/4, 2) = ccw[2] - 1;
                     F(j/4, 3) = ccw[3] - 1;
 
 
-                    for (int k = 0; k < numNodesPerElem; ++k) {
-                        std::size_t nodeId = nodeListFlat[j + k];
-                        const auto &xyz = nodeIdToCoord[nodeId];
-                        //std::cout << "  Vertex " << nodeId << ": ("<< xyz[0] << ", " << xyz[1] << ", " << xyz[2] << ")\n";
+                    for (int k = 0; k < num_nodes_per_elem; ++k) {
+                        std::size_t node_id = node_list_flat[j + k];
+                        const auto &xyz = node_id_to_coord[node_id];
+                        //std::cout << "  Vertex " << node_id << ": ("<< xyz[0] << ", " << xyz[1] << ", " << xyz[2] << ")\n";
 
                         Point p(xyz[0], xyz[1]);
                         q.push_back(p);
 
                         //std::cout << "  j: " << j << " k: " << k << std::endl;
-                        //F(j/4,k) = nodeId - 1;
+                        //F(j/4,k) = node_id - 1;
                     }
 
                     Point q0 = q[0];
@@ -788,13 +779,13 @@ void to_IPE_quad(std::string path, std::vector<Point> points, std::vector<Segmen
 
     o.close();
 
-    std::string systemCom = "ipe " + path + " > /dev/null 2>&1";
+    std::string system_com = "ipe " + path + " > /dev/null 2>&1";
 #if __APPLE__
-    systemCom = "open -W /Applications/Ipe.app " + path;
+    system_com = "open -W /Applications/Ipe.app " + path;
 #endif
-    int systemRet = system(systemCom.c_str());
+    int system_ret = system(system_com.c_str());
 
-    if (systemRet == -1){
+    if (system_ret == -1){
         printf("Could not open IPE");
     }
 }
@@ -895,32 +886,32 @@ void add_text_and_overwrite(Problem* problem, const std::string& path) {
     gmsh::model::getEntities(entities, 2); // dimension 2 = surface elements
 
     for (const auto &[dim, tag] : entities) {
-        std::vector<int> elementTypes;
-        std::vector<std::vector<std::size_t>> elementTags;
-        std::vector<std::vector<std::size_t>> nodeTagsPerElement;
+        std::vector<int> element_types;
+        std::vector<std::vector<std::size_t>> element_tags;
+        std::vector<std::vector<std::size_t>> node_tags_per_element;
 
-        gmsh::model::mesh::getElements(elementTypes, elementTags, nodeTagsPerElement, dim, tag);
+        gmsh::model::mesh::getElements(element_types, element_tags, node_tags_per_element, dim, tag);
 
-        for (std::size_t i = 0; i < elementTypes.size(); ++i) {
-            int elementType = elementTypes[i];
+        for (std::size_t i = 0; i < element_types.size(); ++i) {
+            int element_type = element_types[i];
             std::string name;
-            int dimDummy;
+            int dim_dummy;
             int order;
-            int numNodesPerElem;
-            std::vector<double> dummyCoords;
-            int numPrimaryNodes;
+            int num_nodes_per_elem;
+            std::vector<double> dummy_coords;
+            int num_primary_nodes;
 
             gmsh::model::mesh::getElementProperties(
-                elementType, name, dimDummy, order, numNodesPerElem, dummyCoords, numPrimaryNodes
+                element_type, name, dim_dummy, order, num_nodes_per_elem, dummy_coords, num_primary_nodes
             );
 
-            //std::cout << "Element type: " << name << " (nodes per face: " << numNodesPerElem << ")\n";
-            const auto &nodeListFlat = nodeTagsPerElement[i];
+            //std::cout << "Element type: " << name << " (nodes per face: " << num_nodes_per_elem << ")\n";
+            const auto &node_list_flat = node_tags_per_element[i];
 
             // Init faces for optimization
-            int totalFaceCount = nodeListFlat.size()/4;
+            int total_face_count = node_list_flat.size()/4;
 
-            buffer << name << ": " << totalFaceCount << "\n"; 
+            buffer << name << ": " << total_face_count << "\n"; 
         }
     }
 

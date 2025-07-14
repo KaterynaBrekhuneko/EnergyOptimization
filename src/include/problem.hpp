@@ -26,8 +26,6 @@ using json = nlohmann::json;
 typedef CGAL::Exact_predicates_exact_constructions_kernel K;
 typedef CGAL::Exact_predicates_inexact_constructions_kernel K_i;
 typedef CGAL::Polygon_2<K> Polygon;
-typedef Polygon::Vertex_iterator VertexIterator;
-typedef Polygon::Edge_const_iterator EdgeIterator;
 typedef CGAL::Point_2<K> Point;
 typedef K::Vector_2 Vector;
 typedef K::Line_2 Line;
@@ -40,7 +38,7 @@ typedef CGAL::Triangulation_data_structure_2<Vb, Fb> Tds;
 typedef CGAL::Constrained_Delaunay_triangulation_2<K, Tds> CDT;
 typedef CDT::Face_handle Face_handle;
 typedef CDT::Vertex_handle Vertex_handle;
-typedef CDT::Vertex_circulator Vertex_circulator;
+typedef CDT::Vertex_circulator Vertex_Circulator;
 
 typedef CGAL::Delaunay_mesh_size_criteria_2<CDT> Criteria;
 typedef CGAL::Delaunay_mesher_2<CDT, Criteria> Mesher;
@@ -178,7 +176,7 @@ int count_obtuse_triangles(Problem* problem);
 double squared_distance(Point& a, Point& b);
 double distance(Point& a, Point& b);
 
-void to_IPE(std::string path, std::vector<Point> points, std::vector<Segment> constraints, std::vector<Segment> newConstraints, std::vector<Point> boundary, std::vector<Point> steiner, std::vector<Segment> triangulation, std::vector<Polygon> obtuseTriangles, std::vector<Polygon> problematic_triangles);
+void to_IPE(std::string path, std::vector<Point> points, std::vector<Segment> constraints, std::vector<Segment> new_constraints, std::vector<Point> boundary, std::vector<Point> steiner, std::vector<Segment> triangulation, std::vector<Polygon> obtuse_triangles, std::vector<Polygon> problematic_triangles);
 void to_SVG(std::string path, std::vector<Point> points, std::vector<Segment> constraints, Polygon boundary, std::vector<Point> steiner, std::vector<Polygon> triangles, std::vector<Polygon> obtuse_triangles);
 
-void to_IPE_voronoi(std::string path, std::vector<Point> points, std::vector<Segment> constraints, std::vector<Segment> newConstraints, std::vector<Point> boundary, std::vector<Point> steiner, std::vector<Segment> triangulation, std::vector<Polygon> obtuseTriangles, std::vector<Polygon> problematic_triangles, std::vector<std::pair<Point, Point>> voronoi_edges);
+void to_IPE_voronoi(std::string path, std::vector<Point> points, std::vector<Segment> constraints, std::vector<Segment> new_constraints, std::vector<Point> boundary, std::vector<Point> steiner, std::vector<Segment> triangulation, std::vector<Polygon> obtuse_triangles, std::vector<Polygon> problematic_triangles, std::vector<std::pair<Point, Point>> voronoi_edges);

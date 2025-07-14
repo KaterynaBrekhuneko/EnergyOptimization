@@ -1,5 +1,5 @@
+#pragma once
 #include "problem.hpp"
-#include "solver.hpp"
 
 bool is_on_constraint_lloyd(const Point& steiner, Problem* problem);
 bool is_on_boundary_lloyd(Point& p, Polygon& boundary);

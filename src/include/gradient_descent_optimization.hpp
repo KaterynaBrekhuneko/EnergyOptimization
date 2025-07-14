@@ -1,8 +1,6 @@
 #pragma once
 
-#include "miscellaneous.hpp"
 #include "problem.hpp"
-#include "local_optimization.hpp"
 #include "global_optimization.hpp"
 
 void perform_edge_flips(Problem *problem, bool ignore);

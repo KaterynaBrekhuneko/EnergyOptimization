@@ -60,7 +60,7 @@ void print_current_time(){
 int main(int argc, char **argv){
     print_current_time();
 
-    Problem *problem = new Problem("../instances/point-set/point-set_10_d009159f.instance.json");
+    Problem *problem = new Problem("../instances/point-set/point-set_20_fa3fd7e0.instance.json");
     std::cout << "current instance: " << problem->get_name() << std::endl;
     problem->visualize_solution({});
 
@@ -70,7 +70,7 @@ int main(int argc, char **argv){
     build_quad_mesh_medians(problem);*/
 
     //* Fully non-obtuse mesh
-    /*print_current_time();
+    print_current_time();
     std::vector<Mesh_Statistics> all_stats;
 
     //Problem *problem = new Problem("../instances/ortho/ortho_10_d2723dcc.instance.json");
@@ -86,18 +86,18 @@ int main(int argc, char **argv){
               });
           
 
-    for (const auto& entry : entries) {
+    /*for (const auto& entry : entries) {
         if (entry.is_regular_file() && entry.path().extension() == ".json") {
-            Problem *problem = new Problem("../instances/ortho/" + entry.path().filename().string());
+            Problem *problem = new Problem("../instances/ortho/" + entry.path().filename().string());*/
 
             std::string name = problem->get_name();
             
                 std::cout << BLUE << "\ncurrent instance: " << problem->get_name() << RESET << std::endl;
                 //Mesh_Statistics stats  = uniform_mesh(problem);
                 auto start = std::chrono::high_resolution_clock::now();
-                Mesh_Statistics stats = offcenter_delaunay_refinement(problem);
-                //Mesh_Statistics stats;
-                //classic_delaunay_refinement(problem);
+                //Mesh_Statistics stats = offcenter_delaunay_refinement(problem);
+                Mesh_Statistics stats;
+                classic_delaunay_refinement(problem);
                 auto end = std::chrono::high_resolution_clock::now();
 
                 std::chrono::duration<double> duration = end - start;
@@ -110,7 +110,7 @@ int main(int argc, char **argv){
 
                 //all_stats.push_back(stats);
                 //write_to_csv_fully_non_obtuse("../results/fully_nonobtuse_ortho_offcenter.csv", all_stats);
-        }
+        /*}
     }
 
     write_to_csv_fully_non_obtuse("../results/fully_nonobtuse_ortho_offcenter.csv", all_stats);*/

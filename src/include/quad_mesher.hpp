@@ -1,4 +1,14 @@
+#pragma once
+
 #include "problem.hpp"
+#include "quad_optimization.hpp"
+
+#include <CGAL/intersections.h>
+
+#include <vector>
+#include <gmsh.h>
+#include <fstream>
+#include <algorithm>
 
 void build_quad_mesh_medians(Problem* problem);
 void build_quad_mesh_gmsh(Problem* problem);

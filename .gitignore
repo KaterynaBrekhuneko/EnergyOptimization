@@ -5,9 +5,18 @@ solutions
 .vscode
 libs/TinyAD
 python/env
+python/plots
 
 *.fish
 *.svg
 *.json
 
 Core_Diagnostics
+
+normal_delaunay_refinement
+offcenter_delaunay_refinement
+instances
+results
+quad_meshes
+instances
+instances_presentation

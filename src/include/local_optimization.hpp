@@ -1,5 +1,6 @@
+#pragma once
+
 #include "problem.hpp"
-#include "solver.hpp"
 
 std::vector<Polygon> find_neighborhood(const Point& steiner, std::vector<Polygon>& triangles, bool debug);
 bool is_interior_vertex(const Point& steiner, const Polygon& boundary);

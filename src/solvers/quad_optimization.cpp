@@ -1,12 +1,5 @@
 #include "quad_optimization.hpp"
 
-#include "../../libs/TinyAD/include/TinyAD/ScalarFunction.hh"
-#include "../../libs/TinyAD/include/TinyAD/Utils/LineSearch.hh"
-#include "../../libs/TinyAD/include/TinyAD/Utils/NewtonDirection.hh"
-#include "../../libs/TinyAD/include/TinyAD/Utils/NewtonDecrement.hh"
-
-#include <Eigen/Dense>
-
 // Energy function: 1 / (1 + exp(-k(x - π/2)))
 template <typename T>
 T angle_cost_sigmoid_quad( Problem* problem,
@@ -334,11 +327,6 @@ void find_minimum_quad(Problem* problem, Eigen::MatrixXd& V, Eigen::MatrixXi& F,
         return V.row(v_idx);
     });
 
-    /*std::cout << "BS:\n";
-    std::cout << BS;
-    std::cout << "\npoints size:\n";
-    std::cout << points.size();*/
-
     TINYAD_DEBUG_OUT("Start energy: " << func.eval(x));
 
     // Projected Newton
@@ -358,7 +346,6 @@ void find_minimum_quad(Problem* problem, Eigen::MatrixXd& V, Eigen::MatrixXi& F,
 
         double newton_decrement = TinyAD::newton_decrement<double>(d, g);
         //alter_direction(d, BS, BS_VAR, BS_TANGENT);
-        //TINYAD_DEBUG_OUT("Energy | Newton decrement in iteration " << iter << ": " << f << " | " << newton_decrement);
         if(newton_decrement < convergence_eps)
             break;
         //x = TinyAD::line_search(x, d, f, g, func, 1.0, 0.8, 256);

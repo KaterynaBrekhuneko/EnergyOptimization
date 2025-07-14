@@ -24,7 +24,7 @@ bool is_on_boundary_lloyd(Point& p, Polygon& boundary){
 
 Point compute_voronoi_centroid(const Vertex_handle& v, CDT& cdt) {
     std::vector<Point> neighbors;
-    Vertex_circulator vc = cdt.incident_vertices(v);
+    Vertex_Circulator vc = cdt.incident_vertices(v);
     if (vc != 0) {
         do {
             if (!cdt.is_infinite(vc)) {

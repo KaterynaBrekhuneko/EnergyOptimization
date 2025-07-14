@@ -1,13 +1,25 @@
+#pragma once
+
 #include "problem.hpp"
-#include "tinyAD_optimization.hpp"
 #include "mesh_statistics.hpp"
+#include "tinyAD_optimization.hpp"
 #include "gradient_descent_optimization.hpp"
+#include "lloyd.hpp"
+
+#include <CGAL/lloyd_optimize_mesh_2.h>
+#include <CGAL/Meshes/Double_map_container.h>
+#include <CGAL/intersections.h>
+#include <CGAL/Boolean_set_operations_2.h>
+
+#include <unordered_map>
+#include <limits>
+#include <chrono>
+#include <ctime>
 
 Mesh_Statistics refine(Problem* problem);
 void step_by_step_mesh(Problem* problem);
 void classic_delaunay_refinement(Problem* problem);
 Mesh_Statistics offcenter_delaunay_refinement(Problem* problem);
-void pentagon_refinement(Problem* problem);
 
 void locally_optimize_obtuse_refinement(Problem *problem);
 
@@ -21,7 +33,6 @@ bool point_within_segment(Point& a, Point& b, Point& p);
 
 void fix_boundary_refinement(Problem *problem);
 void fix_constraint_refinement(Problem *problem);
-//void fix_rhombus(Problem* problem, CDT& cdt);
 
 Mesh_Statistics uniform_mesh(Problem* problem);
 

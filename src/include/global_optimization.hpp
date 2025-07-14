@@ -1,5 +1,6 @@
+#pragma once
+
 #include "problem.hpp"
-#include "solver.hpp"
 #include "local_optimization.hpp"
 
 

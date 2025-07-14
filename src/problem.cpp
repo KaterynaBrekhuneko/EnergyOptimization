@@ -287,7 +287,7 @@ void Problem::save_intermidiate_result(std::string path){
     to_SVG(path, points, constraints, boundary, steiner, triangulation, obtuse_triangles);
 }
 
-void to_IPE(std::string path, std::vector<Point> points, std::vector<Segment> constraints, std::vector<Segment> newConstraints, std::vector<Point> boundary, std::vector<Point> steiner, std::vector<Segment> triangulation, std::vector<Polygon> obtuseTriangles, std::vector<Polygon> problematic_triangles){
+void to_IPE(std::string path, std::vector<Point> points, std::vector<Segment> constraints, std::vector<Segment> new_constraints, std::vector<Point> boundary, std::vector<Point> steiner, std::vector<Segment> triangulation, std::vector<Polygon> obtuse_triangles, std::vector<Polygon> problematic_triangles){
     std::ofstream o(path);
 
     auto xmin = boundary[0].x();
@@ -376,7 +376,7 @@ void to_IPE(std::string path, std::vector<Point> points, std::vector<Segment> co
         o << "</path>\n";
     }
 
-    for (Polygon p : obtuseTriangles){
+    for (Polygon p : obtuse_triangles){
         Point a = p[0];
         Point b = p[1];
         Point c = p[2];
@@ -419,7 +419,7 @@ void to_IPE(std::string path, std::vector<Point> points, std::vector<Segment> co
         o << "</path>\n";
     }
 
-    for (Segment v : newConstraints){
+    for (Segment v : new_constraints){
         Point a = v.start();
         Point b = v.end();
 
@@ -541,7 +541,7 @@ void to_SVG(std::string path, std::vector<Point> points, std::vector<Segment> co
     o.close();
 }
 
-void to_IPE_voronoi(std::string path, std::vector<Point> points, std::vector<Segment> constraints, std::vector<Segment> newConstraints, std::vector<Point> boundary, std::vector<Point> steiner, std::vector<Segment> triangulation, std::vector<Polygon> obtuseTriangles, std::vector<Polygon> problematic_triangles, std::vector<std::pair<Point, Point>> voronoi_edges){
+void to_IPE_voronoi(std::string path, std::vector<Point> points, std::vector<Segment> constraints, std::vector<Segment> new_constraints, std::vector<Point> boundary, std::vector<Point> steiner, std::vector<Segment> triangulation, std::vector<Polygon> obtuse_triangles, std::vector<Polygon> problematic_triangles, std::vector<std::pair<Point, Point>> voronoi_edges){
     std::ofstream o(path);
 
     auto xmin = boundary[0].x();
@@ -624,7 +624,7 @@ void to_IPE_voronoi(std::string path, std::vector<Point> points, std::vector<Seg
         o << "</path>\n";
     }
 
-    for (Polygon p : obtuseTriangles){
+    for (Polygon p : obtuse_triangles){
         Point a = p[0];
         Point b = p[1];
         Point c = p[2];
@@ -667,7 +667,7 @@ void to_IPE_voronoi(std::string path, std::vector<Point> points, std::vector<Seg
         o << "</path>\n";
     }
 
-    for (Segment v : newConstraints){
+    for (Segment v : new_constraints){
         Point a = v.start();
         Point b = v.end();
 

@@ -13,12 +13,12 @@ This project provides a framework for generating and optimizing high-quality tri
 - [nlohmann/json](https://github.com/nlohmann/json)
 - [TinyAD](https://github.com/patr-schm/TinyAD) (for newton-based optimization)
 
-### Compilation (with CMake)
+### Compile and run (with CMake)
 
 ```bash
 mkdir build && cd build
 cmake ../src
 cmake --build .
 
-run with ./energy
+./energy
 

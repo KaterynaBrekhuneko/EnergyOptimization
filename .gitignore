@@ -13,10 +13,8 @@ python/plots
 
 Core_Diagnostics
 
-normal_delaunay_refinement
-offcenter_delaunay_refinement
 instances
-results
+results_new
 quad_meshes
 instances
 instances_presentation
